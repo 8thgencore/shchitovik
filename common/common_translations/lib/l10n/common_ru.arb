@@ -1,0 +1,315 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Щитовик",
+  "ok": "ОК",
+  "cancel": "Отмена",
+  "confirm": "Подтвердить",
+  "retry": "Повторить",
+  "moreActions": "Ещё",
+  "initializationFailed": "Не удалось запустить приложение",
+  "projectsTitle": "Проекты",
+  "projectsEmpty": "Проектов пока нет",
+  "settingsTitle": "Настройки",
+  "themeModeTitle": "Тема",
+  "themeModeSystem": "Как в системе",
+  "themeModeLight": "Светлая",
+  "themeModeDark": "Тёмная",
+  "estimateDisclaimer": "Ориентировочный расчёт. Не заменяет проект, выполненный квалифицированным специалистом.",
+  "delete": "Удалить",
+  "save": "Сохранить",
+  "close": "Закрыть",
+  "auto": "Авто",
+  "yes": "Да",
+  "no": "Нет",
+  "reset": "Сбросить",
+  "notSet": "не задано",
+  "projectsCreate": "Новый проект",
+  "projectsImport": "Импорт проекта",
+  "projectsImportFailed": "Не удалось импортировать: {message}",
+  "@projectsImportFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsImported": "Проект «{name}» импортирован",
+  "@projectsImported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsDemoTitle": "Или начните с примера",
+  "projectsDemoOneRoom": "1-комнатная квартира",
+  "projectsDemoThreeRoom": "3-комнатная квартира",
+  "projectsDemoHouse": "Частный дом",
+  "projectsUpdated": "изменён {date}",
+  "@projectsUpdated": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "projectDuplicate": "Дублировать",
+  "projectExport": "Экспорт файла",
+  "projectDeleteTitle": "Удалить проект?",
+  "projectDeleteMessage": "Проект «{name}» будет удалён.",
+  "@projectDeleteMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "projectNotFound": "Проект не найден",
+  "createProjectTitle": "Новый проект",
+  "createProjectName": "Название",
+  "createProjectDefaultName": "Мой проект",
+  "objectTypeTitle": "Тип объекта",
+  "supplyTitle": "Ввод",
+  "supplySingle": "1 фаза",
+  "supplyThree": "3 фазы",
+  "create": "Создать",
+  "tabSetup": "Объект",
+  "tabRooms": "Помещения",
+  "tabCircuits": "Линии",
+  "tabEstimate": "Смета",
+  "reportPdf": "PDF-отчёт",
+  "reportFailed": "Не удалось сформировать отчёт: {message}",
+  "@reportFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "interfaceModeTitle": "Режим",
+  "interfaceModeSimple": "Простой",
+  "interfaceModeExpert": "Экспертный",
+  "interfaceModeHint": "В экспертном режиме доступны все параметры расчёта и ручная правка линий.",
+  "setupGeneral": "Общее",
+  "setupSupply": "Ввод и сеть",
+  "setupCable": "Кабель по умолчанию",
+  "setupProtection": "Защита",
+  "setupName": "Название проекта",
+  "setupNote": "Заметка",
+  "setupVoltage": "Номинальное напряжение",
+  "setupAllowedPower": "Разрешённая мощность, кВт",
+  "setupAllowedPowerHint": "Из технических условий на присоединение",
+  "setupIncomerBreaker": "Существующий вводной автомат, А",
+  "setupExternalLoop": "Сопротивление петли «фаза — нуль» до щита, Ом",
+  "setupExternalLoopHint": "По замеру или от сетевой организации; без него проверка КЗ — с допущением",
+  "setupCookingFuel": "Плита",
+  "cookingFuelNaturalGas": "Газовая",
+  "cookingFuelLiquefied": "Сжиженный газ / твёрдое топливо",
+  "cookingFuelElectric": "Электрическая",
+  "setupCommercialProfile": "Профиль помещения",
+  "profileOffice": "Офис",
+  "profileShop": "Магазин",
+  "profileCatering": "Общепит",
+  "profileServices": "Салон, мастерская услуг",
+  "profileWorkshop": "Мастерская со станками",
+  "setupRcdStrategy": "Устройства защитного отключения",
+  "rcdStrategyRcbo": "Дифавтомат на каждую линию",
+  "rcdStrategyRcd": "Автомат + УЗО на каждую линию",
+  "rcdStrategyGrouped": "Общие УЗО на группы линий",
+  "setupFireRcd": "Противопожарное УЗО на вводе",
+  "setupMaterial": "Материал жил",
+  "materialCopper": "Медь",
+  "materialAluminium": "Алюминий",
+  "setupInsulation": "Изоляция",
+  "insulationPvc": "ПВХ (70 °C)",
+  "insulationXlpe": "Сшитый полиэтилен (90 °C)",
+  "setupMethod": "Способ прокладки",
+  "setupAmbient": "Температура среды, °C",
+  "setupGrouped": "Цепей, проложенных вместе",
+  "setupDefaultLength": "Длина линии по умолчанию, м",
+  "roomsEmpty": "Добавьте помещения — приборы подставятся из типового набора",
+  "roomsAdd": "Помещение",
+  "roomsAddTitle": "Добавить помещение",
+  "roomsEmptyRoom": "Пустое помещение",
+  "roomRename": "Переименовать",
+  "roomKind": "Тип помещения",
+  "roomKindStandard": "Жилое / обычное",
+  "roomKindKitchen": "Кухня",
+  "roomKindBathroom": "Ванная, душевая, сауна",
+  "roomKindOutdoor": "Улица",
+  "roomKindGarage": "Гараж, мастерская",
+  "roomDeleteTitle": "Удалить помещение?",
+  "roomDeleteMessage": "Вместе с помещением будут удалены его приборы.",
+  "devicesAdd": "Прибор",
+  "devicesSearch": "Поиск прибора",
+  "deviceCustom": "Свой прибор",
+  "deviceName": "Название",
+  "devicePower": "Мощность одного, Вт",
+  "deviceQuantity": "Количество",
+  "devicePhases": "Фазы",
+  "deviceCosPhi": "cos φ",
+  "deviceUsageFactor": "Коэффициент использования ku",
+  "deviceInrush": "Кратность пускового тока",
+  "deviceConnection": "Подключение",
+  "connectionSocket": "Через розетку",
+  "connectionFixed": "Стационарно",
+  "deviceDedicated": "Отдельная линия",
+  "dedicatedRequired": "Обязательно",
+  "dedicatedRecommended": "По умолчанию",
+  "dedicatedNo": "Общая группа",
+  "circuitsEmpty": "Линии появятся, когда вы добавите приборы",
+  "circuitsInput": "Ввод",
+  "circuitsInstalled": "Установленная мощность",
+  "circuitsByDevices": "По приборам (Σ P·ku)",
+  "circuitsNormative": "Расчётная по СП 256",
+  "circuitsDesignCurrent": "Расчётный ток",
+  "circuitsIncomer": "Вводной автомат",
+  "circuitsFireRcd": "УЗО на вводе",
+  "circuitsPhases": "Фазы",
+  "circuitsImbalance": "Разница токов фаз",
+  "circuitsAssumptions": "Допущения расчёта",
+  "circuitsIssues": "Замечания",
+  "circuitStatus": "Статус",
+  "circuitValues": "Расчёт",
+  "circuitChecks": "Проверки",
+  "circuitRcdReasons": "Почему нужно УЗО",
+  "circuitSettings": "Параметры линии",
+  "circuitExpert": "Ручные изменения",
+  "circuitLength": "Длина, м",
+  "circuitSection": "Сечение, мм²",
+  "circuitBreaker": "Номинал автомата, А",
+  "circuitCurve": "Характеристика",
+  "circuitProtection": "Аппарат защиты",
+  "circuitPhase": "Фаза",
+  "circuitResetManual": "Сбросить ручные изменения",
+  "protectionMcb": "Автомат",
+  "protectionMcbRcd": "Автомат + УЗО",
+  "protectionRcbo": "Дифавтомат",
+  "protectionGroup": "Автомат под общим УЗО",
+  "circuitDevices": "Приборы",
+  "estimateScenario": "Сценарий",
+  "scenarioEconomy": "Эконом",
+  "scenarioStandard": "Стандарт",
+  "scenarioPremium": "Премиум",
+  "estimateTotal": "Итого",
+  "estimateTypical": "Типично {price}",
+  "@estimateTypical": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "estimateApparatus": "Аппараты защиты",
+  "estimateAuxiliary": "Вспомогательные устройства",
+  "estimateCable": "Кабель",
+  "estimateModules": "Модулей DIN: {count}",
+  "@estimateModules": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "estimateOptions": "Состав",
+  "estimateVoltageRelay": "Реле напряжения",
+  "estimateSpd": "УЗИП",
+  "estimateOverhead": "Воздушный ввод (УЗИП тип 1+2)",
+  "estimateCableMark": "Марка медного кабеля",
+  "estimateWarnings": "Предупреждения",
+  "estimateNotIncluded": "Не включено",
+  "estimatePickModel": "Выбор модели",
+  "estimateRequirement": "Требование: {requirement}",
+  "@estimateRequirement": {
+    "placeholders": {
+      "requirement": {
+        "type": "String"
+      }
+    }
+  },
+  "estimateCustomPrice": "Своя цена, ₽",
+  "estimateResetSelection": "Подбирать автоматически",
+  "compatibilityExact": "точное соответствие",
+  "compatibilityDifferences": "подходит, есть отличия",
+  "estimateNoModels": "В каталоге нет подходящих моделей",
+  "tabBoard": "Щит",
+  "stepBack": "Назад",
+  "stepRoomsSummary": "{rooms} пом. · {devices} приб.",
+  "@stepRoomsSummary": {
+    "placeholders": {
+      "rooms": {
+        "type": "int"
+      },
+      "devices": {
+        "type": "int"
+      }
+    }
+  },
+  "stepCircuitsSummary": "{circuits} лин. · {failed} ✕",
+  "@stepCircuitsSummary": {
+    "placeholders": {
+      "circuits": {
+        "type": "int"
+      },
+      "failed": {
+        "type": "int"
+      }
+    }
+  },
+  "stepNeedRooms": "Добавьте хотя бы одно помещение",
+  "stepFailedCircuits": "Не проходят: {numbers}",
+  "@stepFailedCircuits": {
+    "placeholders": {
+      "numbers": {
+        "type": "String"
+      }
+    }
+  },
+  "circuitsViewBoard": "Щит",
+  "circuitsViewList": "Список",
+  "boardEnclosure": "Корпус {rails}×{perRail} = {total} мод. · занято {occupied} · резерв {reserve}",
+  "@boardEnclosure": {
+    "placeholders": {
+      "rails": {
+        "type": "int"
+      },
+      "perRail": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "occupied": {
+        "type": "int"
+      },
+      "reserve": {
+        "type": "int"
+      }
+    }
+  },
+  "boardRail": "Рейка {number} · {used}/{capacity}",
+  "@boardRail": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "used": {
+        "type": "int"
+      },
+      "capacity": {
+        "type": "int"
+      }
+    }
+  },
+  "boardReserveNote": "Резерв не менее {percent} % — допущение, требует проверки. Цвет полосы — фаза, рамка — статус линии.",
+  "@boardReserveNote": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "boardIncomer": "Ввод",
+  "boardRcd": "УЗО",
+  "boardAuxiliary": "Доп."
+}

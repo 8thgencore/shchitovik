@@ -1,0 +1,23 @@
+name: root
+description: "Workspace root"
+publish_to: none
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+  flutter: ">=3.47.0 <4.0.0"
+
+dev_dependencies:
+  sizzle_lints: ^2.1.7
+
+workspace:
+  - app
+
+  # Common
+  - common/common_utils
+  - common/common_logger
+  - common/common_error_reporter
+  - common/common_translations
+  - common/common_database
+
+# engine/* are standalone pure Dart packages (own resolution): their `test` dependency
+# cannot share a solve with the test_api version pinned by flutter_test.

@@ -1,0 +1,51 @@
+{
+ "dataset": "voltage_drop_limits",
+ "dataset_version": "2026.10-1",
+ "description": "Допустимые потери напряжения в электроустановке потребителя.",
+ "source": {
+  "documents": [
+   "sp-256-1325800-2016",
+   "gost-r-50571-5-52-2011"
+  ],
+  "clauses": [
+   "СП 256: 8.23",
+   "ГОСТ Р 50571.5.52: G.52.1",
+   "ГОСТ Р 50571.5.52: приложение G, формула падения напряжения"
+  ]
+ },
+ "notes": [
+  "СП 256 (8.23) строже приложения G ГОСТ Р 50571.5.52 и применяется к жилым и общественным зданиям.",
+  "Свыше 100 м от ВРУ допускается увеличение на 0,005 % на каждый метр сверх 100 м, но не более 0,5 %.",
+  "Суммарные потери от шин ТП до наиболее удалённого светильника — не более 7,5 % (вне границ установки потребителя).",
+  "Формула (прил. G): u = b·(ρ1·L/S·cos φ + λ·L·sin φ)·IB; Δu = 100·u/U0; b = 2 (однофазные), 1 (трёхфазные); ρ1 = 1,25·ρ20; λ = 0,08 мОм/м; при отсутствии данных cos φ = 0,8."
+ ],
+ "from_building_input": {
+  "lighting_percent": 3.0,
+  "other_percent": 4.0
+ },
+ "long_line_allowance": {
+  "length_threshold_m": 100,
+  "percent_per_m": 0.005,
+  "max_extra_percent": 0.5
+ },
+ "gost_g_52_1": {
+  "public_lv_supply": {
+   "lighting_percent": 3.0,
+   "other_percent": 5.0
+  },
+  "private_lv_supply": {
+   "lighting_percent": 6.0,
+   "other_percent": 8.0
+  }
+ },
+ "formula_g": {
+  "b_single_phase": 2,
+  "b_three_phase": 1,
+  "rho1_ohm_mm2_per_m": {
+   "copper": 0.0225,
+   "aluminium": 0.036
+  },
+  "lambda_mohm_per_m": 0.08,
+  "default_cos_phi": 0.8
+ }
+}

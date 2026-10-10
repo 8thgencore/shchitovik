@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "note": "Справочник производителей собран вручную из общедоступных сведений. Сегмент (tier) и позиционирование — экспертная оценка для учебных задач, не официальная классификация.",
+    "tiers": {
+      "budget": "массовый/бюджетный сегмент, самая низкая цена",
+      "mid": "средний сегмент, баланс цены и качества",
+      "premium": "премиальный сегмент, международные бренды"
+    }
+  },
+  "manufacturers": [
+    {"id": "iek", "name": "IEK", "country": "RU", "tier": "budget", "segments": ["MCB", "RCD", "RCBO"], "note": "один из крупнейших российских брендов электроустановочного оборудования; широкая дистрибуция"},
+    {"id": "ekf", "name": "EKF", "country": "RU", "tier": "budget", "segments": ["MCB", "RCD", "RCBO"], "note": "российский бренд; линейки Basic (экономичная) и PROxima (средняя)"},
+    {"id": "tdm", "name": "TDM Electric", "country": "RU", "tier": "budget", "segments": ["MCB"], "note": "российский бренд, ценовая политика близка к экономичным сериям"},
+    {"id": "dekraft", "name": "DEKraft", "country": "RU", "tier": "mid", "segments": ["MCB", "RCD", "RCBO"], "note": "бренд Schneider Electric для российского рынка (бюджетно-средний сегмент)"},
+    {"id": "chint", "name": "CHINT", "country": "CN", "tier": "mid", "segments": ["MCB", "RCD", "RCBO"], "note": "китайский производитель, широко представлен в России"},
+    {"id": "legrand", "name": "Legrand", "country": "FR", "tier": "premium", "segments": ["MCB", "RCD", "RCBO"], "note": "серии DX3 (автоматы, УЗО) и RX3 (бюджетнее)"},
+    {"id": "hager", "name": "Hager", "country": "DE", "tier": "premium", "segments": ["MCB", "RCD"], "note": "немецко-французская компания; серия MCN, УЗО CDA"},
+    {"id": "abb", "name": "ABB", "country": "CH", "tier": "premium", "segments": ["MCB", "RCD", "RCBO"], "note": "серии S200 (автоматы), F200 (УЗО), DS201 (дифавтоматы)"},
+    {"id": "schneider", "name": "Schneider Electric", "country": "FR", "tier": "premium", "segments": ["MCB", "RCD", "RCBO"], "note": "линейки Acti9 (профессиональная) и Easy9 (экономичная)"},
+    {"id": "siemens", "name": "Siemens", "country": "DE", "tier": "premium", "segments": ["MCB", "RCD", "RCBO"], "note": "серии 5SL6, 5SM3, 5SU1"}
+  ]
+}

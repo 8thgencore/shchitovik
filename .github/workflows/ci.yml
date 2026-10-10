@@ -1,0 +1,60 @@
+# GitHub Actions variant of .gitlab-ci.yml: checks on every push and PR, builds on main.
+# Flutter jobs run in the same image as GitLab CI, so the toolchain matches exactly.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  data:
+    name: Catalogs and formula oracle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: python3 -I tools/catalog/validate_catalogs.py
+      - run: python3 -I verification/oracle/run_vectors.py
+
+  check:
+    name: Format, analyze, test
+    runs-on: ubuntu-latest
+    container: ghcr.io/cirruslabs/flutter:3.47.6
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash scripts/bootstrap.bash
+      - run: bash scripts/format.bash --check
+      - run: bash scripts/analyze.bash
+      - run: bash scripts/test.bash
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: test-reports
+          path: reports/
+          retention-days: 7
+
+  build:
+    name: Build Web and APK
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [data, check]
+    runs-on: ubuntu-latest
+    container: ghcr.io/cirruslabs/flutter:3.47.6
+    env:
+      DEFINES: --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash scripts/bootstrap.bash
+      - run: cd app && flutter build web --release $DEFINES
+      - run: cd app && flutter build apk --release $DEFINES
+      - uses: actions/upload-artifact@v7
+        with:
+          name: web
+          path: app/build/web/
+          retention-days: 7
+      - uses: actions/upload-artifact@v7
+        with:
+          name: apk
+          path: app/build/app/outputs/flutter-apk/
+          retention-days: 7

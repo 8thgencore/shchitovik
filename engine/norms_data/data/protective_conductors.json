@@ -1,0 +1,20 @@
+{
+ "dataset": "protective_conductors",
+ "dataset_version": "2026.10-1",
+ "description": "Минимальное сечение защитного проводника и коэффициент k для термической стойкости.",
+ "source": {"documents": ["gost-r-50571-5-54"], "tables": ["54.2", "A.54.4"]},
+ "notes": [
+  "Табл. 54.2 для PE из того же материала, что и фазный: S ≤ 16 → S; 16 < S ≤ 35 → 16; S > 35 → S/2.",
+  "Табл. A.54.4: PE — жила кабеля; для ПВХ значения для сечений до 300 мм².",
+  "Проверка термической стойкости: S ≥ √(I²t) / k (ГОСТ Р 50571.5.54, п. 543.1.2)."
+ ],
+ "min_section_rule": [
+  {"phase_max_mm2": 16, "pe": "same_as_phase"},
+  {"phase_max_mm2": 35, "pe_mm2": 16},
+  {"phase_max_mm2": null, "pe": "half_of_phase"}
+ ],
+ "k_cable_core": {
+  "pvc": {"initial_c": 70, "final_c": 160, "copper": 115, "aluminium": 76},
+  "xlpe": {"initial_c": 90, "final_c": 250, "copper": 143, "aluminium": 94}
+ }
+}

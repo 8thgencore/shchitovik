@@ -1,0 +1,23 @@
+name: common_translations
+description: Reusable localization resources of the workspace.
+version: 0.0.1
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+  flutter: ">=3.47.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  generate: true

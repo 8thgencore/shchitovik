@@ -1,0 +1,369 @@
+{
+ "dataset": "auxiliary_devices",
+ "dataset_version": "2026-10-1",
+ "description": "Вспомогательные устройства щита: реле напряжения, реле контроля фаз, УЗИП.",
+ "price_disclaimer": "Оценка по сегментам (budget/mid/premium); не прайс-лист.",
+ "notes": [
+  "Реле напряжения — защита приёмников от перенапряжения при обрыве нуля (рекомендация, не требование норм).",
+  "УЗИП — ГОСТ Р 50571.4.44 / ГОСТ Р 50571.5.53 (534); тип 1+2 — при воздушном вводе."
+ ],
+ "items": [
+  {
+   "id": "voltage_relay-2p-40-budget",
+   "kind": "voltage_relay",
+   "poles": 2,
+   "rated_current_a": 40,
+   "tier": "budget",
+   "name": "Реле напряжения однофазное 40 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1280,
+    "typical": 1600,
+    "max": 2240,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-2p-40-mid",
+   "kind": "voltage_relay",
+   "poles": 2,
+   "rated_current_a": 40,
+   "tier": "mid",
+   "name": "Реле напряжения однофазное 40 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 2050,
+    "typical": 2560,
+    "max": 3585,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-2p-40-premium",
+   "kind": "voltage_relay",
+   "poles": 2,
+   "rated_current_a": 40,
+   "tier": "premium",
+   "name": "Реле напряжения однофазное 40 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 3840,
+    "typical": 4800,
+    "max": 6720,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-2p-63-budget",
+   "kind": "voltage_relay",
+   "poles": 2,
+   "rated_current_a": 63,
+   "tier": "budget",
+   "name": "Реле напряжения однофазное 63 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1600,
+    "typical": 2000,
+    "max": 2800,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-2p-63-mid",
+   "kind": "voltage_relay",
+   "poles": 2,
+   "rated_current_a": 63,
+   "tier": "mid",
+   "name": "Реле напряжения однофазное 63 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 2560,
+    "typical": 3200,
+    "max": 4480,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-2p-63-premium",
+   "kind": "voltage_relay",
+   "poles": 2,
+   "rated_current_a": 63,
+   "tier": "premium",
+   "name": "Реле напряжения однофазное 63 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 4800,
+    "typical": 6000,
+    "max": 8400,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-4p-63-budget",
+   "kind": "voltage_relay",
+   "poles": 4,
+   "rated_current_a": 63,
+   "tier": "budget",
+   "name": "Реле контроля фаз (трёхфазное) с контактором до 63 А",
+   "module_units": 6,
+   "price": {
+    "currency": "RUB",
+    "min": 5200,
+    "typical": 6500,
+    "max": 9100,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-4p-63-mid",
+   "kind": "voltage_relay",
+   "poles": 4,
+   "rated_current_a": 63,
+   "tier": "mid",
+   "name": "Реле контроля фаз (трёхфазное) с контактором до 63 А",
+   "module_units": 6,
+   "price": {
+    "currency": "RUB",
+    "min": 8320,
+    "typical": 10400,
+    "max": 14560,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "voltage_relay-4p-63-premium",
+   "kind": "voltage_relay",
+   "poles": 4,
+   "rated_current_a": 63,
+   "tier": "premium",
+   "name": "Реле контроля фаз (трёхфазное) с контактором до 63 А",
+   "module_units": 6,
+   "price": {
+    "currency": "RUB",
+    "min": 15600,
+    "typical": 19500,
+    "max": 27300,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd-2p-budget",
+   "kind": "spd",
+   "poles": 2,
+   "rated_current_a": null,
+   "tier": "budget",
+   "name": "УЗИП тип 2, 1P+N",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 2000,
+    "typical": 2500,
+    "max": 3500,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd-2p-mid",
+   "kind": "spd",
+   "poles": 2,
+   "rated_current_a": null,
+   "tier": "mid",
+   "name": "УЗИП тип 2, 1P+N",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 3200,
+    "typical": 4000,
+    "max": 5600,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd-2p-premium",
+   "kind": "spd",
+   "poles": 2,
+   "rated_current_a": null,
+   "tier": "premium",
+   "name": "УЗИП тип 2, 1P+N",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 6000,
+    "typical": 7500,
+    "max": 10500,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd-4p-budget",
+   "kind": "spd",
+   "poles": 4,
+   "rated_current_a": null,
+   "tier": "budget",
+   "name": "УЗИП тип 2, 3P+N",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 4000,
+    "typical": 5000,
+    "max": 7000,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd-4p-mid",
+   "kind": "spd",
+   "poles": 4,
+   "rated_current_a": null,
+   "tier": "mid",
+   "name": "УЗИП тип 2, 3P+N",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 6400,
+    "typical": 8000,
+    "max": 11200,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd-4p-premium",
+   "kind": "spd",
+   "poles": 4,
+   "rated_current_a": null,
+   "tier": "premium",
+   "name": "УЗИП тип 2, 3P+N",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 12000,
+    "typical": 15000,
+    "max": 21000,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd_type1-2p-budget",
+   "kind": "spd_type1",
+   "poles": 2,
+   "rated_current_a": null,
+   "tier": "budget",
+   "name": "УЗИП тип 1+2, 1P+N (воздушный ввод)",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 5600,
+    "typical": 7000,
+    "max": 9800,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd_type1-2p-mid",
+   "kind": "spd_type1",
+   "poles": 2,
+   "rated_current_a": null,
+   "tier": "mid",
+   "name": "УЗИП тип 1+2, 1P+N (воздушный ввод)",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 8960,
+    "typical": 11200,
+    "max": 15680,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd_type1-2p-premium",
+   "kind": "spd_type1",
+   "poles": 2,
+   "rated_current_a": null,
+   "tier": "premium",
+   "name": "УЗИП тип 1+2, 1P+N (воздушный ввод)",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 16800,
+    "typical": 21000,
+    "max": 29400,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd_type1-4p-budget",
+   "kind": "spd_type1",
+   "poles": 4,
+   "rated_current_a": null,
+   "tier": "budget",
+   "name": "УЗИП тип 1+2, 3P+N (воздушный ввод)",
+   "module_units": 8,
+   "price": {
+    "currency": "RUB",
+    "min": 11200,
+    "typical": 14000,
+    "max": 19600,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd_type1-4p-mid",
+   "kind": "spd_type1",
+   "poles": 4,
+   "rated_current_a": null,
+   "tier": "mid",
+   "name": "УЗИП тип 1+2, 3P+N (воздушный ввод)",
+   "module_units": 8,
+   "price": {
+    "currency": "RUB",
+    "min": 17920,
+    "typical": 22400,
+    "max": 31360,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "spd_type1-4p-premium",
+   "kind": "spd_type1",
+   "poles": 4,
+   "rated_current_a": null,
+   "tier": "premium",
+   "name": "УЗИП тип 1+2, 3P+N (воздушный ввод)",
+   "module_units": 8,
+   "price": {
+    "currency": "RUB",
+    "min": 33600,
+    "typical": 42000,
+    "max": 58800,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+import 'package:electrical_core/electrical_core.dart' show unset;
+import 'package:estimate_core/src/catalog/catalog.dart';
+import 'package:estimate_core/src/catalog/price.dart';
+import 'package:meta/meta.dart';
+
+/// Price scenario: selects the manufacturer segment for automatic selection.
+enum EstimateScenario {
+  /// Budget brands.
+  economy(Tier.budget),
+
+  /// Mid segment.
+  standard(Tier.mid),
+
+  /// Premium brands.
+  premium(Tier.premium);
+
+  const EstimateScenario(this.tier);
+
+  /// Segment.
+  final Tier tier;
+}
+
+/// Model chosen by the user for a slot; stored as a snapshot so that catalog updates do not
+/// change an existing estimate silently.
+@immutable
+final class ApparatusSelection {
+  const ApparatusSelection({required this.product, required this.catalogVersion, this.customPrice});
+
+  /// Parses JSON produced by [toJson].
+  factory ApparatusSelection.fromJson(Map<String, Object?> json) => ApparatusSelection(
+    product: ApparatusProduct.fromJson(json['product']! as Map<String, Object?>),
+    catalogVersion: json['catalog_version']! as String,
+    customPrice: json['custom_price'] == null
+        ? null
+        : PriceRange.fromJson(json['custom_price']! as Map<String, Object?>),
+  );
+
+  /// Snapshot of the model.
+  final ApparatusProduct product;
+
+  /// Catalog version the snapshot was taken from.
+  final String catalogVersion;
+
+  /// Price entered by the user (per unit).
+  final PriceRange? customPrice;
+
+  /// Serializes to JSON.
+  Map<String, Object?> toJson() => {
+    'product': product.toJson(),
+    'catalog_version': catalogVersion,
+    if (customPrice != null) 'custom_price': customPrice!.toJson(),
+  };
+}
+
+/// User choices for the estimate; persisted next to the project input.
+@immutable
+final class EstimateInput {
+  const EstimateInput({
+    this.scenario = EstimateScenario.standard,
+    this.cableMarkId,
+    this.cableReserveFactor = 1.1,
+    this.voltageRelay,
+    this.surgeProtection,
+    this.overheadSupply = false,
+    this.selections = const {},
+    this.cableCustomPrices = const {},
+  });
+
+  /// Parses JSON produced by [toJson].
+  factory EstimateInput.fromJson(Map<String, Object?> json) => EstimateInput(
+    scenario: EstimateScenario.values.byName(json['scenario'] as String? ?? 'standard'),
+    cableMarkId: json['cable_mark_id'] as String?,
+    cableReserveFactor: (json['cable_reserve_factor'] as num?)?.toDouble() ?? 1.1,
+    voltageRelay: json['voltage_relay'] as bool?,
+    surgeProtection: json['surge_protection'] as bool?,
+    overheadSupply: json['overhead_supply'] as bool? ?? false,
+    selections: {
+      for (final e in (json['selections'] as Map<String, Object?>? ?? const {}).entries)
+        e.key: ApparatusSelection.fromJson(e.value! as Map<String, Object?>),
+    },
+    cableCustomPrices: {
+      for (final e in (json['cable_custom_prices'] as Map<String, Object?>? ?? const {}).entries)
+        e.key: PriceRange.fromJson(e.value! as Map<String, Object?>),
+    },
+  );
+
+  /// Price scenario.
+  final EstimateScenario scenario;
+
+  /// Copper cable mark; `null` — ВВГнг(А)-LS. Aluminium lines always use АВВГнг(А)-LS.
+  final String? cableMarkId;
+
+  /// Cable length reserve for routing and terminations (1,1 = +10 %).
+  final double cableReserveFactor;
+
+  /// Voltage relay; `null` — recommended (included).
+  final bool? voltageRelay;
+
+  /// Surge protective device; `null` — included for houses and garages.
+  final bool? surgeProtection;
+
+  /// Overhead supply line: SPD type 1+2 instead of type 2.
+  final bool overheadSupply;
+
+  /// Chosen models by slot id.
+  final Map<String, ApparatusSelection> selections;
+
+  /// Cable price per metre entered by the user, by circuit id (`incomer` for the incomer cable).
+  final Map<String, PriceRange> cableCustomPrices;
+
+  /// Returns a copy with the given fields replaced; pass `null` explicitly to clear an
+  /// optional field.
+  EstimateInput copyWith({
+    EstimateScenario? scenario,
+    Object? cableMarkId = unset,
+    double? cableReserveFactor,
+    Object? voltageRelay = unset,
+    Object? surgeProtection = unset,
+    bool? overheadSupply,
+    Map<String, ApparatusSelection>? selections,
+    Map<String, PriceRange>? cableCustomPrices,
+  }) => EstimateInput(
+    scenario: scenario ?? this.scenario,
+    cableMarkId: identical(cableMarkId, unset) ? this.cableMarkId : cableMarkId as String?,
+    cableReserveFactor: cableReserveFactor ?? this.cableReserveFactor,
+    voltageRelay: identical(voltageRelay, unset) ? this.voltageRelay : voltageRelay as bool?,
+    surgeProtection: identical(surgeProtection, unset)
+        ? this.surgeProtection
+        : surgeProtection as bool?,
+    overheadSupply: overheadSupply ?? this.overheadSupply,
+    selections: selections ?? this.selections,
+    cableCustomPrices: cableCustomPrices ?? this.cableCustomPrices,
+  );
+
+  /// Serializes to JSON.
+  Map<String, Object?> toJson() => {
+    'scenario': scenario.name,
+    if (cableMarkId != null) 'cable_mark_id': cableMarkId,
+    'cable_reserve_factor': cableReserveFactor,
+    if (voltageRelay != null) 'voltage_relay': voltageRelay,
+    if (surgeProtection != null) 'surge_protection': surgeProtection,
+    'overhead_supply': overheadSupply,
+    'selections': {for (final e in selections.entries) e.key: e.value.toJson()},
+    'cable_custom_prices': {for (final e in cableCustomPrices.entries) e.key: e.value.toJson()},
+  };
+}

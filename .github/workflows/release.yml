@@ -1,0 +1,90 @@
+# Manual release tasks (Actions → Release → Run workflow), GitHub variant of the manual GitLab jobs.
+# Sentry stays off: no SENTRY_DSN define, the privacy policy promises no error reports.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: What to do
+        type: choice
+        options: [store-android, deploy-web, deploy-catalog]
+
+env:
+  DEFINES: --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
+
+jobs:
+  store-android:
+    name: Signed AAB and APK
+    if: inputs.target == 'store-android'
+    runs-on: ubuntu-latest
+    container: ghcr.io/cirruslabs/flutter:3.47.6
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash scripts/bootstrap.bash
+      - name: Upload key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          cat > app/android/key.properties <<EOF
+          storeFile=$RUNNER_TEMP/upload.jks
+          storePassword=$STORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+      - run: cd app && flutter build appbundle --release --build-number=${{ github.run_number }} $DEFINES
+      - run: cd app && flutter build apk --release --build-number=${{ github.run_number }} $DEFINES
+      - run: rm -f app/android/key.properties "$RUNNER_TEMP/upload.jks"
+        if: always()
+      - uses: actions/upload-artifact@v7
+        with:
+          name: store-android
+          path: |
+            app/build/app/outputs/bundle/release/
+            app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+  deploy-web:
+    name: Deploy Web to VPS
+    if: inputs.target == 'deploy-web'
+    runs-on: ubuntu-latest
+    container: ghcr.io/cirruslabs/flutter:3.47.6
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash scripts/bootstrap.bash
+      - run: cd app && flutter build web --release $DEFINES
+      - run: apt-get update && apt-get install -y --no-install-recommends rsync openssh-client
+      - name: SSH key
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - run: rsync -az --delete app/build/web/ "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/var/www/shchitovik/web/"
+
+  deploy-catalog:
+    name: Deploy price catalog to VPS
+    if: inputs.target == 'deploy-catalog'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: SSH key
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - run: python3 -I tools/catalog/validate_catalogs.py
+      - run: python3 -I tools/catalog/publish_catalog.py out
+      - run: rsync -az --delete out/catalog/ "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/var/www/shchitovik/catalog/"
