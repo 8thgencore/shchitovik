@@ -1,0 +1,488 @@
+{
+ "dataset": "room_templates",
+ "dataset_version": "2026.10-1",
+ "description": "Шаблоны помещений с типовым набором электроприёмников.",
+ "source": {
+  "documents": [
+   "engineering-estimate",
+   "sp-256-1325800-2016"
+  ],
+  "clauses": [
+   "СП 256: 15.28 (число розеток), прил. А (УДТ)"
+  ]
+ },
+ "notes": [
+  "room_kind влияет на правила УДТ: bathroom — ванные, душевые, сауны (ГОСТ Р 50571.7.701, СП 256 А.4.15); outdoor — наружные розетки (СП 256 А.1.6, А.5.4); garage — гаражи и мастерские (СП 256 А.5.4); kitchen — кухни.",
+  "Наборы приборов — стартовые, пользователь редактирует их в мастере."
+ ],
+ "room_kinds": [
+  "standard",
+  "kitchen",
+  "bathroom",
+  "outdoor",
+  "garage"
+ ],
+ "rooms": [
+  {
+   "id": "kitchen",
+   "name": "Кухня",
+   "room_kind": "kitchen",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 1
+    },
+    {
+     "device_id": "led_strip",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point_kitchen",
+     "count": 4
+    },
+    {
+     "device_id": "refrigerator",
+     "count": 1
+    },
+    {
+     "device_id": "microwave",
+     "count": 1
+    },
+    {
+     "device_id": "kettle",
+     "count": 1
+    },
+    {
+     "device_id": "dishwasher",
+     "count": 1
+    },
+    {
+     "device_id": "oven",
+     "count": 1
+    },
+    {
+     "device_id": "induction_cooktop",
+     "count": 1
+    },
+    {
+     "device_id": "kitchen_hood",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "bathroom",
+   "name": "Ванная",
+   "room_kind": "bathroom",
+   "devices": [
+    {
+     "device_id": "led_spot",
+     "count": 4
+    },
+    {
+     "device_id": "socket_point",
+     "count": 1
+    },
+    {
+     "device_id": "washing_machine",
+     "count": 1
+    },
+    {
+     "device_id": "water_heater_storage",
+     "count": 1
+    },
+    {
+     "device_id": "floor_heating_bathroom",
+     "count": 1
+    },
+    {
+     "device_id": "bathroom_fan",
+     "count": 1
+    },
+    {
+     "device_id": "towel_warmer",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "toilet",
+   "name": "Санузел",
+   "room_kind": "bathroom",
+   "devices": [
+    {
+     "device_id": "led_spot",
+     "count": 2
+    },
+    {
+     "device_id": "bathroom_fan",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "living_room",
+   "name": "Гостиная",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_chandelier",
+     "count": 1
+    },
+    {
+     "device_id": "led_spot",
+     "count": 6
+    },
+    {
+     "device_id": "socket_point",
+     "count": 6
+    },
+    {
+     "device_id": "tv",
+     "count": 1
+    },
+    {
+     "device_id": "air_conditioner_small",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "bedroom",
+   "name": "Спальня",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_chandelier",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point",
+     "count": 4
+    },
+    {
+     "device_id": "air_conditioner_small",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "kids_room",
+   "name": "Детская",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_chandelier",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point",
+     "count": 4
+    },
+    {
+     "device_id": "computer",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "study",
+   "name": "Кабинет",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point",
+     "count": 4
+    },
+    {
+     "device_id": "computer",
+     "count": 1
+    },
+    {
+     "device_id": "network_equipment",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "hallway",
+   "name": "Прихожая / коридор",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_spot",
+     "count": 4
+    },
+    {
+     "device_id": "socket_point",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "id": "balcony",
+   "name": "Балкон / лоджия",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "boiler_room",
+   "name": "Котельная / техническое помещение",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point",
+     "count": 1
+    },
+    {
+     "device_id": "electric_boiler_3ph",
+     "count": 1
+    },
+    {
+     "device_id": "circulation_pump",
+     "count": 1
+    },
+    {
+     "device_id": "well_pump",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "sauna",
+   "name": "Сауна",
+   "room_kind": "bathroom",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 1
+    },
+    {
+     "device_id": "sauna_heater",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "garage",
+   "name": "Гараж",
+   "room_kind": "garage",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 2
+    },
+    {
+     "device_id": "socket_point",
+     "count": 3
+    },
+    {
+     "device_id": "power_tool",
+     "count": 1
+    },
+    {
+     "device_id": "gate_drive",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "workshop",
+   "name": "Мастерская",
+   "room_kind": "garage",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 3
+    },
+    {
+     "device_id": "socket_point",
+     "count": 4
+    },
+    {
+     "device_id": "machine_tool_3ph",
+     "count": 1
+    },
+    {
+     "device_id": "air_compressor",
+     "count": 1
+    },
+    {
+     "device_id": "welder",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "outdoor",
+   "name": "Улица / участок",
+   "room_kind": "outdoor",
+   "devices": [
+    {
+     "device_id": "outdoor_light",
+     "count": 4
+    },
+    {
+     "device_id": "socket_point",
+     "count": 2
+    }
+   ]
+  },
+  {
+   "id": "office",
+   "name": "Офисное помещение",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 6
+    },
+    {
+     "device_id": "socket_point",
+     "count": 8
+    },
+    {
+     "device_id": "computer",
+     "count": 4
+    },
+    {
+     "device_id": "network_equipment",
+     "count": 1
+    },
+    {
+     "device_id": "air_conditioner_small",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "sales_area",
+   "name": "Торговый зал",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 10
+    },
+    {
+     "device_id": "socket_point",
+     "count": 4
+    },
+    {
+     "device_id": "display_fridge",
+     "count": 2
+    },
+    {
+     "device_id": "cash_register",
+     "count": 1
+    },
+    {
+     "device_id": "signboard",
+     "count": 1
+    },
+    {
+     "device_id": "air_conditioner_large",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "server_room",
+   "name": "Серверная",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 1
+    },
+    {
+     "device_id": "socket_point",
+     "count": 2
+    },
+    {
+     "device_id": "server_rack",
+     "count": 1
+    },
+    {
+     "device_id": "air_conditioner_small",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "salon",
+   "name": "Салон / парикмахерская",
+   "room_kind": "standard",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 6
+    },
+    {
+     "device_id": "socket_point",
+     "count": 6
+    },
+    {
+     "device_id": "hair_dryer_salon",
+     "count": 3
+    },
+    {
+     "device_id": "water_heater_storage",
+     "count": 1
+    },
+    {
+     "device_id": "air_conditioner_small",
+     "count": 1
+    }
+   ]
+  },
+  {
+   "id": "cafe_kitchen",
+   "name": "Кухня кафе",
+   "room_kind": "kitchen",
+   "devices": [
+    {
+     "device_id": "led_ceiling_light",
+     "count": 4
+    },
+    {
+     "device_id": "socket_point_kitchen",
+     "count": 6
+    },
+    {
+     "device_id": "commercial_oven_3ph",
+     "count": 1
+    },
+    {
+     "device_id": "display_fridge",
+     "count": 1
+    },
+    {
+     "device_id": "dishwasher",
+     "count": 1
+    },
+    {
+     "device_id": "ventilation_unit",
+     "count": 1
+    }
+   ]
+  }
+ ]
+}

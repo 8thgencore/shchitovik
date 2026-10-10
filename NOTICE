@@ -1,0 +1,8 @@
+Щитовик
+
+The workspace layout, app bootstrap/DI code (app/lib/src/{bloc,logic,model,widget},
+feature/settings) and the common_logger, common_error_reporter, common_utils,
+common_database and common_translations packages are derived from
+sizzle_starter (https://github.com/hawkkiller/sizzle_starter),
+Copyright Michael Lazebny, licensed under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0). Files have been modified.

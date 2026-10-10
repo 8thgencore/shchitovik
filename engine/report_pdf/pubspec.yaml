@@ -1,0 +1,21 @@
+name: report_pdf
+description: "PDF report of a calculated project (pure Dart)."
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+
+dependencies:
+  electrical_core:
+    path: ../electrical_core
+  estimate_core:
+    path: ../estimate_core
+  norms_data:
+    path: ../norms_data
+  meta: ^1.17.0
+  pdf: ^3.13.1
+
+dev_dependencies:
+  sizzle_lints: ^2.1.7
+  test: ^1.32.0

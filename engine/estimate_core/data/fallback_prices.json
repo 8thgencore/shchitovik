@@ -1,0 +1,686 @@
+{
+ "dataset": "fallback_prices",
+ "dataset_version": "2026-10-1",
+ "description": "Усреднённые цены аппаратов по диапазонам номиналов — когда в каталоге нет совместимой модели.",
+ "price_disclaimer": "Оценка по сегментам; не прайс-лист.",
+ "items": [
+  {
+   "function": "MCB",
+   "poles": 1,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "budget",
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 1040,
+    "typical": 1300,
+    "max": 1820,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 1,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "mid",
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 1665,
+    "typical": 2080,
+    "max": 2910,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 1,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "premium",
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3120,
+    "typical": 3900,
+    "max": 5460,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 2,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "budget",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 2160,
+    "typical": 2700,
+    "max": 3780,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 2,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "mid",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 3455,
+    "typical": 4320,
+    "max": 6050,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 2,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "premium",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 6480,
+    "typical": 8100,
+    "max": 11340,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 3,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "budget",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 3200,
+    "typical": 4000,
+    "max": 5600,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 3,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "mid",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 5120,
+    "typical": 6400,
+    "max": 8960,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 3,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "premium",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 9600,
+    "typical": 12000,
+    "max": 16800,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 4,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "budget",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 4240,
+    "typical": 5300,
+    "max": 7420,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 4,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "mid",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 6785,
+    "typical": 8480,
+    "max": 11870,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 4,
+   "min_rated_a": 80,
+   "max_rated_a": 125,
+   "tier": "premium",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 12720,
+    "typical": 15900,
+    "max": 22260,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCBO",
+   "poles": 2,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "budget",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1360,
+    "typical": 1700,
+    "max": 2380,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCBO",
+   "poles": 2,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "mid",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 2175,
+    "typical": 2720,
+    "max": 3810,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCBO",
+   "poles": 2,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "premium",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 4080,
+    "typical": 5100,
+    "max": 7140,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCBO",
+   "poles": 4,
+   "min_rated_a": 6,
+   "max_rated_a": 40,
+   "tier": "budget",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 5200,
+    "typical": 6500,
+    "max": 9100,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCBO",
+   "poles": 4,
+   "min_rated_a": 6,
+   "max_rated_a": 40,
+   "tier": "mid",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 8320,
+    "typical": 10400,
+    "max": 14560,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCBO",
+   "poles": 4,
+   "min_rated_a": 6,
+   "max_rated_a": 40,
+   "tier": "premium",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 15600,
+    "typical": 19500,
+    "max": 27300,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 2,
+   "min_rated_a": 16,
+   "max_rated_a": 63,
+   "tier": "budget",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1200,
+    "typical": 1500,
+    "max": 2100,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 2,
+   "min_rated_a": 16,
+   "max_rated_a": 63,
+   "tier": "mid",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1920,
+    "typical": 2400,
+    "max": 3360,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 2,
+   "min_rated_a": 16,
+   "max_rated_a": 63,
+   "tier": "premium",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 3600,
+    "typical": 4500,
+    "max": 6300,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 4,
+   "min_rated_a": 16,
+   "max_rated_a": 100,
+   "tier": "budget",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 2800,
+    "typical": 3500,
+    "max": 4900,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 4,
+   "min_rated_a": 16,
+   "max_rated_a": 100,
+   "tier": "mid",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 4480,
+    "typical": 5600,
+    "max": 7840,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 4,
+   "min_rated_a": 16,
+   "max_rated_a": 100,
+   "tier": "premium",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 8400,
+    "typical": 10500,
+    "max": 14700,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "RCD",
+   "poles": 2,
+   "min_rated_a": 25,
+   "max_rated_a": 100,
+   "tier": "budget",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 4400,
+    "typical": 5500,
+    "max": 7700,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   },
+   "selectivity": "S"
+  },
+  {
+   "function": "RCD",
+   "poles": 2,
+   "min_rated_a": 25,
+   "max_rated_a": 100,
+   "tier": "mid",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 7040,
+    "typical": 8800,
+    "max": 12320,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   },
+   "selectivity": "S"
+  },
+  {
+   "function": "RCD",
+   "poles": 2,
+   "min_rated_a": 25,
+   "max_rated_a": 100,
+   "tier": "premium",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 13200,
+    "typical": 16500,
+    "max": 23100,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   },
+   "selectivity": "S"
+  },
+  {
+   "function": "RCD",
+   "poles": 4,
+   "min_rated_a": 25,
+   "max_rated_a": 100,
+   "tier": "budget",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 7200,
+    "typical": 9000,
+    "max": 12600,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   },
+   "selectivity": "S"
+  },
+  {
+   "function": "RCD",
+   "poles": 4,
+   "min_rated_a": 25,
+   "max_rated_a": 100,
+   "tier": "mid",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 11520,
+    "typical": 14400,
+    "max": 20160,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   },
+   "selectivity": "S"
+  },
+  {
+   "function": "RCD",
+   "poles": 4,
+   "min_rated_a": 25,
+   "max_rated_a": 100,
+   "tier": "premium",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 21600,
+    "typical": 27000,
+    "max": 37800,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   },
+   "selectivity": "S"
+  },
+  {
+   "function": "MCB",
+   "poles": 1,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "budget",
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 160,
+    "typical": 200,
+    "max": 280,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 1,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "mid",
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 255,
+    "typical": 320,
+    "max": 450,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 1,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "premium",
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 480,
+    "typical": 600,
+    "max": 840,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 2,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "budget",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 360,
+    "typical": 450,
+    "max": 630,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 2,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "mid",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 575,
+    "typical": 720,
+    "max": 1010,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 2,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "premium",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1080,
+    "typical": 1350,
+    "max": 1890,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 3,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "budget",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 560,
+    "typical": 700,
+    "max": 980,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 3,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "mid",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 895,
+    "typical": 1120,
+    "max": 1570,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 3,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "premium",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 1680,
+    "typical": 2100,
+    "max": 2940,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 4,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "budget",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 760,
+    "typical": 950,
+    "max": 1330,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 4,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "mid",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 1215,
+    "typical": 1520,
+    "max": 2130,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "function": "MCB",
+   "poles": 4,
+   "min_rated_a": 6,
+   "max_rated_a": 63,
+   "tier": "premium",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 2280,
+    "typical": 2850,
+    "max": 3990,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  }
+ ]
+}

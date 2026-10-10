@@ -1,0 +1,1244 @@
+{
+ "dataset": "cable_catalog",
+ "dataset_version": "2026-10-1",
+ "description": "Кабели для групповых и питающих линий; цена за метр.",
+ "price_disclaimer": "Оценка розничной цены: (жилы·S·k_мат + база)·k_марки; не прайс-лист.",
+ "marks": [
+  {
+   "id": "vvgng_a_ls",
+   "name": "ВВГнг(А)-LS",
+   "material": "copper",
+   "note": "Самый распространённый кабель для групповых сетей; нераспространение горения, низкое дымовыделение."
+  },
+  {
+   "id": "vvgng_a_frls",
+   "name": "ВВГнг(А)-FRLS",
+   "material": "copper",
+   "note": "Огнестойкий; для систем противопожарной защиты."
+  },
+  {
+   "id": "nym",
+   "name": "NYM",
+   "material": "copper",
+   "note": "Кабель с мягкой оболочкой, удобен в монтаже."
+  },
+  {
+   "id": "ppgng_a_hf",
+   "name": "ППГнг(А)-HF",
+   "material": "copper",
+   "note": "Безгалогенный; для общественных зданий."
+  },
+  {
+   "id": "avvgng_a_ls",
+   "name": "АВВГнг(А)-LS",
+   "material": "aluminium",
+   "note": "Алюминиевые жилы; в групповых сетях допускаются только сплавы 8030/8176 (СП 256, табл. 15.3)."
+  }
+ ],
+ "items": [
+  {
+   "id": "vvgng_a_ls-3x1_5",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 62,
+    "typical": 74,
+    "max": 96,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x2_5",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 96,
+    "typical": 110,
+    "max": 145,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x4",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 145,
+    "typical": 170,
+    "max": 220,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x6",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 210,
+    "typical": 250,
+    "max": 325,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x10",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 345,
+    "typical": 405,
+    "max": 525,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x16",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 545,
+    "typical": 640,
+    "max": 830,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x25",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 840,
+    "typical": 990,
+    "max": 1285,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-3x35",
+   "mark": "vvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1175,
+    "typical": 1380,
+    "max": 1795,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x1_5",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 96,
+    "typical": 110,
+    "max": 145,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x2_5",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 150,
+    "typical": 180,
+    "max": 230,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x4",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 235,
+    "typical": 275,
+    "max": 360,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x6",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 345,
+    "typical": 405,
+    "max": 525,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x10",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 565,
+    "typical": 665,
+    "max": 865,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x16",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 895,
+    "typical": 1055,
+    "max": 1370,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x25",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1395,
+    "typical": 1640,
+    "max": 2130,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_ls-5x35",
+   "mark": "vvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1945,
+    "typical": 2290,
+    "max": 2975,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x1_5",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 84,
+    "typical": 99,
+    "max": 130,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x2_5",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 130,
+    "typical": 150,
+    "max": 195,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x4",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 195,
+    "typical": 230,
+    "max": 300,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x6",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 285,
+    "typical": 335,
+    "max": 435,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x10",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 465,
+    "typical": 545,
+    "max": 710,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x16",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 735,
+    "typical": 865,
+    "max": 1120,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x25",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1135,
+    "typical": 1335,
+    "max": 1735,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-3x35",
+   "mark": "vvgng_a_frls",
+   "cores": 3,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1585,
+    "typical": 1865,
+    "max": 2420,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x1_5",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 130,
+    "typical": 150,
+    "max": 195,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x2_5",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 205,
+    "typical": 240,
+    "max": 310,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x4",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 315,
+    "typical": 370,
+    "max": 485,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x6",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 465,
+    "typical": 545,
+    "max": 710,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x10",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 765,
+    "typical": 900,
+    "max": 1165,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x16",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1210,
+    "typical": 1425,
+    "max": 1850,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x25",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1880,
+    "typical": 2215,
+    "max": 2880,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "vvgng_a_frls-5x35",
+   "mark": "vvgng_a_frls",
+   "cores": 5,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 2630,
+    "typical": 3090,
+    "max": 4020,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x1_5",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 72,
+    "typical": 85,
+    "max": 110,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x2_5",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 110,
+    "typical": 130,
+    "max": 170,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x4",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 165,
+    "typical": 195,
+    "max": 255,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x6",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 245,
+    "typical": 285,
+    "max": 370,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x10",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 395,
+    "typical": 465,
+    "max": 605,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x16",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 625,
+    "typical": 735,
+    "max": 955,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x25",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 970,
+    "typical": 1140,
+    "max": 1480,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-3x35",
+   "mark": "nym",
+   "cores": 3,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1350,
+    "typical": 1585,
+    "max": 2065,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x1_5",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 110,
+    "typical": 130,
+    "max": 170,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x2_5",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 175,
+    "typical": 205,
+    "max": 265,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x4",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 270,
+    "typical": 315,
+    "max": 410,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x6",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 395,
+    "typical": 465,
+    "max": 605,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x10",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 650,
+    "typical": 765,
+    "max": 995,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x16",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1030,
+    "typical": 1215,
+    "max": 1575,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x25",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1605,
+    "typical": 1885,
+    "max": 2450,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "nym-5x35",
+   "mark": "nym",
+   "cores": 5,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 2240,
+    "typical": 2635,
+    "max": 3425,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x1_5",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 81,
+    "typical": 96,
+    "max": 125,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x2_5",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 125,
+    "typical": 145,
+    "max": 190,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x4",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 190,
+    "typical": 220,
+    "max": 290,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x6",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 275,
+    "typical": 325,
+    "max": 420,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x10",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 450,
+    "typical": 525,
+    "max": 685,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x16",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 705,
+    "typical": 830,
+    "max": 1080,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x25",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1095,
+    "typical": 1285,
+    "max": 1675,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-3x35",
+   "mark": "ppgng_a_hf",
+   "cores": 3,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1525,
+    "typical": 1795,
+    "max": 2330,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x1_5",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 1.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 125,
+    "typical": 145,
+    "max": 190,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x2_5",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 195,
+    "typical": 230,
+    "max": 300,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x4",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 305,
+    "typical": 360,
+    "max": 465,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x6",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 450,
+    "typical": 525,
+    "max": 685,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x10",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 735,
+    "typical": 865,
+    "max": 1125,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x16",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1165,
+    "typical": 1370,
+    "max": 1785,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x25",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1810,
+    "typical": 2130,
+    "max": 2770,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "ppgng_a_hf-5x35",
+   "mark": "ppgng_a_hf",
+   "cores": 5,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 2530,
+    "typical": 2975,
+    "max": 3870,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x2_5",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 31,
+    "typical": 36,
+    "max": 47,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x4",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 39,
+    "typical": 46,
+    "max": 60,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x6",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 51,
+    "typical": 60,
+    "max": 77,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x10",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 73,
+    "typical": 86,
+    "max": 110,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x16",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 105,
+    "typical": 125,
+    "max": 165,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x25",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 155,
+    "typical": 185,
+    "max": 240,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x35",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 215,
+    "typical": 250,
+    "max": 325,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x50",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 50,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 300,
+    "typical": 350,
+    "max": 455,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x70",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 70,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 410,
+    "typical": 480,
+    "max": 625,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x95",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 95,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 550,
+    "typical": 645,
+    "max": 840,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-3x120",
+   "mark": "avvgng_a_ls",
+   "cores": 3,
+   "section_mm2": 120,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 690,
+    "typical": 810,
+    "max": 1055,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x2_5",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 2.5,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 40,
+    "typical": 48,
+    "max": 62,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x4",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 4,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 54,
+    "typical": 64,
+    "max": 83,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x6",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 6,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 73,
+    "typical": 86,
+    "max": 110,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x10",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 10,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 110,
+    "typical": 130,
+    "max": 170,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x16",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 16,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 165,
+    "typical": 195,
+    "max": 255,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x25",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 25,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 250,
+    "typical": 295,
+    "max": 385,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x35",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 35,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 345,
+    "typical": 405,
+    "max": 525,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x50",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 50,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 485,
+    "typical": 570,
+    "max": 740,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x70",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 70,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 670,
+    "typical": 790,
+    "max": 1025,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x95",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 95,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 905,
+    "typical": 1065,
+    "max": 1385,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "avvgng_a_ls-5x120",
+   "mark": "avvgng_a_ls",
+   "cores": 5,
+   "section_mm2": 120,
+   "price_per_m": {
+    "currency": "RUB",
+    "min": 1140,
+    "typical": 1340,
+    "max": 1740,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  }
+ ]
+}

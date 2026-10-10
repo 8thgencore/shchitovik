@@ -1,0 +1,100 @@
+import 'dart:async';
+
+import 'package:clock/clock.dart';
+import 'package:common_database/common_database.dart';
+import 'package:common_logger/common_logger.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shchitovik/src/feature/catalog_sync/injection.dart';
+import 'package:shchitovik/src/feature/projects/injection.dart';
+import 'package:shchitovik/src/feature/settings/injection.dart';
+import 'package:shchitovik/src/model/app_config.dart';
+import 'package:shchitovik/src/model/dependencies_container.dart';
+
+/// A place where Application-Wide dependencies are initialized.
+///
+/// Application-Wide dependencies are dependencies that have a global scope,
+/// used in the entire application and have a lifetime that is the same as the application.
+/// Composes dependencies and returns the result of composition.
+Future<CompositionResult> composeDependencies({
+  required AppConfig config,
+  required Logger logger,
+}) async {
+  final stopwatch = clock.stopwatch()..start();
+
+  logger.info('Initializing dependencies...');
+
+  // Create the dependencies container using functions.
+  final dependencies = await createDependenciesContainer(config, logger);
+
+  stopwatch.stop();
+  logger.info('Dependencies initialized successfully in ${stopwatch.elapsedMilliseconds} ms.');
+
+  return CompositionResult(
+    dependencies: dependencies,
+    millisecondsSpent: stopwatch.elapsedMilliseconds,
+  );
+}
+
+final class CompositionResult {
+  const CompositionResult({required this.dependencies, required this.millisecondsSpent});
+
+  final DependenciesContainer dependencies;
+  final int millisecondsSpent;
+
+  @override
+  String toString() =>
+      'CompositionResult('
+      'dependencies: $dependencies, '
+      'millisecondsSpent: $millisecondsSpent'
+      ')';
+}
+
+/// Creates the initialized [DependenciesContainer].
+Future<DependenciesContainer> createDependenciesContainer(AppConfig config, Logger logger) async {
+  // Create or obtain the shared preferences instance.
+  final sharedPreferences = SharedPreferencesAsync();
+
+  // Get package info.
+  final packageInfo = await PackageInfo.fromPlatform();
+  final settingsContainer = await SettingsContainer.create(sharedPreferences: sharedPreferences);
+
+  // Local project storage (SQLite on mobile, sqlite3.wasm + OPFS/IndexedDB on the web).
+  final database = AppDatabase.defaults(name: 'shchitovik');
+  final projectsContainer = ProjectsContainer.create(
+    database: database,
+    appVersion: '${packageInfo.version}+${packageInfo.buildNumber}',
+  );
+
+  // Price catalog: embedded copy, replaced by a verified update from the static hosting.
+  final catalogContainer = CatalogContainer.create(
+    database: database,
+    catalogUrl: config.catalogUrl,
+  );
+  unawaited(
+    catalogContainer.catalogService.checkForUpdates().then(
+      (status) => logger.info('Catalog update check: ${status.name}'),
+    ),
+  );
+
+  return DependenciesContainer(
+    logger: logger,
+    config: config,
+    packageInfo: packageInfo,
+    settingsContainer: settingsContainer,
+    database: database,
+    projectsContainer: projectsContainer,
+    catalogContainer: catalogContainer,
+  );
+}
+
+/// Creates the [Logger] instance and attaches any provided observers.
+Logger createAppLogger({List<LogObserver> observers = const []}) {
+  final logger = Logger();
+
+  for (final observer in observers) {
+    logger.addObserver(observer);
+  }
+
+  return logger;
+}

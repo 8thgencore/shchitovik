@@ -1,0 +1,91 @@
+name: shchitovik
+description: "Щитовик — расчёт электрощита и смета."
+publish_to: "none"
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+  flutter: ">=3.47.0 <4.0.0"
+
+dependencies:
+  # Flutter SDK
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management
+  flutter_bloc: ^9.1.1
+
+  # Navigation
+  go_router: ^18.0.2
+
+  # Storage
+  shared_preferences: ^2.5.6
+
+  # UI
+  cupertino_icons: ^2.0.0
+
+  # Files, sharing, printing
+  printing: ^5.15.1
+  share_plus: ^13.3.1
+  file_picker: ^13.1.0
+
+  # Network
+  http: ^1.6.0
+  crypto: ^3.0.7
+
+  # Utils
+  meta: ^1.17.0
+  uuid: ^4.6.0
+  clock: ^1.1.3
+  package_info_plus: ^10.2.2
+
+  # Code Generation
+  json_annotation: ^4.12.0
+  freezed_annotation: ^3.1.0
+
+  # Common
+  common_database:
+    path: ../common/common_database
+  common_logger:
+    path: ../common/common_logger
+  common_translations:
+    path: ../common/common_translations
+  common_error_reporter:
+    path: ../common/common_error_reporter
+  common_utils:
+    path: ../common/common_utils
+
+  # Engine
+  electrical_core:
+    path: ../engine/electrical_core
+  estimate_core:
+    path: ../engine/estimate_core
+  norms_data:
+    path: ../engine/norms_data
+  report_pdf:
+    path: ../engine/report_pdf
+
+dev_dependencies:
+  # Testing
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.5
+  drift: ^2.35.2
+
+  # Code Generation
+  build_runner: ^2.16.2
+  json_serializable: ^6.14.1
+  freezed: ^4.0.2
+  shared_preferences_platform_interface: ^2.4.2
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # Noto Sans (SIL OFL 1.1, see OFL.txt): Cyrillic and Greek glyphs for PDF reports.
+    - assets/fonts/NotoSans-Regular.ttf
+    - assets/fonts/NotoSans-Bold.ttf
+    - assets/fonts/OFL.txt

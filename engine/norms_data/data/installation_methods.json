@@ -1,0 +1,25 @@
+{
+ "dataset": "installation_methods",
+ "dataset_version": "2026.10-1",
+ "description": "Способы прокладки для пользователя и соответствующие им расчётные методы ГОСТ Р 50571.5.52 для многожильных кабелей (ВВГ, NYM, ППГ и аналогичных).",
+ "source": {"documents": ["gost-r-50571-5-52-2011"], "tables": ["A.52.3", "B.52.1", "B.52.17"]},
+ "notes": [
+  "Методы приведены для многожильного кабеля; одножильные провода в трубах (A1, B1) в MVP не поддерживаются.",
+  "Для пустот строительных конструкций и подвесных потолков принят B2 (A.52.3, поз. 40, 47 при 1,5De ≤ V < 5De) — консервативно.",
+  "grouping: ключ строки таблицы B.52.17 (воздух) либо таблицы для земли; environment: air | ground."
+ ],
+ "methods": [
+  {"id": "plaster_direct", "title": "Скрыто в штробе под штукатуркой, в бетоне/кладке", "reference_method": "C", "a52_3_items": [57, 58], "environment": "air", "grouping": "bunched"},
+  {"id": "conduit_in_wall", "title": "В гофре/трубе в стене, полу, бетоне", "reference_method": "B2", "a52_3_items": [60], "environment": "air", "grouping": "bunched"},
+  {"id": "conduit_on_surface", "title": "В трубе/гофре открыто по стене", "reference_method": "B2", "a52_3_items": [5], "environment": "air", "grouping": "bunched"},
+  {"id": "trunking_on_wall", "title": "В кабель-канале по стене", "reference_method": "B2", "a52_3_items": [8, 9], "environment": "air", "grouping": "bunched"},
+  {"id": "clipped_on_wall", "title": "Открыто на стене (скобы, клипсы)", "reference_method": "C", "a52_3_items": [20], "environment": "air", "grouping": "single_layer_on_wall"},
+  {"id": "under_ceiling", "title": "Открыто непосредственно под потолком", "reference_method": "C", "a52_3_items": [21], "environment": "air", "grouping": "single_layer_under_ceiling"},
+  {"id": "building_void", "title": "В пустотах конструкций, за подвесным потолком, в каркасной стене без утеплителя", "reference_method": "B2", "a52_3_items": [40, 47], "environment": "air", "grouping": "bunched"},
+  {"id": "thermal_insulation", "title": "В стене с теплоизоляцией (каркасный дом)", "reference_method": "A1", "a52_3_items": [3], "environment": "air", "grouping": "bunched"},
+  {"id": "conduit_in_thermal_insulation", "title": "В трубе в стене с теплоизоляцией", "reference_method": "A2", "a52_3_items": [2], "environment": "air", "grouping": "bunched"},
+  {"id": "perforated_tray", "title": "На перфорированном лотке / в воздухе", "reference_method": "E", "a52_3_items": [31, 32, 34], "environment": "air", "grouping": "single_layer_perforated_tray"},
+  {"id": "ground_in_duct", "title": "В земле в трубе", "reference_method": "D1", "a52_3_items": [70], "environment": "ground", "grouping": "in_ducts_multicore"},
+  {"id": "ground_direct", "title": "В земле без трубы (бронированный кабель)", "reference_method": "D2", "a52_3_items": [72, 73], "environment": "ground", "grouping": "direct_in_ground"}
+ ]
+}
