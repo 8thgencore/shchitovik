@@ -9,6 +9,7 @@ import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/feature/rooms_devices/presentation/device_editor_sheet.dart';
 import 'package:shchitovik/src/feature/rooms_devices/presentation/pickers.dart';
+import 'package:shchitovik/src/widget/confirm_delete.dart';
 import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
@@ -62,7 +63,14 @@ class RoomsScreen extends StatelessWidget {
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: Text(t.roomsEmpty, textAlign: TextAlign.center),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(t.roomsEmptyTitle, style: Theme.of(context).textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    Text(t.roomsEmpty, textAlign: TextAlign.center),
+                  ],
+                ),
               ),
             )
           : ListView(
@@ -100,7 +108,7 @@ class _RoomCard extends StatelessWidget {
   }
 
   Future<void> _rename(BuildContext context) async {
-    final result = await RoomEditorDialog.show(context, room);
+    final result = await RoomEditorSheet.show(context, room);
     if (result == null || !context.mounted) return;
     ProjectScope.edit(
       context,
@@ -114,18 +122,13 @@ class _RoomCard extends StatelessWidget {
 
   Future<void> _delete(BuildContext context) async {
     final t = context.translations;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(t.roomDeleteTitle),
-        content: Text(t.roomDeleteMessage),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(t.cancel)),
-          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(t.delete)),
-        ],
-      ),
+    final confirmed = await confirmDelete(
+      context,
+      title: t.roomDeleteTitle(room.name),
+      message: t.roomDeleteMessage,
+      confirmLabel: t.roomDeleteConfirm,
     );
-    if (!(confirmed ?? false) || !context.mounted) return;
+    if (!confirmed || !context.mounted) return;
     ProjectScope.edit(
       context,
       (ProjectDocument d) => d.copyWith(
@@ -159,7 +162,7 @@ class _RoomCard extends StatelessWidget {
               onSelected: (v) => v == 0 ? _rename(context) : _delete(context),
               itemBuilder: (_) => [
                 PopupMenuItem(value: 0, child: Text(t.roomRename)),
-                PopupMenuItem(value: 1, child: Text(t.delete)),
+                PopupMenuItem(value: 1, child: Text(t.roomDeleteConfirm)),
               ],
             ),
           ),

@@ -1,3 +1,4 @@
+import 'package:common_translations/common_translations.dart';
 import 'package:flutter/material.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
@@ -27,6 +28,9 @@ class SectionTitle extends StatelessWidget {
 
 /// Text field that reports its value when editing is finished (enter or focus loss),
 /// so that every keystroke does not trigger a recalculation.
+///
+/// [validator] runs on that same moment: invalid text is not reported and shows the error,
+/// which disappears with the first corrective keystroke.
 class CommitTextField extends StatefulWidget {
   const CommitTextField({
     required this.value,
@@ -34,6 +38,7 @@ class CommitTextField extends StatefulWidget {
     required this.onCommitted,
     this.hint,
     this.keyboardType,
+    this.validator,
     super.key,
   });
 
@@ -49,8 +54,11 @@ class CommitTextField extends StatefulWidget {
   /// Keyboard.
   final TextInputType? keyboardType;
 
-  /// Called with the edited text when it differs from [value].
+  /// Called with the edited text when it differs from [value] and passes [validator].
   final ValueChanged<String> onCommitted;
+
+  /// Error message for the edited text, `null` when it is valid.
+  final String? Function(String text)? validator;
 
   @override
   State<CommitTextField> createState() => _CommitTextFieldState();
@@ -59,6 +67,7 @@ class CommitTextField extends StatefulWidget {
 class _CommitTextFieldState extends State<CommitTextField> {
   late final _controller = TextEditingController(text: widget.value);
   final _focus = FocusNode();
+  String? _error;
 
   @override
   void initState() {
@@ -71,11 +80,15 @@ class _CommitTextFieldState extends State<CommitTextField> {
   @override
   void didUpdateWidget(CommitTextField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!_focus.hasFocus && widget.value != _controller.text) _controller.text = widget.value;
+    if (!_focus.hasFocus && _error == null && widget.value != _controller.text) {
+      _controller.text = widget.value;
+    }
   }
 
   void _commit() {
-    if (_controller.text != widget.value) widget.onCommitted(_controller.text);
+    final error = widget.validator?.call(_controller.text);
+    if (error != _error) setState(() => _error = error);
+    if (error == null && _controller.text != widget.value) widget.onCommitted(_controller.text);
   }
 
   @override
@@ -87,7 +100,7 @@ class _CommitTextFieldState extends State<CommitTextField> {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: TextField(
       controller: _controller,
       focusNode: _focus,
@@ -96,13 +109,18 @@ class _CommitTextFieldState extends State<CommitTextField> {
         labelText: widget.label,
         helperText: widget.hint,
         helperMaxLines: 3,
+        errorText: _error,
+        errorMaxLines: 3,
       ),
+      onChanged: (_) {
+        if (_error != null) setState(() => _error = null);
+      },
       onSubmitted: (_) => _commit(),
     ),
   );
 }
 
-/// Decimal field; empty input means `null`.
+/// Decimal field; empty input means `null`, text that is not a number shows an error.
 class DecimalField extends StatelessWidget {
   const DecimalField({
     required this.value,
@@ -110,6 +128,7 @@ class DecimalField extends StatelessWidget {
     required this.onChanged,
     this.hint,
     this.digits = 2,
+    this.validator,
     super.key,
   });
 
@@ -125,8 +144,11 @@ class DecimalField extends StatelessWidget {
   /// Decimals shown.
   final int digits;
 
-  /// Called with the parsed value (`null` when cleared); invalid input is ignored.
+  /// Called with the parsed value (`null` when cleared) once it passes [validator].
   final ValueChanged<double?> onChanged;
+
+  /// Error message for the parsed value, `null` when it is acceptable.
+  final String? Function(double? value)? validator;
 
   @override
   Widget build(BuildContext context) => CommitTextField(
@@ -134,10 +156,12 @@ class DecimalField extends StatelessWidget {
     label: label,
     hint: hint,
     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-    onCommitted: (text) {
+    validator: (text) {
       final parsed = parseDecimal(text);
-      if (text.trim().isEmpty || parsed != null) onChanged(parsed);
+      if (text.trim().isNotEmpty && parsed == null) return context.translations.fieldNumber;
+      return validator?.call(parsed);
     },
+    onCommitted: (text) => onChanged(parseDecimal(text)),
   );
 }
 
@@ -165,7 +189,7 @@ class ChoiceField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     child: DropdownButtonFormField<T>(
       initialValue: value,
       key: ValueKey(value),
@@ -183,4 +207,34 @@ class ChoiceField<T> extends StatelessWidget {
       },
     ),
   );
+}
+
+/// Validators of [DecimalField] values with the messages of the form.
+extension FieldValidators on BuildContext {
+  /// The value is required and at least [min].
+  String? Function(double?) atLeast(num min) =>
+      (v) => v == null
+      ? translations.fieldRequired
+      : v < min
+      ? translations.fieldMin(formatNumber(min.toDouble()))
+      : null;
+
+  /// The value is required and greater than [min].
+  String? Function(double?) above(num min) =>
+      (v) => v == null
+      ? translations.fieldRequired
+      : v <= min
+      ? translations.fieldAbove(formatNumber(min.toDouble()))
+      : null;
+
+  /// The value is required and within [min]…[max].
+  String? Function(double?) between(num min, num max) =>
+      (v) => v == null
+      ? translations.fieldRequired
+      : v < min || v > max
+      ? translations.fieldRange(formatNumber(min.toDouble()), formatNumber(max.toDouble()))
+      : null;
+
+  /// The text is not blank.
+  String? notBlank(String text) => text.trim().isEmpty ? translations.fieldRequired : null;
 }

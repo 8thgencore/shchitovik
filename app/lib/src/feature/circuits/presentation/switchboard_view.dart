@@ -47,7 +47,7 @@ class SwitchboardView extends StatelessWidget {
             decoration: BoxDecoration(
               color: scheme.surfaceContainerHigh,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: scheme.outlineVariant, width: 3),
+              border: Border.all(color: scheme.surfaceContainerHighest, width: 3),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8),
@@ -61,7 +61,7 @@ class SwitchboardView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(
           t.boardReserveNote((enclosureReserveShare * 100).round()),
           style: Theme.of(context).textTheme.bodySmall,
@@ -88,7 +88,7 @@ class _Rail extends StatelessWidget {
         children: [
           Text(
             context.translations.boardRail(number, rail.used, rail.capacity),
-            style: Theme.of(context).textTheme.labelSmall,
+            style: Theme.of(context).textTheme.labelMedium,
           ),
           const SizedBox(height: 2),
           SizedBox(
@@ -255,7 +255,7 @@ class _Module extends StatelessWidget {
                           top,
                           maxLines: 1,
                           overflow: TextOverflow.clip,
-                          style: const TextStyle(color: Colors.white, fontSize: 11),
+                          style: TextStyle(color: _foregroundOn(color), fontSize: 12),
                         ),
                       ),
                     ),
@@ -265,7 +265,7 @@ class _Module extends StatelessWidget {
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.clip,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   Icon(Icons.toggle_on_outlined, size: 22, color: scheme.onSurfaceVariant),
@@ -277,7 +277,7 @@ class _Module extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 9, height: 1.1),
+                      style: const TextStyle(fontSize: 12, height: 1.2),
                     ),
                   ),
                 ],
@@ -295,6 +295,12 @@ class _Module extends StatelessWidget {
   }
 }
 
+/// Black or white text, whichever is readable on [background].
+Color _foregroundOn(Color background) =>
+    ThemeData.estimateBrightnessForColor(background) == Brightness.dark
+    ? Colors.white
+    : Colors.black;
+
 class _BlankModule extends StatelessWidget {
   const _BlankModule();
 
@@ -307,7 +313,7 @@ class _BlankModule extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
       ),
     ),

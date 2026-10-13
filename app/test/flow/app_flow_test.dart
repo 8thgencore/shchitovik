@@ -107,7 +107,7 @@ void main() {
     );
     await settle(tester);
 
-    await tester.tap(find.text('Новый проект'));
+    await tester.tap(find.text('Создать проект'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'Моя квартира');
     await tester.tap(find.text('Создать'));
@@ -116,7 +116,7 @@ void main() {
 
     await tester.tap(find.text('Помещения').first);
     await settle(tester);
-    await tester.tap(find.text('Помещение'));
+    await tester.tap(find.text('Добавить помещение'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Кухня').last);
     await settle(tester);

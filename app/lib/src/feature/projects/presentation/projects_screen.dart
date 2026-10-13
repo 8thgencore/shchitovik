@@ -8,10 +8,13 @@ import 'package:go_router/go_router.dart';
 import 'package:shchitovik/src/feature/project_io/presentation/project_files.dart';
 import 'package:shchitovik/src/feature/projects/application/projects_service.dart';
 import 'package:shchitovik/src/feature/projects/presentation/bloc/projects_list_bloc.dart';
-import 'package:shchitovik/src/feature/projects/presentation/widget/create_project_dialog.dart';
+import 'package:shchitovik/src/feature/projects/presentation/widget/create_project_sheet.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document_codec.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
+import 'package:shchitovik/src/widget/confirm_delete.dart';
+import 'package:shchitovik/src/widget/content_width.dart';
+import 'package:shchitovik/src/widget/deferred_progress.dart';
 import 'package:shchitovik/src/widget/dependencies_scope.dart';
 
 /// Start screen with the list of the user's projects.
@@ -30,7 +33,7 @@ class _ProjectsView extends StatelessWidget {
   const _ProjectsView();
 
   Future<void> _create(BuildContext context) async {
-    final params = await CreateProjectDialog.show(context);
+    final params = await CreateProjectSheet.show(context);
     if (params == null || !context.mounted) return;
     final created = Completer<String>();
     context.read<ProjectsListBloc>().add(
@@ -56,7 +59,17 @@ class _ProjectsView extends StatelessWidget {
       final document = await imported.future;
       messenger.showSnackBar(SnackBar(content: Text(t.projectsImported(document.name))));
     } on ProjectFormatException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(t.projectsImportFailed(e.message))));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(t.projectsImportFailed(e.message)),
+          action: SnackBarAction(
+            label: t.projectsImportPickAnother,
+            onPressed: () {
+              if (context.mounted) unawaited(_import(context));
+            },
+          ),
+        ),
+      );
     }
   }
 
@@ -85,15 +98,43 @@ class _ProjectsView extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: Text(t.projectsCreate),
       ),
-      body: switch (projects) {
-        null => const Center(child: CircularProgressIndicator()),
-        [] => const _EmptyProjects(),
-        final list => ListView.builder(
-          padding: const EdgeInsets.only(bottom: 88),
-          itemCount: list.length,
-          itemBuilder: (context, index) => _ProjectTile(project: list[index]),
+      body: ContentWidth(
+        child: switch (projects) {
+          null => const DeferredProgress(),
+          [] => const _EmptyProjects(),
+          final list => _ProjectsList(projects: list),
+        },
+      ),
+    );
+  }
+}
+
+/// Projects in one bordered surface with hairlines between the rows.
+class _ProjectsList extends StatelessWidget {
+  const _ProjectsList({required this.projects});
+
+  final List<ProjectSummary> projects;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+          sliver: DecoratedSliver(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: scheme.outlineVariant),
+            ),
+            sliver: SliverList.separated(
+              itemCount: projects.length,
+              itemBuilder: (context, index) => _ProjectTile(project: projects[index]),
+              separatorBuilder: (context, index) => const Divider(height: 1),
+            ),
+          ),
         ),
-      },
+      ],
     );
   }
 }
@@ -118,6 +159,8 @@ class _EmptyProjects extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(t.projectsEmpty, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(t.projectsEmptyHint, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             Text(t.projectsDemoTitle),
             const SizedBox(height: 8),
@@ -157,18 +200,13 @@ class _ProjectTile extends StatelessWidget {
         );
       case _ProjectAction.delete:
         final t = context.translations;
-        final confirmed = await showDialog<bool>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(t.projectDeleteTitle),
-            content: Text(t.projectDeleteMessage(project.name)),
-            actions: [
-              TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(t.cancel)),
-              FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(t.delete)),
-            ],
-          ),
+        final confirmed = await confirmDelete(
+          context,
+          title: t.projectDeleteTitle(project.name),
+          message: t.projectDeleteMessage,
+          confirmLabel: t.projectDeleteConfirm,
         );
-        if (confirmed ?? false) bloc.add(ProjectDeleteRequested(project.id));
+        if (confirmed) bloc.add(ProjectDeleteRequested(project.id));
     }
   }
 
@@ -193,7 +231,7 @@ class _ProjectTile extends StatelessWidget {
         itemBuilder: (_) => [
           PopupMenuItem(value: _ProjectAction.duplicate, child: Text(t.projectDuplicate)),
           PopupMenuItem(value: _ProjectAction.export, child: Text(t.projectExport)),
-          PopupMenuItem(value: _ProjectAction.delete, child: Text(t.delete)),
+          PopupMenuItem(value: _ProjectAction.delete, child: Text(t.projectDeleteConfirm)),
         ],
       ),
     );
