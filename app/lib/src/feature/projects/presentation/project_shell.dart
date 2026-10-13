@@ -1,6 +1,7 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:printing/printing.dart';
@@ -10,7 +11,10 @@ import 'package:shchitovik/src/feature/projects/public/presentation/formatting.d
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
+import 'package:shchitovik/src/widget/content_width.dart';
+import 'package:shchitovik/src/widget/deferred_progress.dart';
 import 'package:shchitovik/src/widget/dependencies_scope.dart';
+import 'package:shchitovik/src/widget/status_colors.dart';
 import 'package:shchitovik/src/widget/window_size.dart';
 
 /// Frame of a project around its sections Объект / Помещения / Линии / Смета.
@@ -80,7 +84,7 @@ class _ProjectBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (context.watch<ProjectBloc>().state) {
-    ProjectLoading() => const Center(child: CircularProgressIndicator()),
+    ProjectLoading() => const DeferredProgress(),
     ProjectNotFound() => Center(child: Text(context.translations.projectNotFound)),
     ProjectReady() => child,
   };
@@ -136,7 +140,9 @@ class _ExpandedProjectFrame extends StatelessWidget {
             ],
           ),
           const VerticalDivider(width: 1),
-          Expanded(child: _ProjectBody(child: child)),
+          Expanded(
+            child: ContentWidth(child: _ProjectBody(child: child)),
+          ),
         ],
       ),
     );
@@ -272,7 +278,7 @@ class _StepIndicator extends StatelessWidget {
                     : Text(
                         '${section.index + 1}',
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           color: current ? scheme.onPrimary : scheme.onSurface,
                         ),
                       ),
@@ -286,15 +292,15 @@ class _StepIndicator extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 13,
-              fontWeight: current ? FontWeight.bold : FontWeight.normal,
+              fontSize: 14,
+              fontWeight: current ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
           Text(
             _stepSummary(context, section, state),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 11, color: scheme.onSurfaceVariant),
+            style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -324,8 +330,10 @@ class _StepsNavigation extends StatelessWidget {
     final next = section.index < _Section.values.length - 1
         ? _Section.values[section.index + 1]
         : null;
+    final scheme = Theme.of(context).colorScheme;
     return Material(
-      elevation: 3,
+      color: scheme.surface,
+      shape: Border(top: BorderSide(color: scheme.outlineVariant)),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
@@ -334,16 +342,22 @@ class _StepsNavigation extends StatelessWidget {
             children: [
               if (hint != null)
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
                     children: [
-                      Icon(Icons.info_outline, size: 18, color: Colors.amber.shade800),
-                      const SizedBox(width: 6),
+                      Icon(Icons.info_outline, size: 18, color: StatusColors.of(context).warning),
+                      const SizedBox(width: 8),
                       Expanded(child: Text(hint)),
                     ],
                   ),
                 ),
-              Row(
+              // Buttons stack instead of overflowing when both do not fit the width.
+              OverflowBar(
+                alignment: previous == null
+                    ? MainAxisAlignment.end
+                    : MainAxisAlignment.spaceBetween,
+                overflowAlignment: OverflowBarAlignment.end,
+                overflowSpacing: 8,
                 children: [
                   if (previous != null)
                     OutlinedButton.icon(
@@ -351,7 +365,6 @@ class _StepsNavigation extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back),
                       label: Text(t.stepBack),
                     ),
-                  const Spacer(),
                   if (next != null)
                     FilledButton.icon(
                       onPressed: () => context.go(frame.path(next)),
@@ -359,11 +372,7 @@ class _StepsNavigation extends StatelessWidget {
                       label: Text(_stepName(context, next)),
                     )
                   else
-                    FilledButton.icon(
-                      onPressed: () => _ProjectActions.report(context, state),
-                      icon: const Icon(Icons.picture_as_pdf_outlined),
-                      label: Text(t.reportPdf),
-                    ),
+                    _ReportButton(state: state, filled: true),
                 ],
               ),
             ],
@@ -382,23 +391,6 @@ class _ProjectActions extends StatelessWidget {
 
   final String projectId;
 
-  /// Builds the PDF report and offers to share it.
-  static Future<void> report(BuildContext context, ProjectReady state) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final t = context.translations;
-    try {
-      final bytes = await DependenciesScope.of(
-        context,
-      ).projectsContainer.reportService.build(state.document, catalog: state.catalog);
-      await Printing.sharePdf(
-        bytes: bytes,
-        filename: '${ProjectFileCodec.fileName(state.document.name).split('.').first}.pdf',
-      );
-    } on Object catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(t.reportFailed('$e'))));
-    }
-  }
-
   Future<void> _export(BuildContext context, ProjectReady state) async {
     final service = DependenciesScope.of(context).projectsContainer.projectsService;
     await ProjectFiles.shareProject(
@@ -415,11 +407,7 @@ class _ProjectActions extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        IconButton(
-          tooltip: t.reportPdf,
-          icon: const Icon(Icons.picture_as_pdf_outlined),
-          onPressed: () => report(context, state),
-        ),
+        _ReportButton(state: state, filled: false),
         IconButton(
           tooltip: t.projectExport,
           icon: const Icon(Icons.ios_share),
@@ -427,5 +415,63 @@ class _ProjectActions extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+/// Builds the PDF report and offers to share it; shows progress on the button meanwhile.
+class _ReportButton extends StatefulWidget {
+  const _ReportButton({required this.state, required this.filled});
+
+  final ProjectReady state;
+
+  /// Labelled filled button (wizard footer) or icon button (app bar).
+  final bool filled;
+
+  @override
+  State<_ReportButton> createState() => _ReportButtonState();
+}
+
+class _ReportButtonState extends State<_ReportButton> {
+  var _busy = false;
+
+  Future<void> _report() async {
+    if (_busy) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final t = context.translations;
+    final document = widget.state.document;
+    setState(() => _busy = true);
+    try {
+      final bytes = await DependenciesScope.of(
+        context,
+      ).projectsContainer.reportService.build(document, catalog: widget.state.catalog);
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: '${ProjectFileCodec.fileName(document.name).split('.').first}.pdf',
+      );
+    } on Object catch (e, stackTrace) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(t.reportFailed),
+          action: SnackBarAction(
+            label: t.copyErrorDetails,
+            onPressed: () => Clipboard.setData(ClipboardData(text: '$e\n$stackTrace')),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.translations;
+    final icon = _busy
+        ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+        : const Icon(Icons.picture_as_pdf_outlined);
+    final label = _busy ? t.reportInProgress : t.reportPdf;
+    return widget.filled
+        ? FilledButton.icon(onPressed: _report, icon: icon, label: Text(label))
+        : IconButton(tooltip: label, icon: icon, onPressed: _report);
   }
 }

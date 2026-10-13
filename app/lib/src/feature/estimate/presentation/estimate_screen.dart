@@ -85,6 +85,7 @@ class EstimateScreen extends StatelessWidget {
         section(t.estimateCable, EstimateCategory.cable, estimate.cableTotal),
         Card(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SectionTitle(t.estimateOptions),
               SwitchListTile(
@@ -122,7 +123,7 @@ class EstimateScreen extends StatelessWidget {
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: [
               for (final w in estimate.warnings)
-                Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${w.message}')),
+                Padding(padding: const EdgeInsets.only(bottom: 8), child: Text('• ${w.message}')),
               const SizedBox(height: 8),
               Text(t.estimateNotIncluded, style: Theme.of(context).textTheme.labelLarge),
               for (final item in estimate.notIncluded) Text('• $item'),

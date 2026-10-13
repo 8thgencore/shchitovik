@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:norms_data/norms_data.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
+import 'package:shchitovik/src/widget/confirm_delete.dart';
 import 'package:shchitovik/src/widget/form_fields.dart';
 
 /// Bottom sheet editing one device; advanced parameters in the expert mode.
@@ -56,25 +57,22 @@ class DeviceEditorSheet extends StatelessWidget {
           CommitTextField(
             value: device.name,
             label: t.deviceName,
-            onCommitted: (v) {
-              if (v.trim().isNotEmpty) edit((d) => d.copyWith(name: v.trim()));
-            },
+            validator: context.notBlank,
+            onCommitted: (v) => edit((d) => d.copyWith(name: v.trim())),
           ),
           DecimalField(
             value: device.powerW.toDouble(),
             label: t.devicePower,
             digits: 0,
-            onChanged: (v) {
-              if (v != null && v > 0) edit((d) => d.copyWith(powerW: v.round()));
-            },
+            validator: context.above(0),
+            onChanged: (v) => edit((d) => d.copyWith(powerW: v!.round())),
           ),
           DecimalField(
             value: device.quantity.toDouble(),
             label: t.deviceQuantity,
             digits: 0,
-            onChanged: (v) {
-              if (v != null && v >= 1) edit((d) => d.copyWith(quantity: v.round()));
-            },
+            validator: context.atLeast(1),
+            onChanged: (v) => edit((d) => d.copyWith(quantity: v!.round())),
           ),
           ChoiceField<DeviceConnection>(
             label: t.deviceConnection,
@@ -95,24 +93,21 @@ class DeviceEditorSheet extends StatelessWidget {
             DecimalField(
               value: device.cosPhi,
               label: t.deviceCosPhi,
-              onChanged: (v) {
-                if (v != null && v >= 0.1 && v <= 1) edit((d) => d.copyWith(cosPhi: v));
-              },
+              validator: context.between(0.1, 1),
+              onChanged: (v) => edit((d) => d.copyWith(cosPhi: v)),
             ),
             DecimalField(
               value: device.usageFactor,
               label: t.deviceUsageFactor,
-              onChanged: (v) {
-                if (v != null && v >= 0 && v <= 1) edit((d) => d.copyWith(usageFactor: v));
-              },
+              validator: context.between(0, 1),
+              onChanged: (v) => edit((d) => d.copyWith(usageFactor: v)),
             ),
             DecimalField(
               value: device.inrushMultiple,
               label: t.deviceInrush,
               digits: 1,
-              onChanged: (v) {
-                if (v != null && v >= 1) edit((d) => d.copyWith(inrushMultiple: v));
-              },
+              validator: context.atLeast(1),
+              onChanged: (v) => edit((d) => d.copyWith(inrushMultiple: v)),
             ),
             ChoiceField<DedicatedLine>(
               label: t.deviceDedicated,
@@ -129,8 +124,15 @@ class DeviceEditorSheet extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: OutlinedButton.icon(
               icon: const Icon(Icons.delete_outline),
-              label: Text(t.delete),
-              onPressed: () {
+              label: Text(t.deviceDelete),
+              onPressed: () async {
+                final confirmed = await confirmDelete(
+                  context,
+                  title: t.deviceDeleteTitle(device.name),
+                  message: t.deviceDeleteMessage,
+                  confirmLabel: t.deviceDelete,
+                );
+                if (!confirmed || !context.mounted) return;
                 ProjectScope.edit(
                   context,
                   (d) => d.copyWith(

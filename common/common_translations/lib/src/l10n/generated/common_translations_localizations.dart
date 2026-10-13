@@ -238,19 +238,19 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @projectsCreate.
   ///
   /// In ru, this message translates to:
-  /// **'Новый проект'**
+  /// **'Создать проект'**
   String get projectsCreate;
 
   /// No description provided for @projectsImport.
   ///
   /// In ru, this message translates to:
-  /// **'Импорт проекта'**
+  /// **'Импортировать проект'**
   String get projectsImport;
 
   /// No description provided for @projectsImportFailed.
   ///
   /// In ru, this message translates to:
-  /// **'Не удалось импортировать: {message}'**
+  /// **'Не удалось импортировать проект: {message}'**
   String projectsImportFailed(String message);
 
   /// No description provided for @projectsImported.
@@ -298,20 +298,20 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @projectExport.
   ///
   /// In ru, this message translates to:
-  /// **'Экспорт файла'**
+  /// **'Экспортировать проект'**
   String get projectExport;
 
   /// No description provided for @projectDeleteTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Удалить проект?'**
-  String get projectDeleteTitle;
+  /// **'Удалить проект «{name}»?'**
+  String projectDeleteTitle(String name);
 
   /// No description provided for @projectDeleteMessage.
   ///
   /// In ru, this message translates to:
-  /// **'Проект «{name}» будет удалён.'**
-  String projectDeleteMessage(String name);
+  /// **'Проект, его помещения, линии и смета будут удалены без возможности восстановления.'**
+  String get projectDeleteMessage;
 
   /// No description provided for @projectNotFound.
   ///
@@ -394,14 +394,20 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @reportPdf.
   ///
   /// In ru, this message translates to:
-  /// **'PDF-отчёт'**
+  /// **'Сохранить PDF'**
   String get reportPdf;
+
+  /// No description provided for @reportInProgress.
+  ///
+  /// In ru, this message translates to:
+  /// **'Формируем PDF…'**
+  String get reportInProgress;
 
   /// No description provided for @reportFailed.
   ///
   /// In ru, this message translates to:
-  /// **'Не удалось сформировать отчёт: {message}'**
-  String reportFailed(String message);
+  /// **'Не удалось сформировать отчёт. Повторите попытку; если ошибка повторится, скопируйте подробности для поддержки.'**
+  String get reportFailed;
 
   /// No description provided for @interfaceModeTitle.
   ///
@@ -658,7 +664,7 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @roomsAdd.
   ///
   /// In ru, this message translates to:
-  /// **'Помещение'**
+  /// **'Добавить помещение'**
   String get roomsAdd;
 
   /// No description provided for @roomsAddTitle.
@@ -718,8 +724,8 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @roomDeleteTitle.
   ///
   /// In ru, this message translates to:
-  /// **'Удалить помещение?'**
-  String get roomDeleteTitle;
+  /// **'Удалить помещение «{name}»?'**
+  String roomDeleteTitle(String name);
 
   /// No description provided for @roomDeleteMessage.
   ///
@@ -730,7 +736,7 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @devicesAdd.
   ///
   /// In ru, this message translates to:
-  /// **'Прибор'**
+  /// **'Добавить прибор'**
   String get devicesAdd;
 
   /// No description provided for @devicesSearch.
@@ -1236,6 +1242,108 @@ abstract class CommonTranslationsLocalizations {
   /// In ru, this message translates to:
   /// **'Доп.'**
   String get boardAuxiliary;
+
+  /// No description provided for @projectsEmptyHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Создайте проект — линии, щит и смета посчитаются по нормам автоматически.'**
+  String get projectsEmptyHint;
+
+  /// No description provided for @projectsImportPickAnother.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выбрать другой файл'**
+  String get projectsImportPickAnother;
+
+  /// No description provided for @copyErrorDetails.
+  ///
+  /// In ru, this message translates to:
+  /// **'Скопировать подробности'**
+  String get copyErrorDetails;
+
+  /// No description provided for @projectDeleteConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить проект'**
+  String get projectDeleteConfirm;
+
+  /// No description provided for @roomDeleteConfirm.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить помещение'**
+  String get roomDeleteConfirm;
+
+  /// No description provided for @roomsEmptyTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Помещений пока нет'**
+  String get roomsEmptyTitle;
+
+  /// No description provided for @deviceDelete.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить прибор'**
+  String get deviceDelete;
+
+  /// No description provided for @deviceDeleteTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Удалить прибор «{name}»?'**
+  String deviceDeleteTitle(String name);
+
+  /// No description provided for @deviceDeleteMessage.
+  ///
+  /// In ru, this message translates to:
+  /// **'Прибор будет убран из помещения, линии и смета пересчитаются.'**
+  String get deviceDeleteMessage;
+
+  /// No description provided for @devicesNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ничего не найдено по запросу «{query}»'**
+  String devicesNotFound(String query);
+
+  /// No description provided for @devicesSearchReset.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сбросить поиск'**
+  String get devicesSearchReset;
+
+  /// No description provided for @circuitsEmptyAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Добавить помещения'**
+  String get circuitsEmptyAction;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In ru, this message translates to:
+  /// **'Заполните поле'**
+  String get fieldRequired;
+
+  /// No description provided for @fieldNumber.
+  ///
+  /// In ru, this message translates to:
+  /// **'Введите число, например 2,5'**
+  String get fieldNumber;
+
+  /// No description provided for @fieldMin.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите значение не меньше {min}'**
+  String fieldMin(String min);
+
+  /// No description provided for @fieldAbove.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите значение больше {min}'**
+  String fieldAbove(String min);
+
+  /// No description provided for @fieldRange.
+  ///
+  /// In ru, this message translates to:
+  /// **'Укажите значение от {min} до {max}'**
+  String fieldRange(String min, String max);
 }
 
 class _CommonTranslationsLocalizationsDelegate

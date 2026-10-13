@@ -3,6 +3,7 @@ import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
 import 'package:norms_data/norms_data.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
+import 'package:shchitovik/src/widget/sheet_form.dart';
 
 /// Russian label of a room kind.
 String roomKindLabel(BuildContext context, RoomKind kind) {
@@ -82,7 +83,19 @@ class DeviceTemplatePicker extends StatefulWidget {
 }
 
 class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
+  final _search = TextEditingController();
   var _query = '';
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _resetSearch() {
+    _search.clear();
+    setState(() => _query = '');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,10 +111,11 @@ class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: TextField(
+              controller: _search,
               autofocus: true,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
-                hintText: t.devicesSearch,
+                labelText: t.devicesSearch,
               ),
               onChanged: (v) => setState(() => _query = v),
             ),
@@ -115,6 +129,17 @@ class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
                   title: Text(t.deviceCustom),
                   onTap: () => Navigator.of(context).pop(Object()),
                 ),
+                if (devices.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Text(t.devicesNotFound(_query), textAlign: TextAlign.center),
+                        const SizedBox(height: 8),
+                        OutlinedButton(onPressed: _resetSearch, child: Text(t.devicesSearchReset)),
+                      ],
+                    ),
+                  ),
                 for (final d in devices)
                   ListTile(
                     title: Text(d.name),
@@ -133,23 +158,21 @@ class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
 }
 
 /// Edits name and kind of a room.
-class RoomEditorDialog extends StatefulWidget {
-  const RoomEditorDialog({required this.room, super.key});
+class RoomEditorSheet extends StatefulWidget {
+  const RoomEditorSheet({required this.room, super.key});
 
   /// Room.
   final RoomInput room;
 
-  /// Shows the dialog.
-  static Future<RoomInput?> show(BuildContext context, RoomInput room) => showDialog<RoomInput>(
-    context: context,
-    builder: (_) => RoomEditorDialog(room: room),
-  );
+  /// Shows the sheet; `null` if cancelled.
+  static Future<RoomInput?> show(BuildContext context, RoomInput room) =>
+      SheetForm.show<RoomInput>(context, (_) => RoomEditorSheet(room: room));
 
   @override
-  State<RoomEditorDialog> createState() => _RoomEditorDialogState();
+  State<RoomEditorSheet> createState() => _RoomEditorSheetState();
 }
 
-class _RoomEditorDialogState extends State<RoomEditorDialog> {
+class _RoomEditorSheetState extends State<RoomEditorSheet> {
   late final _name = TextEditingController(text: widget.room.name);
   late var _kind = widget.room.kind;
 
@@ -159,43 +182,40 @@ class _RoomEditorDialogState extends State<RoomEditorDialog> {
     super.dispose();
   }
 
+  void _save() => Navigator.of(context).pop(
+    widget.room.copyWith(
+      name: _name.text.trim().isEmpty ? widget.room.name : _name.text.trim(),
+      kind: _kind,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final t = context.translations;
-    return AlertDialog(
-      title: Text(t.roomRename),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _name,
-            autofocus: true,
-            decoration: InputDecoration(labelText: t.deviceName),
-          ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<RoomKind>(
-            initialValue: _kind,
-            isExpanded: true,
-            decoration: InputDecoration(labelText: t.roomKind),
-            items: [
-              for (final k in RoomKind.values)
-                DropdownMenuItem(value: k, child: Text(roomKindLabel(context, k))),
-            ],
-            onChanged: (k) => setState(() => _kind = k!),
-          ),
-        ],
-      ),
+    return SheetForm(
+      title: t.roomRename,
+      fields: [
+        TextField(
+          controller: _name,
+          autofocus: true,
+          decoration: InputDecoration(labelText: t.deviceName),
+          onSubmitted: (_) => _save(),
+        ),
+        const SizedBox(height: 16),
+        DropdownButtonFormField<RoomKind>(
+          initialValue: _kind,
+          isExpanded: true,
+          decoration: InputDecoration(labelText: t.roomKind),
+          items: [
+            for (final k in RoomKind.values)
+              DropdownMenuItem(value: k, child: Text(roomKindLabel(context, k))),
+          ],
+          onChanged: (k) => setState(() => _kind = k!),
+        ),
+      ],
       actions: [
         TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(t.cancel)),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(
-            widget.room.copyWith(
-              name: _name.text.trim().isEmpty ? widget.room.name : _name.text.trim(),
-              kind: _kind,
-            ),
-          ),
-          child: Text(t.save),
-        ),
+        FilledButton(onPressed: _save, child: Text(t.save)),
       ],
     );
   }
