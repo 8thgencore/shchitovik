@@ -37,7 +37,16 @@ class CircuitsScreen extends StatelessWidget {
       if (result.circuits.isEmpty)
         Padding(
           padding: const EdgeInsets.all(24),
-          child: Center(child: Text(t.circuitsEmpty)),
+          child: Column(
+            children: [
+              Text(t.circuitsEmpty, textAlign: TextAlign.center),
+              const SizedBox(height: 8),
+              FilledButton(
+                onPressed: () => context.go(AppRoutes.projectRooms(state.document.id)),
+                child: Text(t.circuitsEmptyAction),
+              ),
+            ],
+          ),
         ),
       for (final c in result.circuits) _CircuitTile(projectId: state.document.id, circuit: c),
     ];
@@ -140,7 +149,7 @@ class _IncomerCard extends StatelessWidget {
             if (balance != null)
               _Row(t.circuitsImbalance, '${formatNumber(balance.imbalancePercent, 0)} %'),
             for (final c in incomer.checks.where((c) => c.status != CheckStatus.passed))
-              Padding(padding: const EdgeInsets.only(top: 6), child: Text(c.message)),
+              Padding(padding: const EdgeInsets.only(top: 8), child: Text(c.message)),
           ],
         ),
       ),
@@ -163,9 +172,9 @@ class _IssuesCard extends StatelessWidget {
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final i in result.issues)
-            Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${i.message}')),
+            Padding(padding: const EdgeInsets.only(bottom: 8), child: Text('• ${i.message}')),
           for (final a in result.assumptions)
-            Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('• ${a.message}')),
+            Padding(padding: const EdgeInsets.only(bottom: 8), child: Text('• ${a.message}')),
         ],
       ),
     );
