@@ -50,8 +50,8 @@ abstract final class ProjectDocumentCodec {
         input: ProjectInput.fromJson(migrated['input']! as Map<String, Object?>),
         estimate: EstimateInput.fromJson(migrated['estimate'] as Map<String, Object?>? ?? const {}),
       );
-    } on Object catch (e) {
-      throw ProjectFormatException('Данные проекта повреждены: $e');
+    } on Object {
+      throw const ProjectFormatException('Данные проекта повреждены или записаны не полностью');
     }
   }
 

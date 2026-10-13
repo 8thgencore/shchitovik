@@ -80,14 +80,14 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get notSet => 'не задано';
 
   @override
-  String get projectsCreate => 'Новый проект';
+  String get projectsCreate => 'Создать проект';
 
   @override
-  String get projectsImport => 'Импорт проекта';
+  String get projectsImport => 'Импортировать проект';
 
   @override
   String projectsImportFailed(String message) {
-    return 'Не удалось импортировать: $message';
+    return 'Не удалось импортировать проект: $message';
   }
 
   @override
@@ -116,15 +116,16 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get projectDuplicate => 'Дублировать';
 
   @override
-  String get projectExport => 'Экспорт файла';
+  String get projectExport => 'Экспортировать проект';
 
   @override
-  String get projectDeleteTitle => 'Удалить проект?';
-
-  @override
-  String projectDeleteMessage(String name) {
-    return 'Проект «$name» будет удалён.';
+  String projectDeleteTitle(String name) {
+    return 'Удалить проект «$name»?';
   }
+
+  @override
+  String get projectDeleteMessage =>
+      'Проект, его помещения, линии и смета будут удалены без возможности восстановления.';
 
   @override
   String get projectNotFound => 'Проект не найден';
@@ -166,12 +167,14 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get tabEstimate => 'Смета';
 
   @override
-  String get reportPdf => 'PDF-отчёт';
+  String get reportPdf => 'Сохранить PDF';
 
   @override
-  String reportFailed(String message) {
-    return 'Не удалось сформировать отчёт: $message';
-  }
+  String get reportInProgress => 'Формируем PDF…';
+
+  @override
+  String get reportFailed =>
+      'Не удалось сформировать отчёт. Повторите попытку; если ошибка повторится, скопируйте подробности для поддержки.';
 
   @override
   String get interfaceModeTitle => 'Режим';
@@ -302,7 +305,7 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get roomsEmpty => 'Добавьте помещения — приборы подставятся из типового набора';
 
   @override
-  String get roomsAdd => 'Помещение';
+  String get roomsAdd => 'Добавить помещение';
 
   @override
   String get roomsAddTitle => 'Добавить помещение';
@@ -332,13 +335,15 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get roomKindGarage => 'Гараж, мастерская';
 
   @override
-  String get roomDeleteTitle => 'Удалить помещение?';
+  String roomDeleteTitle(String name) {
+    return 'Удалить помещение «$name»?';
+  }
 
   @override
   String get roomDeleteMessage => 'Вместе с помещением будут удалены его приборы.';
 
   @override
-  String get devicesAdd => 'Прибор';
+  String get devicesAdd => 'Добавить прибор';
 
   @override
   String get devicesSearch => 'Поиск прибора';
@@ -609,4 +614,66 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String get boardAuxiliary => 'Доп.';
+
+  @override
+  String get projectsEmptyHint =>
+      'Создайте проект — линии, щит и смета посчитаются по нормам автоматически.';
+
+  @override
+  String get projectsImportPickAnother => 'Выбрать другой файл';
+
+  @override
+  String get copyErrorDetails => 'Скопировать подробности';
+
+  @override
+  String get projectDeleteConfirm => 'Удалить проект';
+
+  @override
+  String get roomDeleteConfirm => 'Удалить помещение';
+
+  @override
+  String get roomsEmptyTitle => 'Помещений пока нет';
+
+  @override
+  String get deviceDelete => 'Удалить прибор';
+
+  @override
+  String deviceDeleteTitle(String name) {
+    return 'Удалить прибор «$name»?';
+  }
+
+  @override
+  String get deviceDeleteMessage => 'Прибор будет убран из помещения, линии и смета пересчитаются.';
+
+  @override
+  String devicesNotFound(String query) {
+    return 'Ничего не найдено по запросу «$query»';
+  }
+
+  @override
+  String get devicesSearchReset => 'Сбросить поиск';
+
+  @override
+  String get circuitsEmptyAction => 'Добавить помещения';
+
+  @override
+  String get fieldRequired => 'Заполните поле';
+
+  @override
+  String get fieldNumber => 'Введите число, например 2,5';
+
+  @override
+  String fieldMin(String min) {
+    return 'Укажите значение не меньше $min';
+  }
+
+  @override
+  String fieldAbove(String min) {
+    return 'Укажите значение больше $min';
+  }
+
+  @override
+  String fieldRange(String min, String max) {
+    return 'Укажите значение от $min до $max';
+  }
 }

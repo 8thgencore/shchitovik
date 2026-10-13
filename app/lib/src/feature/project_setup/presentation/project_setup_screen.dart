@@ -35,9 +35,8 @@ class ProjectSetupScreen extends StatelessWidget {
         CommitTextField(
           value: document.name,
           label: t.setupName,
-          onCommitted: (v) {
-            if (v.trim().isNotEmpty) ProjectScope.edit(context, (d) => d.copyWith(name: v.trim()));
-          },
+          validator: context.notBlank,
+          onCommitted: (v) => ProjectScope.edit(context, (d) => d.copyWith(name: v.trim())),
         ),
         ChoiceField<ObjectType>(
           label: t.objectTypeTitle,
@@ -78,7 +77,7 @@ class ProjectSetupScreen extends StatelessWidget {
         ),
         SectionTitle(t.setupSupply),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SegmentedButton<SupplyPhases>(
             segments: [
               ButtonSegment(value: SupplyPhases.single, label: Text(t.supplySingle)),
@@ -169,17 +168,15 @@ class ProjectSetupScreen extends StatelessWidget {
             value: input.cableDefaults.ambientTemperatureC,
             label: t.setupAmbient,
             digits: 0,
-            onChanged: (v) {
-              if (v != null) editCable((c) => c.copyWith(ambientTemperatureC: v));
-            },
+            validator: (v) => v == null ? t.fieldRequired : null,
+            onChanged: (v) => editCable((c) => c.copyWith(ambientTemperatureC: v)),
           ),
           DecimalField(
             value: input.cableDefaults.groupedCircuits.toDouble(),
             label: t.setupGrouped,
             digits: 0,
-            onChanged: (v) {
-              if (v != null && v >= 1) editCable((c) => c.copyWith(groupedCircuits: v.round()));
-            },
+            validator: context.atLeast(1),
+            onChanged: (v) => editCable((c) => c.copyWith(groupedCircuits: v!.round())),
           ),
         ],
       ],
