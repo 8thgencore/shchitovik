@@ -1,4 +1,5 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,7 +24,7 @@ class SwitchboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.translations;
-    final scheme = Theme.of(context).colorScheme;
+    final c = context.uiColors;
     final layout = layoutSwitchboard(
       switchboardItems(state.document.input, state.result, state.estimate),
     );
@@ -38,19 +39,19 @@ class SwitchboardView extends StatelessWidget {
             layout.occupiedModules,
             layout.reserveModules,
           ),
-          style: Theme.of(context).textTheme.titleSmall,
+          style: UiTextStyles.heading.copyWith(color: c.text),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: UiSpace.m),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: scheme.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: scheme.surfaceContainerHighest, width: 3),
+              color: c.sunken,
+              borderRadius: UiRadius.cardAll,
+              border: Border.all(color: c.borderStrong),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.fromLTRB(UiSpace.m, UiSpace.m, UiSpace.m, UiSpace.xs),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -61,10 +62,10 @@ class SwitchboardView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: UiSpace.s),
         Text(
           t.boardReserveNote((enclosureReserveShare * 100).round()),
-          style: Theme.of(context).textTheme.bodySmall,
+          style: UiTextStyles.caption.copyWith(color: c.textMuted),
         ),
       ],
     );
@@ -80,31 +81,29 @@ class _Rail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final c = context.uiColors;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: UiSpace.s),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.translations.boardRail(number, rail.used, rail.capacity),
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
-          const SizedBox(height: 2),
+          UiLabel(context.translations.boardRail(number, rail.used, rail.capacity)),
+          const SizedBox(height: UiSpace.xs),
           SizedBox(
             width: rail.capacity * _moduleWidth,
-            height: 112,
+            height: 108,
             child: Stack(
               children: [
+                // The DIN rail itself, behind the modules.
                 Positioned(
                   left: 0,
                   right: 0,
-                  top: 40,
-                  height: 28,
+                  top: 38,
+                  height: 26,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: scheme.outlineVariant,
-                      border: Border.all(color: scheme.outline),
+                      color: c.border,
+                      border: Border.symmetric(horizontal: BorderSide(color: c.borderStrong)),
                     ),
                   ),
                 ),
@@ -125,6 +124,8 @@ class _Rail extends StatelessWidget {
 }
 
 /// Conductor colours of the phases by ГОСТ 33542-2015 (IEC 60445): L1 brown, L2 black, L3 grey.
+///
+/// These are physical marking colours, not theme roles.
 Color _phaseColor(Phase phase) => switch (phase) {
   Phase.l1 => const Color(0xFF795548),
   Phase.l2 => const Color(0xFF212121),
@@ -140,9 +141,9 @@ class _BoardItemModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.translations;
-    final scheme = Theme.of(context).colorScheme;
+    final c = context.uiColors;
     final result = state.result;
-    final group = item.groupId == null ? null : scheme.tertiary;
+    final group = item.groupId == null ? null : c.primary;
     switch (item.kind) {
       case BoardItemKind.incomer:
         return _Module(
@@ -150,7 +151,7 @@ class _BoardItemModule extends StatelessWidget {
           top: t.boardIncomer,
           title: 'C${formatNumber(result.incomer.breakerA, 0)}',
           bottom: '${formatNumber(result.incomer.designCurrentA)} А',
-          color: scheme.secondary,
+          strip: c.primary,
         );
       case BoardItemKind.fireRcd:
         final rcd = result.fireRcd!;
@@ -159,7 +160,7 @@ class _BoardItemModule extends StatelessWidget {
           top: t.boardRcd,
           title: '${formatNumber(rcd.residualMa, 0)} мА',
           bottom: '${formatNumber(rcd.ratedA, 0)} А',
-          color: scheme.error,
+          strip: c.danger,
         );
       case BoardItemKind.auxiliary:
         final line = state.estimate.lines.firstWhere((l) => l.id == item.id);
@@ -168,7 +169,7 @@ class _BoardItemModule extends StatelessWidget {
           top: t.boardAuxiliary,
           title: line.title,
           bottom: line.description,
-          color: scheme.secondary,
+          strip: c.textMuted,
         );
       case BoardItemKind.groupRcd:
         final rcd = result.sharedRcds.firstWhere((r) => r.id == item.id);
@@ -177,26 +178,32 @@ class _BoardItemModule extends StatelessWidget {
           top: t.boardRcd,
           title: '${formatNumber(rcd.residualMa, 0)} мА',
           bottom: '${formatNumber(rcd.ratedA, 0)} А',
-          color: scheme.tertiary,
+          strip: c.primary,
           underline: group,
         );
       case BoardItemKind.circuit:
-        final circuit = result.circuits.firstWhere((c) => c.id == item.id);
+        final circuit = result.circuits.firstWhere((x) => x.id == item.id);
         final phase = circuit.phase;
+        final tone = statusStripe(circuit.status);
         return Tooltip(
           message:
               '${circuit.number}. ${circuit.name}\n${circuit.protection.description}\n'
               '${circuit.cable.label} мм² · ${phase?.label ?? '3ф'} · ${circuit.status.label}',
-          child: InkWell(
-            onTap: () => context.go(AppRoutes.circuit(state.document.id, circuit.id)),
-            child: _Module(
-              units: item.units,
-              top: '${circuit.number} · ${phase?.label ?? '3ф'}',
-              title: circuit.protection.label,
-              bottom: circuit.name,
-              color: phase == null ? scheme.primary : _phaseColor(phase),
-              border: statusColor(context, circuit.status),
-              underline: group,
+          child: UiPressable(
+            onPressed: () => context.go(AppRoutes.circuit(state.document.id, circuit.id)),
+            semanticLabel: '${circuit.number}. ${circuit.name}, ${circuit.status.label}',
+            builder: (context, s) => UiFocusRing(
+              visible: s.focused,
+              child: _Module(
+                units: item.units,
+                top: '${circuit.number} · ${phase?.label ?? '3ф'}',
+                title: circuit.protection.label,
+                bottom: circuit.name,
+                strip: phase == null ? c.primary : _phaseColor(phase),
+                frame: tone?.color(c),
+                hovered: s.hovered,
+                underline: group,
+              ),
             ),
           ),
         );
@@ -210,65 +217,82 @@ class _Module extends StatelessWidget {
     required this.top,
     required this.title,
     required this.bottom,
-    required this.color,
-    this.border,
+    required this.strip,
+    this.frame,
     this.underline,
+    this.hovered = false,
   });
 
   final int units;
   final String top;
   final String title;
   final String bottom;
-  final Color color;
-  final Color? border;
+  final Color strip;
+  final Color? frame;
   final Color? underline;
+  final bool hovered;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final c = context.uiColors;
     final width = units * _moduleWidth - 2;
+    final onStrip = ThemeData.estimateBrightnessForColor(strip) == Brightness.dark
+        ? const Color(0xFFFFFFFF)
+        : const Color(0xFF000000);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 1),
       child: Column(
         children: [
           SizedBox(
             width: width,
-            height: 104,
+            height: 100,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                color: scheme.surface,
-                borderRadius: BorderRadius.circular(3),
-                border: Border.all(
-                  color: border ?? scheme.outline,
-                  width: border == null ? 1 : 2,
-                ),
+                color: hovered ? c.sunken : c.surface,
+                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                border: Border.all(color: frame ?? c.borderStrong, width: frame == null ? 1 : 2),
               ),
               child: Column(
                 children: [
                   SizedBox(
                     width: double.infinity,
-                    height: 18,
+                    height: 16,
                     child: ColoredBox(
-                      color: color,
+                      color: strip,
                       child: Center(
                         child: Text(
                           top,
                           maxLines: 1,
                           overflow: TextOverflow.clip,
-                          style: TextStyle(color: _foregroundOn(color), fontSize: 12),
+                          style: UiTextStyles.label.copyWith(
+                            color: onStrip,
+                            fontSize: 11,
+                            letterSpacing: 0,
+                            height: 1.2,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 5),
                   Text(
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.clip,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                    style: UiTextStyles.valueStrong.copyWith(color: c.text, fontSize: 12),
                   ),
-                  const SizedBox(height: 4),
-                  Icon(Icons.toggle_on_outlined, size: 22, color: scheme.onSurfaceVariant),
+                  const SizedBox(height: 5),
+                  // Toggle lever of the device.
+                  SizedBox(
+                    width: 10,
+                    height: 20,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: c.text.withValues(alpha: .75),
+                        borderRadius: const BorderRadius.all(Radius.circular(1.5)),
+                      ),
+                    ),
+                  ),
                   const Spacer(),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(2, 0, 2, 4),
@@ -277,17 +301,22 @@ class _Module extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12, height: 1.2),
+                      style: UiTextStyles.caption.copyWith(
+                        color: c.textMuted,
+                        fontSize: 12,
+                        height: 1.15,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
+          const SizedBox(height: 2),
           SizedBox(
             width: width,
-            height: 4,
-            child: ColoredBox(color: underline ?? Colors.transparent),
+            height: 3,
+            child: ColoredBox(color: underline ?? const Color(0x00000000)),
           ),
         ],
       ),
@@ -295,25 +324,19 @@ class _Module extends StatelessWidget {
   }
 }
 
-/// Black or white text, whichever is readable on [background].
-Color _foregroundOn(Color background) =>
-    ThemeData.estimateBrightnessForColor(background) == Brightness.dark
-    ? Colors.white
-    : Colors.black;
-
 class _BlankModule extends StatelessWidget {
   const _BlankModule();
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(1, 20, 1, 0),
+    padding: const EdgeInsets.fromLTRB(1, 18, 1, 0),
     child: SizedBox(
       width: _moduleWidth - 2,
-      height: 68,
+      height: 66,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(2),
-          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          borderRadius: const BorderRadius.all(Radius.circular(2)),
+          border: Border.all(color: context.uiColors.borderStrong.withValues(alpha: .6)),
         ),
       ),
     ),

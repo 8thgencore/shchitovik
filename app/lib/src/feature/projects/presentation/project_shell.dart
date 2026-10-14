@@ -1,4 +1,5 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,15 +12,11 @@ import 'package:shchitovik/src/feature/projects/public/presentation/formatting.d
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
-import 'package:shchitovik/src/widget/content_width.dart';
-import 'package:shchitovik/src/widget/deferred_progress.dart';
 import 'package:shchitovik/src/widget/dependencies_scope.dart';
-import 'package:shchitovik/src/widget/status_colors.dart';
-import 'package:shchitovik/src/widget/window_size.dart';
 
 /// Frame of a project around its sections Объект / Помещения / Линии / Смета.
 ///
-/// Expanded layout: navigation rail, the switchboard is the home section.
+/// Expanded layout: sidebar with the sections, the switchboard is the home section.
 /// Compact layout: step-by-step wizard with progress and «Назад / Далее».
 class ProjectShell extends StatelessWidget {
   const ProjectShell({
@@ -84,10 +81,34 @@ class _ProjectBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => switch (context.watch<ProjectBloc>().state) {
-    ProjectLoading() => const DeferredProgress(),
-    ProjectNotFound() => Center(child: Text(context.translations.projectNotFound)),
+    ProjectLoading() => const UiDeferredProgress(),
+    ProjectNotFound() => UiEmptyState(
+      icon: UiIcons.projects,
+      title: context.translations.projectNotFound,
+      message: context.translations.projectNotFoundHint,
+      actions: [
+        UiButton(
+          label: context.translations.projectsAll,
+          icon: UiIcons.back,
+          onPressed: () => context.go(AppRoutes.projects),
+        ),
+      ],
+    ),
     ProjectReady() => child,
   };
+}
+
+class _BackButton extends StatelessWidget {
+  const _BackButton({required this.frame});
+
+  final _Frame frame;
+
+  @override
+  Widget build(BuildContext context) => UiIconButton(
+    icon: UiIcons.back,
+    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+    onPressed: () => frame.back(context),
+  );
 }
 
 // Expanded layout.
@@ -105,43 +126,66 @@ class _ExpandedProjectFrame extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.translations;
     final state = context.watch<ProjectBloc>().state;
+    final ready = state is ProjectReady ? state : null;
     final labels = {
       _Section.circuits: t.tabBoard,
       _Section.rooms: t.tabRooms,
       _Section.setup: t.tabSetup,
       _Section.estimate: t.tabEstimate,
     };
+    final counts = {
+      _Section.circuits: ready?.result.circuits.length,
+      _Section.rooms: ready?.document.input.rooms.length,
+    };
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => frame.back(context),
-        ),
-        title: Text(
-          state is ProjectReady
-              ? '${state.document.name} · ${labels[frame.section]}'
-              : labels[frame.section]!,
-        ),
-        actions: [_ProjectActions(projectId: frame.projectId)],
-      ),
       body: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          NavigationRail(
-            selectedIndex: _order.indexOf(frame.section),
-            labelType: NavigationRailLabelType.all,
-            onDestinationSelected: (i) => context.go(frame.path(_order[i])),
-            destinations: [
+          UiSidebar(
+            brand: t.appTitle,
+            header: ready == null ? null : _ProjectSummary(state: ready),
+            items: [
               for (final section in _order)
-                NavigationRailDestination(
-                  icon: Icon(_sectionIcon(section)),
-                  label: Text(labels[section]!),
+                UiNavItem(
+                  icon: _sectionIcon(section),
+                  label: labels[section]!,
+                  count: counts[section]?.toString(),
+                  selected: section == frame.section,
+                  onPressed: () => context.go(frame.path(section)),
                 ),
             ],
+            footer: [
+              UiNavItem(
+                icon: UiIcons.projects,
+                label: t.projectsAll,
+                onPressed: () => context.go(AppRoutes.projects),
+              ),
+              UiNavItem(
+                icon: UiIcons.settings,
+                label: t.settingsTitle,
+                onPressed: () => context.push(AppRoutes.settings),
+              ),
+            ],
           ),
-          const VerticalDivider(width: 1),
           Expanded(
-            child: ContentWidth(child: _ProjectBody(child: child)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                UiTopBar(
+                  large: true,
+                  eyebrow: ready?.document.name,
+                  title: labels[frame.section]!,
+                  leading: frame.isSectionRoot ? null : _BackButton(frame: frame),
+                  actions: [
+                    if (ready != null) ...[
+                      _ExportButton(projectId: frame.projectId, state: ready),
+                      _ReportButton(state: ready, variant: _ReportVariant.secondary),
+                    ],
+                  ],
+                ),
+                Expanded(child: _ProjectBody(child: child)),
+              ],
+            ),
           ),
         ],
       ),
@@ -149,11 +193,42 @@ class _ExpandedProjectFrame extends StatelessWidget {
   }
 }
 
+/// Name and key facts of the project at the top of the sidebar.
+class _ProjectSummary extends StatelessWidget {
+  const _ProjectSummary({required this.state});
+
+  final ProjectReady state;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.translations;
+    final c = context.uiColors;
+    final input = state.document.input;
+    final supply = input.supplyPhases == SupplyPhases.single ? t.supplySingle : t.supplyThree;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          state.document.name,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: UiTextStyles.bodySmall.copyWith(color: c.text, fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          '${input.objectType.label} · $supply',
+          style: UiTextStyles.caption.copyWith(color: c.textMuted),
+        ),
+      ],
+    );
+  }
+}
+
 IconData _sectionIcon(_Section section) => switch (section) {
-  _Section.setup => Icons.home_work_outlined,
-  _Section.rooms => Icons.meeting_room_outlined,
-  _Section.circuits => Icons.view_module_outlined,
-  _Section.estimate => Icons.receipt_long_outlined,
+  _Section.setup => UiIcons.object,
+  _Section.rooms => UiIcons.rooms,
+  _Section.circuits => UiIcons.board,
+  _Section.estimate => UiIcons.estimate,
 };
 
 // Compact layout.
@@ -167,27 +242,52 @@ class _CompactProjectFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ProjectBloc>().state;
-    final ready = state is ProjectReady && frame.isSectionRoot ? state : null;
+    final ready = state is ProjectReady ? state : null;
+    final root = ready != null && frame.isSectionRoot ? ready : null;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => frame.back(context),
-        ),
-        title: Text(state is ProjectReady ? state.document.name : ''),
-        actions: [_ProjectActions(projectId: frame.projectId)],
-        bottom: ready == null
-            ? null
-            : PreferredSize(
-                preferredSize: const Size.fromHeight(76),
-                child: _StepsHeader(frame: frame, state: ready),
-              ),
+      appBar: UiTopBar(
+        leading: _BackButton(frame: frame),
+        title: ready?.document.name ?? '',
+        actions: [
+          if (ready != null) ...[
+            _ReportButton(state: ready, variant: _ReportVariant.icon),
+            _ExportButton(projectId: frame.projectId, state: ready),
+          ],
+        ],
+        bottom: root == null ? null : _StepsHeader(frame: frame, state: root),
       ),
       body: _ProjectBody(child: child),
-      bottomNavigationBar: ready == null ? null : _StepsNavigation(frame: frame, state: ready),
+      bottomNavigationBar: root == null ? null : _StepsNavigation(frame: frame, state: root),
     );
   }
+}
+
+/// Wizard progress under the top bar.
+class _StepsHeader extends StatelessWidget implements PreferredSizeWidget {
+  const _StepsHeader({required this.frame, required this.state});
+
+  final _Frame frame;
+  final ProjectReady state;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(UiStepBar.height);
+
+  @override
+  Widget build(BuildContext context) => UiStepBar(
+    steps: [
+      for (final section in _Section.values)
+        UiStep(
+          label: _stepName(context, section),
+          summary: _stepSummary(context, section, state),
+          state: section == frame.section
+              ? UiStepState.current
+              : _stepDone(section, state)
+              ? UiStepState.done
+              : UiStepState.upcoming,
+        ),
+    ],
+    onSelected: (i) => context.go(frame.path(_Section.values[i])),
+  );
 }
 
 /// Step names in wizard order.
@@ -224,90 +324,6 @@ String _stepSummary(BuildContext context, _Section section, ProjectReady state) 
   };
 }
 
-class _StepsHeader extends StatelessWidget {
-  const _StepsHeader({required this.frame, required this.state});
-
-  final _Frame frame;
-  final ProjectReady state;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-    child: Row(
-      children: [
-        for (final section in _Section.values)
-          Expanded(
-            child: _StepIndicator(frame: frame, section: section, state: state),
-          ),
-      ],
-    ),
-  );
-}
-
-class _StepIndicator extends StatelessWidget {
-  const _StepIndicator({required this.frame, required this.section, required this.state});
-
-  final _Frame frame;
-  final _Section section;
-  final ProjectReady state;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final current = section == frame.section;
-    final done = _stepDone(section, state);
-    final first = section == _Section.values.first;
-    final last = section == _Section.values.last;
-    return InkWell(
-      borderRadius: BorderRadius.circular(8),
-      onTap: () => context.go(frame.path(section)),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(child: Divider(color: first ? Colors.transparent : scheme.outline)),
-              CircleAvatar(
-                radius: 13,
-                backgroundColor: current
-                    ? scheme.primary
-                    : done
-                    ? scheme.primaryContainer
-                    : scheme.surfaceContainerHighest,
-                child: done && !current
-                    ? Icon(Icons.check, size: 16, color: scheme.onPrimaryContainer)
-                    : Text(
-                        '${section.index + 1}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: current ? scheme.onPrimary : scheme.onSurface,
-                        ),
-                      ),
-              ),
-              Expanded(child: Divider(color: last ? Colors.transparent : scheme.outline)),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _stepName(context, section),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: current ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
-          Text(
-            _stepSummary(context, section, state),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _StepsNavigation extends StatelessWidget {
   const _StepsNavigation({required this.frame, required this.state});
 
@@ -319,65 +335,56 @@ class _StepsNavigation extends StatelessWidget {
     final t = context.translations;
     final section = frame.section;
     final failed = state.result.circuits.where((c) => c.status == CalculationStatus.failed);
-    final hint = switch (section) {
-      _Section.rooms when state.document.input.rooms.isEmpty => t.stepNeedRooms,
-      _Section.circuits when failed.isNotEmpty => t.stepFailedCircuits(
-        failed.map((c) => '№${c.number}').join(', '),
+    final (hint, tone) = switch (section) {
+      _Section.rooms when state.document.input.rooms.isEmpty => (t.stepNeedRooms, UiTone.warning),
+      _Section.circuits when failed.isNotEmpty => (
+        t.stepFailedCircuits(failed.map((c) => '№${c.number}').join(', ')),
+        UiTone.danger,
       ),
-      _ => null,
+      _ => (null, UiTone.neutral),
     };
     final previous = section.index > 0 ? _Section.values[section.index - 1] : null;
     final next = section.index < _Section.values.length - 1
         ? _Section.values[section.index + 1]
         : null;
-    final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: scheme.surface,
-      shape: Border(top: BorderSide(color: scheme.outlineVariant)),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+    return UiActionBar(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (hint != null) ...[
+            UiNotice(message: hint, tone: tone),
+            const SizedBox(height: UiSpace.m),
+          ],
+          Row(
             children: [
-              if (hint != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline, size: 18, color: StatusColors.of(context).warning),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(hint)),
-                    ],
-                  ),
+              if (previous != null) ...[
+                UiButton.secondary(
+                  label: t.stepBack,
+                  icon: UiIcons.back,
+                  onPressed: () => context.go(frame.path(previous)),
                 ),
-              // Buttons stack instead of overflowing when both do not fit the width.
-              OverflowBar(
-                alignment: previous == null
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.spaceBetween,
-                overflowAlignment: OverflowBarAlignment.end,
-                overflowSpacing: 8,
-                children: [
-                  if (previous != null)
-                    OutlinedButton.icon(
-                      onPressed: () => context.go(frame.path(previous)),
-                      icon: const Icon(Icons.arrow_back),
-                      label: Text(t.stepBack),
-                    ),
-                  if (next != null)
-                    FilledButton.icon(
-                      onPressed: () => context.go(frame.path(next)),
-                      icon: const Icon(Icons.arrow_forward),
-                      label: Text(_stepName(context, next)),
-                    )
-                  else
-                    _ReportButton(state: state, filled: true),
-                ],
+                const SizedBox(width: UiSpace.s),
+              ],
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: next != null
+                      ? UiButton(
+                          label: switch (next) {
+                            _Section.rooms => t.stepGoRooms,
+                            _Section.circuits => t.stepGoCircuits,
+                            _ => t.stepGoEstimate,
+                          },
+                          trailingIcon: UiIcons.next,
+                          onPressed: () => context.go(frame.path(next)),
+                        )
+                      : _ReportButton(state: state, variant: _ReportVariant.primary),
+                ),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -385,13 +392,14 @@ class _StepsNavigation extends StatelessWidget {
 
 // Actions.
 
-/// PDF report and project export buttons.
-class _ProjectActions extends StatelessWidget {
-  const _ProjectActions({required this.projectId});
+/// Shares the project file.
+class _ExportButton extends StatelessWidget {
+  const _ExportButton({required this.projectId, required this.state});
 
   final String projectId;
+  final ProjectReady state;
 
-  Future<void> _export(BuildContext context, ProjectReady state) async {
+  Future<void> _export(BuildContext context) async {
     final service = DependenciesScope.of(context).projectsContainer.projectsService;
     await ProjectFiles.shareProject(
       projectName: state.document.name,
@@ -400,32 +408,21 @@ class _ProjectActions extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final t = context.translations;
-    final state = context.watch<ProjectBloc>().state;
-    if (state is! ProjectReady) return const SizedBox.shrink();
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _ReportButton(state: state, filled: false),
-        IconButton(
-          tooltip: t.projectExport,
-          icon: const Icon(Icons.ios_share),
-          onPressed: () => _export(context, state),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => UiIconButton(
+    tooltip: context.translations.projectExport,
+    icon: UiIcons.share,
+    onPressed: () => _export(context),
+  );
 }
+
+enum _ReportVariant { primary, secondary, icon }
 
 /// Builds the PDF report and offers to share it; shows progress on the button meanwhile.
 class _ReportButton extends StatefulWidget {
-  const _ReportButton({required this.state, required this.filled});
+  const _ReportButton({required this.state, required this.variant});
 
   final ProjectReady state;
-
-  /// Labelled filled button (wizard footer) or icon button (app bar).
-  final bool filled;
+  final _ReportVariant variant;
 
   @override
   State<_ReportButton> createState() => _ReportButtonState();
@@ -436,8 +433,8 @@ class _ReportButtonState extends State<_ReportButton> {
 
   Future<void> _report() async {
     if (_busy) return;
-    final messenger = ScaffoldMessenger.of(context);
     final t = context.translations;
+    final toastContext = context;
     final document = widget.state.document;
     setState(() => _busy = true);
     try {
@@ -449,15 +446,14 @@ class _ReportButtonState extends State<_ReportButton> {
         filename: '${ProjectFileCodec.fileName(document.name).split('.').first}.pdf',
       );
     } on Object catch (e, stackTrace) {
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text(t.reportFailed),
-          action: SnackBarAction(
-            label: t.copyErrorDetails,
-            onPressed: () => Clipboard.setData(ClipboardData(text: '$e\n$stackTrace')),
-          ),
-        ),
-      );
+      if (toastContext.mounted) {
+        showUiToast(
+          toastContext,
+          message: t.reportFailed,
+          actionLabel: t.copyErrorDetails,
+          onAction: () => Clipboard.setData(ClipboardData(text: '$e\n$stackTrace')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -466,12 +462,26 @@ class _ReportButtonState extends State<_ReportButton> {
   @override
   Widget build(BuildContext context) {
     final t = context.translations;
-    final icon = _busy
-        ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-        : const Icon(Icons.picture_as_pdf_outlined);
     final label = _busy ? t.reportInProgress : t.reportPdf;
-    return widget.filled
-        ? FilledButton.icon(onPressed: _report, icon: icon, label: Text(label))
-        : IconButton(tooltip: label, icon: icon, onPressed: _report);
+    return switch (widget.variant) {
+      _ReportVariant.primary => UiButton(
+        label: label,
+        icon: UiIcons.report,
+        busy: _busy,
+        onPressed: _report,
+      ),
+      _ReportVariant.secondary => UiButton.secondary(
+        label: label,
+        icon: UiIcons.report,
+        busy: _busy,
+        onPressed: _report,
+      ),
+      _ReportVariant.icon => UiIconButton(
+        tooltip: label,
+        icon: UiIcons.report,
+        busy: _busy,
+        onPressed: _report,
+      ),
+    };
   }
 }

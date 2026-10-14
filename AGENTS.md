@@ -40,6 +40,8 @@ selections are stored; everything else is recomputed by `engine` deterministical
 
 ## Widgets
 
+- Build screens from `common_ui` (`Ui*` widgets, `UiColors`, `UiTextStyles`, `UiIcons`); no raw
+  colours, bare Material widgets or `Icons.*`. Missing piece → add it to `common_ui` and `UiGallery`.
 - Prefer specific widgets (DecoratedBox, Padding, SizedBox) over Container.
 - Do not use shrinkWrap in scrollable widgets.
 - Do not create functions that return widgets; create a separate widget class.

@@ -70,3 +70,7 @@ __pycache__/
 
 # Report previews written by engine/report_pdf tests
 engine/report_pdf/build/
+
+# Design notes, screenshots and local agent settings
+/design-system/
+/.claude/

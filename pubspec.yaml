@@ -18,6 +18,7 @@ workspace:
   - common/common_error_reporter
   - common/common_translations
   - common/common_database
+  - common/common_ui
 
 # engine/* are standalone pure Dart packages (own resolution): their `test` dependency
 # cannot share a solve with the test_api version pinned by flutter_test.

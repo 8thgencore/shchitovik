@@ -1,20 +1,23 @@
+import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shchitovik/src/widget/status_colors.dart';
 
-/// Colour of a calculation status.
-Color statusColor(BuildContext context, CalculationStatus status) {
-  final scheme = Theme.of(context).colorScheme;
-  final colors = StatusColors.of(context);
-  return switch (status) {
-    CalculationStatus.passed => colors.success,
-    CalculationStatus.warning || CalculationStatus.requiresReview => colors.warning,
-    CalculationStatus.preliminary => scheme.outline,
-    CalculationStatus.failed => scheme.error,
-  };
-}
+/// Tone of a calculation status.
+UiTone statusTone(CalculationStatus status) => switch (status) {
+  CalculationStatus.passed => UiTone.success,
+  CalculationStatus.warning || CalculationStatus.requiresReview => UiTone.warning,
+  CalculationStatus.preliminary => UiTone.neutral,
+  CalculationStatus.failed => UiTone.danger,
+};
 
-/// Icon and colour of a calculation status.
+/// Attention stripe for a row with this status; `null` when nothing needs attention.
+UiTone? statusStripe(CalculationStatus status) => switch (status) {
+  CalculationStatus.failed => UiTone.danger,
+  CalculationStatus.warning || CalculationStatus.requiresReview => UiTone.warning,
+  _ => null,
+};
+
+/// Icon of a calculation status with its name as the tooltip.
 class StatusIcon extends StatelessWidget {
   const StatusIcon(this.status, {super.key});
 
@@ -22,19 +25,26 @@ class StatusIcon extends StatelessWidget {
   final CalculationStatus status;
 
   @override
-  Widget build(BuildContext context) {
-    final icon = switch (status) {
-      CalculationStatus.passed => Icons.check_circle,
-      CalculationStatus.warning => Icons.info,
-      CalculationStatus.requiresReview => Icons.help,
-      CalculationStatus.preliminary => Icons.pending,
-      CalculationStatus.failed => Icons.error,
-    };
-    return Tooltip(
-      message: status.label,
-      child: Icon(icon, color: statusColor(context, status)),
-    );
-  }
+  Widget build(BuildContext context) => UiStatusIcon(
+    tone: statusTone(status),
+    label: status.label,
+    icon: switch (status) {
+      CalculationStatus.requiresReview => UiIcons.help,
+      CalculationStatus.preliminary => UiIcons.pending,
+      _ => null,
+    },
+  );
+}
+
+/// Badge with the name of a calculation status.
+class StatusBadge extends StatelessWidget {
+  const StatusBadge(this.status, {super.key});
+
+  /// Status.
+  final CalculationStatus status;
+
+  @override
+  Widget build(BuildContext context) => UiBadge(label: status.label, tone: statusTone(status));
 }
 
 /// Icon of a check status.
@@ -45,15 +55,15 @@ class CheckStatusIcon extends StatelessWidget {
   final CheckStatus status;
 
   @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final colors = StatusColors.of(context);
-    final (icon, color) = switch (status) {
-      CheckStatus.passed => (Icons.check, colors.success),
-      CheckStatus.warning => (Icons.warning_amber, colors.warning),
-      CheckStatus.failed => (Icons.close, scheme.error),
-      CheckStatus.notEvaluated => (Icons.remove, scheme.outline),
-    };
-    return Icon(icon, color: color, size: 20);
-  }
+  Widget build(BuildContext context) => switch (status) {
+    CheckStatus.passed => UiStatusIcon(tone: UiTone.success, label: status.label, size: 18),
+    CheckStatus.warning => UiStatusIcon(tone: UiTone.warning, label: status.label, size: 18),
+    CheckStatus.failed => UiStatusIcon(tone: UiTone.danger, label: status.label, size: 18),
+    CheckStatus.notEvaluated => UiStatusIcon(
+      tone: UiTone.neutral,
+      label: status.label,
+      icon: UiIcons.notEvaluated,
+      size: 18,
+    ),
+  };
 }

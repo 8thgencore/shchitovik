@@ -1,95 +1,122 @@
-# Design System Master File
+# Design System Master File — «Чертёж»
 
 > **LOGIC:** When building a specific page, first check `design-system/shchitovik/pages/[page-name].md`.
 > If that file exists, its rules **override** this Master file. If not, follow the rules below.
 >
-> Implementation: `app/lib/src/widget/app_theme.dart` (`AppTheme.light` / `AppTheme.dark`) and
-> `app/lib/src/widget/status_colors.dart`. Taste, a11y, bans and voice: `.ux-profile.md`.
+> Implementation: package [`common/common_ui`](../../common/common_ui) — tokens (`UiColors`,
+> `UiTextStyles`, `UiSpace`, `UiRadius`, `UiSize`, `UiMotion`, `UiIcons`), the theme (`UiTheme`) and
+> the widgets. A live showcase of every widget is the `UiGallery` route `/dev/ui` (debug builds,
+> link in Settings). Taste, a11y, bans and voice: `.ux-profile.md`.
 
 ---
 
 **Project:** Щитовик (Shchitovik) — switchboard calculator and estimate, Flutter (Android, iOS, Web)
-**Source:** `ui-ux-pro-max` `--design-system` (query «engineering calculator tool electrical estimate»,
-variance 2, motion 2, density 7), adapted 2026-10-13. Rejected parts are listed at the end.
+**Chosen:** 2026-10-14, direction A «Чертёж» out of three compared (A Чертёж, B Приборная панель,
+C Ясный). Replaces the Material-based navy/slate theme of 2026-10-13.
 
 ---
 
-## Style
+## Idea
 
-**Minimalism & Swiss Style** — clean, functional, high contrast, grid-based, no decoration.
-Matches the Stripe reference in `.ux-profile.md`: clear type, well-structured data, depth by 1px
-borders instead of shadows.
+The interface reads like a neat engineering drawing: ink on paper, hairlines, stamp-like upper-case
+labels, every quantity in a monospaced face. One signal colour (orange) marks what is current:
+the wizard step, the selected section, keyboard focus. Status colours are reserved for check
+results. Nothing decorative: no gradients, no shadows on content, no illustrations.
 
-## Color
-
-Material 3 `ColorScheme`, set role by role (no raw hex in widgets — use `Theme.of(context).colorScheme`).
+## Colour roles (`UiColors`)
 
 | Role | Light | Dark | Use |
 |------|-------|------|-----|
-| `primary` / `onPrimary` | `#1E3A5F` / `#FFFFFF` | `#93C5FD` / `#0F172A` | Primary actions, selection, focus |
-| `primaryContainer` / `on…` | `#DBE5F1` / `#1E3A5F` | `#1E3A5F` / `#DBE5F1` | Completed steps, selected chips |
-| `secondary` / `onSecondary` | `#2563EB` / `#FFFFFF` | `#60A5FA` / `#0F172A` | Links, secondary emphasis |
-| `error` / `onError` | `#DC2626` / `#FFFFFF` | `#F87171` / `#450A0A` | Failures, destructive actions |
-| `surface` | `#F8FAFC` | `#0F172A` | Page canvas (L0) |
-| `surfaceContainerLowest` | `#FFFFFF` | `#0B1220` | Cards in light theme (L1) |
-| `surfaceContainerLow` | `#F1F5F9` | `#162033` | Cards in dark theme (L1) |
-| `surfaceContainer` / `High` / `Highest` | `#EEF2F6` / `#E2E8F0` / `#CBD5E1` | `#1E293B` / `#273449` / `#334155` | Switchboard enclosure, inactive steps |
-| `onSurface` | `#0F172A` | `#F1F5F9` | Body text |
-| `onSurfaceVariant` | `#475569` | `#94A3B8` | Secondary text, labels |
-| `outline` | `#64748B` | `#7C8BA1` | Input and component borders (≥ 3:1) |
-| `outlineVariant` | `#E2E8F0` | `#334155` | Card borders, dividers, hairlines |
+| `canvas` | `#F4F4F4` | `#0A0A0A` | Page background |
+| `surface` | `#FFFFFF` | `#141414` | Cards, bars, sheets |
+| `sunken` | `#EBEBEB` | `#1F1F1F` | Segmented track, table header, hover, selected nav |
+| `border` | `#D9D9D9` | `#2A2A2A` | Hairlines between rows and around cards |
+| `borderStrong` | `#808080` | `#737373` | Inputs, outlined buttons, switchboard frame (≥ 3:1) |
+| `text` / `textMuted` | `#0A0A0A` / `#525252` | `#F5F5F5` / `#A3A3A3` | Body / secondary text, units |
+| `primary` / `onPrimary` | `#0A0A0A` / `#FFFFFF` | `#F5F5F5` / `#0A0A0A` | Main action fill |
+| `accent` / `accentText` / `accentSoft` | `#D9480F` / `#B03A0B` / `#FBE7DC` | `#FF7B36` / `#FF9157` / `#3A2216` | Current step, selection, focus ring |
+| `success` (+ `Soft`) | `#1B6E34` | `#5BC984` | Passed check — never an action colour |
+| `warning` (+ `Soft`) | `#95590A` | `#E8B651` | Needs review |
+| `danger` (+ `Soft`, `onDanger`) | `#C42B1C` | `#FF6E61` | Failure, destructive actions |
 
-Status colours (`StatusColors` theme extension): success `#2E7D32` / `#81C784`, warning `#A15C00` /
-`#FFD54F`; failures use `error`. **Green is reserved for «passed»** — it is never an action colour.
+Contrast is enforced by `common/common_ui/test/ui_colors_contrast_test.dart` (WCAG 2.1 AA) for both
+themes: text roles ≥ 4.5:1 on `canvas`, `surface`, `sunken`; `borderStrong` and `accent` ≥ 3:1;
+content on filled controls ≥ 4.5:1; every status tone ≥ 4.5:1 on its own tint. Change a colour →
+the test must stay green.
 
 Phase colours on the switchboard follow ГОСТ 33542-2015 (L1 brown, L2 black, L3 grey) and are not
 theme roles; label text on them picks black or white by luminance.
 
-Contrast (WCAG 2.1 AA, checked on `surface`, `surfaceContainerLowest/Low` and `surfaceContainer`):
-text roles ≥ 4.5:1 (`onSurfaceVariant` 6.9–7.6 light, 5.7–7.0 dark), `outline` ≥ 3:1
-(4.3–4.8 light, 4.2–5.2 dark), status colours ≥ 4:1.
+## Typography (`UiTextStyles`)
 
-## Typography
+- **IBM Plex Sans** for text, **IBM Plex Mono** for values, units and labels; both bundled in
+  `common_ui/assets/fonts` (OFL 1.1), work offline. Plex Mono has no Greek, so mono styles fall back
+  to Plex Sans for Δ, φ.
+- Weights 400 / 500 / 600 only. Nothing below 12 px.
 
-- **Font:** IBM Plex Sans (`fontFamily: 'IBMPlexSans'`), bundled in `app/assets/fonts` under OFL 1.1 —
-  no runtime download, works offline. Full Cyrillic plus Δ, φ, №, ₽, ², ×, ≤, ≈.
-- **Weights:** 400, 500 (Material 3 titles and labels), 600 (emphasis). Nothing above 600.
-- **Numbers:** Plex digits are tabular by default (all 600 units wide), so columns of currents, lengths
-  and prices line up without `FontFeature.tabularFigures`.
-- **Scale:** Material 3 `TextTheme`; body 16 / secondary 14 / meta 12, nothing below 12.
-- PDF reports keep Noto Sans (`engine/report_pdf`).
+| Style | Size / weight | Use |
+|-------|---------------|-----|
+| `display` | 28 / 600 | Rare: wide page titles |
+| `title` | 20 / 600 | Screen and sheet titles |
+| `heading` | 16 / 600 | Card and section headings |
+| `body` / `bodyStrong` | 16 / 400, 500 | Text, row titles, inputs |
+| `bodySmall` | 14 / 400 | Subtitles, table cells |
+| `caption` | 13 / 400 | Helper, error, field labels |
+| `button` | 15 / 600 | Buttons |
+| `label` (mono) | 12 / 500, +0.7 tracking, UPPER CASE | Stamp labels over values and groups |
+| `value` / `valueStrong` (mono) | 14 / 400, 600 | Quantities in rows and tables |
+| `reading` / `readingLarge` (mono) | 20 / 500, 28 / 600 | Metric tiles, the estimate total |
 
-## Spacing and shape
+Quantity symbols (`In`, `Iz`, `ΔU`, `cos φ`) keep their case: `UiLabel(symbol: true)`,
+`UiMetric(symbol: true)`.
 
-- 8pt grid for layout, 4pt for micro gaps (density 7: 4 · 8 · 16 · 24 · 32).
-- Radius 12 for cards and the projects list frame, 8 for small controls (Material defaults otherwise).
-- Page content capped at 1280 (`ContentWidth`); chrome stays full width.
+## Space, shape, depth
 
-## Elevation
+- 4pt micro / 8pt layout: `UiSpace` 4 · 8 · 12 · 16 · 24 · 32 · 48. Gutter 16 on phones, 24 wide.
+- Corners: 3 px controls, 4 px cards (`UiRadius`); sheets 8 px at the top.
+- Depth by 1px hairlines only. Overlays (menus, dialogs) get one soft shadow; content never does.
+- Touch targets 44 px (`UiSize.control`); small buttons are 36 px tall inside a 44 px hit area.
 
-- **Borders first:** cards have `elevation: 0` and a 1px `outlineVariant` border; app bar and wizard
-  footer are separated by a 1px border, no scroll tint or shadow.
-- No decorative shadows. Overlays (bottom sheets, dialogs, menus) keep Material defaults.
+## Layout
+
+- Breakpoints (`UiBreakpoints`): expanded layout from 840 px; two columns from 960 px of content;
+  content max 1280 px; forms max 720 px.
+- **Phone:** top bar + step bar (wizard Объект → Помещения → Линии → Смета), content, action bar
+  with «Назад / Далее» and the step hint.
+- **Web / wide:** 248 px sidebar (brand, project summary, sections with counts, «Все проекты»,
+  «Настройки»), top bar with the project as a stamp label and the section as the title, actions
+  on the right. Circuits become a `UiTable`; estimate, circuit details and rooms go two-column.
+- Sheets (`showUiSheet`) are bottom sheets on phones and centered 560 px panels on wide screens.
+
+## Widgets
+
+`UiButton` (primary, secondary, ghost, danger; busy, small), `UiIconButton` (tooltip required),
+`UiMenuButton`, `UiCard`, `UiFieldGroup`, `UiDivided`, `UiLabel`, `UiSectionHeader`,
+`UiTextField`, `UiSelect`, `UiSegmented`, `UiSwitchRow`, `UiChoiceRow`, `UiListRow`, `UiKeyValueList`,
+`UiMetricGrid`, `UiRangeBar`, `UiTable`, `UiBadge`, `UiStatusIcon`, `UiNotice`, `UiDisclosure`,
+`UiEmptyState`, `UiTopBar`, `UiSidebar` + `UiNavItem`, `UiStepBar`, `UiActionBar`, `UiSheet`,
+`showUiConfirm`, `showUiToast`, `UiSpinner`, `UiDeferredProgress`, `UiContentWidth`.
+
+All tappable widgets build on `UiPressable`: hover tint, press tint, Enter/Space activation, pointer
+cursor, button semantics, and a 2px orange focus ring in keyboard mode only.
 
 ## Motion
 
-Material defaults only (page transitions, ripples, sheet slide). No decorative or looping animation.
-Any new animation follows the VectorLab `motion` and `reduced-motion` skills.
+120 ms for hover/press/toggles, 200 ms for disclosure and chevrons, ease-out cubic; everything goes
+through `UiMotion.of`, which returns zero when the platform asks to reduce motion. No ripples.
 
 ## Icons
 
-Material Icons (`Icons.*`, prefer `_outlined`). No other icon sets, no emoji.
+Lucide, weight 300, through `UiIcons` only. No Material icons, no emoji.
 
 ---
 
-## Rejected from the generated output
+## Rejected
 
-| Generated | Why rejected |
-|-----------|--------------|
-| Page pattern «Trust & Authority + Conversion» | Landing-page pattern; this is a working tool. Page patterns come from VectorLab `page-patterns` |
-| Accent/CTA green `#059669` | Collides with the «passed» status; actions use `primary` |
-| Poppins + Open Sans | Poppins has no Cyrillic; replaced by IBM Plex Sans from the follow-up typography search |
-| Card shadows `--shadow-md/lg`, hover lift | Borders first per `.ux-profile.md` |
-| Modal `backdrop-filter: blur` | Banned in `.ux-profile.md` |
-| GSAP scroll reveal | Web-only library; not applicable to Flutter |
-| CSS component specs, `cursor: pointer` | Web CSS; Flutter widgets and Material theme cover these |
+| Option | Why rejected |
+|--------|--------------|
+| Direction B «Приборная панель» (graphite, Manrope + JetBrains Mono) | Dark-first default does not suit every user |
+| Direction C «Ясный» (Onest, soft shadows, pill buttons) | Closest to generic apps, little own identity |
+| Generated «Data-Dense Dashboard», amber CTA, Fira Code / Fira Sans | Amber collides with the warning status; Plex already bundled and has Cyrillic |
+| Material ripples, FAB, NavigationRail, filled M3 inputs | Replaced by own widgets so the look is consistent on web and phones |
+| Card shadows, glassmorphism, gradients | Borders first; banned in `.ux-profile.md` |

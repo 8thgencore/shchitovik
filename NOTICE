@@ -7,6 +7,11 @@ sizzle_starter (https://github.com/hawkkiller/sizzle_starter),
 Copyright Michael Lazebny, licensed under the Apache License, Version 2.0
 (http://www.apache.org/licenses/LICENSE-2.0). Files have been modified.
 
-The interface font IBM Plex Sans (app/assets/fonts/IBMPlexSans-*.ttf),
-Copyright © 2017 IBM Corp. with Reserved Font Name "Plex", is licensed under
-the SIL Open Font License, Version 1.1 (app/assets/fonts/IBMPlexSans-OFL.txt).
+The interface fonts IBM Plex Sans and IBM Plex Mono
+(common/common_ui/assets/fonts/IBMPlex*.ttf), Copyright © 2017 IBM Corp. with
+Reserved Font Name "Plex", are licensed under the SIL Open Font License,
+Version 1.1 (common/common_ui/assets/fonts/IBMPlexSans-OFL.txt,
+IBMPlexMono-OFL.txt).
+
+Icons come from Lucide (https://lucide.dev) via the lucide_icons_flutter
+package, licensed under the ISC License.

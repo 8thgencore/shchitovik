@@ -24,8 +24,6 @@ dependencies:
   # Storage
   shared_preferences: ^2.5.6
 
-  # UI
-  cupertino_icons: ^2.0.0
 
   # Files, sharing, printing
   printing: ^5.15.1
@@ -57,6 +55,8 @@ dependencies:
     path: ../common/common_error_reporter
   common_utils:
     path: ../common/common_utils
+  common_ui:
+    path: ../common/common_ui
 
   # Engine
   electrical_core:
@@ -89,14 +89,3 @@ flutter:
     - assets/fonts/NotoSans-Regular.ttf
     - assets/fonts/NotoSans-Bold.ttf
     - assets/fonts/OFL.txt
-    # IBM Plex Sans (SIL OFL 1.1, see IBMPlexSans-OFL.txt): interface font.
-    - assets/fonts/IBMPlexSans-OFL.txt
-
-  fonts:
-    - family: IBMPlexSans
-      fonts:
-        - asset: assets/fonts/IBMPlexSans-Regular.ttf
-        - asset: assets/fonts/IBMPlexSans-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/IBMPlexSans-SemiBold.ttf
-          weight: 600
