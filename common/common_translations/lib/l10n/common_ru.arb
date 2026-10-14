@@ -367,5 +367,29 @@
         "type": "String"
       }
     }
-  }
+  },
+  "projectsAll": "Все проекты",
+  "columnNumber": "№",
+  "columnCircuit": "Линия",
+  "columnProtection": "Защита",
+  "columnCable": "Кабель, мм²",
+  "columnLength": "Длина, м",
+  "columnCurrent": "Ток, А",
+  "columnPhase": "Фаза",
+  "settingsOpen": "Открыть настройки",
+  "stepGoRooms": "Перейти к помещениям",
+  "stepGoCircuits": "Перейти к линиям",
+  "stepGoEstimate": "Перейти к смете",
+  "projectNotFoundHint": "Возможно, его удалили. Откройте список и выберите другой проект.",
+  "projectsSearch": "Поиск проекта",
+  "projectsNotFound": "Нет проектов по запросу «{query}»",
+  "@projectsNotFound": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "projectsSearchReset": "Сбросить поиск",
+  "projectsSorted": "Сначала недавно изменённые"
 }

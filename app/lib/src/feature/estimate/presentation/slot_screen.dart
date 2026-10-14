@@ -1,4 +1,5 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:estimate_core/estimate_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,9 @@ class SlotScreen extends StatelessWidget {
     final state = context.watch<ProjectBloc>().state as ProjectReady;
     final line = state.estimate.lines.where((l) => l.id == slotId).firstOrNull;
     final requirement = line?.requirement;
-    if (line == null || requirement == null) return Center(child: Text(t.estimateNoModels));
+    if (line == null || requirement == null) {
+      return UiEmptyState(icon: UiIcons.estimate, title: t.estimateNoModels, message: '');
+    }
     final selection = state.document.estimate.selections[slotId];
     final candidates = compatibleProducts(requirement, state.catalog);
 
@@ -33,63 +36,77 @@ class SlotScreen extends StatelessWidget {
       });
     }
 
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 24),
+    return PageBody(
+      maxWidth: 840,
       children: [
-        ListTile(
-          title: Text(line.title, style: Theme.of(context).textTheme.titleMedium),
-          subtitle: Text(t.estimateRequirement(requirement.label)),
-        ),
-        ListTile(
-          leading: Icon(selection == null ? Icons.radio_button_checked : Icons.radio_button_off),
-          title: Text(t.estimateResetSelection),
-          subtitle: Text(line.source == PriceSource.automatic ? line.description : ''),
-          onTap: () {
-            select(null);
-            context.pop();
-          },
-        ),
-        if (selection != null)
-          DecimalField(
-            value: selection.customPrice == null
-                ? null
-                : selection.customPrice!.typicalKopecks / 100,
-            label: t.estimateCustomPrice,
-            onChanged: (v) => select(
-              ApparatusSelection(
-                product: selection.product,
-                catalogVersion: selection.catalogVersion,
-                customPrice: v == null ? null : PriceRange.exact((v * 100).round()),
+        UiCard(
+          eyebrow: t.estimateRequirement(requirement.label),
+          title: line.title,
+          child: UiDivided(
+            topBorder: true,
+            children: [
+              UiChoiceRow(
+                title: t.estimateResetSelection,
+                subtitle: line.source == PriceSource.automatic ? line.description : null,
+                selected: selection == null,
+                onTap: () {
+                  select(null);
+                  context.pop();
+                },
               ),
-            ),
-          ),
-        SectionTitle(t.estimatePickModel),
-        if (candidates.isEmpty) ListTile(title: Text(t.estimateNoModels)),
-        for (final c in candidates)
-          ListTile(
-            leading: Icon(
-              selection?.product.id == c.product.id
-                  ? Icons.radio_button_checked
-                  : Icons.radio_button_off,
-            ),
-            title: Text(
-              '${state.catalog.manufacturers[c.product.manufacturerId]?.name ?? ''} ${c.product.series}',
-            ),
-            subtitle: Text(
-              '${c.compatibility.status == CompatibilityStatus.exact ? t.compatibilityExact : t.compatibilityDifferences}'
-              '${c.compatibility.reasons.isEmpty ? '' : ': ${c.compatibility.reasons.map((r) => r.message).join(', ')}'}',
-            ),
-            trailing: Text(formatRubles(c.product.price.typicalKopecks)),
-            onTap: () {
-              select(
-                ApparatusSelection(
-                  product: c.product,
-                  catalogVersion: state.catalog.catalogVersion,
+              if (selection != null)
+                Padding(
+                  padding: const EdgeInsets.all(UiSpace.l),
+                  child: DecimalField(
+                    value: selection.customPrice == null
+                        ? null
+                        : selection.customPrice!.typicalKopecks / 100,
+                    label: t.estimateCustomPrice,
+                    onChanged: (v) => select(
+                      ApparatusSelection(
+                        product: selection.product,
+                        catalogVersion: selection.catalogVersion,
+                        customPrice: v == null ? null : PriceRange.exact((v * 100).round()),
+                      ),
+                    ),
+                  ),
                 ),
-              );
-              context.pop();
-            },
+            ],
           ),
+        ),
+        UiCard(
+          title: t.estimatePickModel,
+          child: candidates.isEmpty
+              ? UiEmptyState(
+                  standalone: false,
+                  title: t.estimateNoModels,
+                  message: t.estimateRequirement(requirement.label),
+                )
+              : UiDivided(
+                  topBorder: true,
+                  children: [
+                    for (final c in candidates)
+                      UiChoiceRow(
+                        selected: selection?.product.id == c.product.id,
+                        title:
+                            '${state.catalog.manufacturers[c.product.manufacturerId]?.name ?? ''} ${c.product.series}',
+                        subtitle:
+                            '${c.compatibility.status == CompatibilityStatus.exact ? t.compatibilityExact : t.compatibilityDifferences}'
+                            '${c.compatibility.reasons.isEmpty ? '' : ': ${c.compatibility.reasons.map((r) => r.message).join(', ')}'}',
+                        trailing: Text(formatRubles(c.product.price.typicalKopecks)),
+                        onTap: () {
+                          select(
+                            ApparatusSelection(
+                              product: c.product,
+                              catalogVersion: state.catalog.catalogVersion,
+                            ),
+                          );
+                          context.pop();
+                        },
+                      ),
+                  ],
+                ),
+        ),
       ],
     );
   }

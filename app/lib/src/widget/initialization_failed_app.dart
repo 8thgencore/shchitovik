@@ -1,3 +1,4 @@
+import 'package:common_ui/common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -46,59 +47,34 @@ class _InitializationFailedAppState extends State<InitializationFailedApp> {
 
   @override
   Widget build(BuildContext context) => MaterialApp(
+    theme: UiTheme.light,
+    darkTheme: UiTheme.dark,
     home: Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: Builder(
-              builder: (context) {
-                final typography = Theme.of(context).textTheme;
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Не удалось запустить приложение',
-                      style: typography.titleLarge,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Сохранённые проекты не затронуты. Повторите запуск; если ошибка '
-                      'повторится, скопируйте подробности и отправьте их разработчику.',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        if (widget.onRetryInitialization != null)
-                          ValueListenableBuilder<bool>(
-                            valueListenable: _inProgress,
-                            builder: (context, inProgress, _) => FilledButton.icon(
-                              onPressed: inProgress ? null : _retryInitialization,
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Повторить запуск'),
-                            ),
-                          ),
-                        OutlinedButton.icon(
-                          onPressed: () => Clipboard.setData(
-                            ClipboardData(text: '${widget.error}\n${widget.stackTrace}'),
-                          ),
-                          icon: const Icon(Icons.copy_outlined),
-                          label: const Text('Скопировать подробности'),
-                        ),
-                      ],
-                    ),
-                  ],
-                );
-              },
+      body: UiEmptyState(
+        icon: UiIcons.danger,
+        title: 'Не удалось запустить приложение',
+        message:
+            'Сохранённые проекты не затронуты. Повторите запуск; если ошибка '
+            'повторится, скопируйте подробности и отправьте их разработчику.',
+        actions: [
+          if (widget.onRetryInitialization != null)
+            ValueListenableBuilder<bool>(
+              valueListenable: _inProgress,
+              builder: (context, inProgress, _) => UiButton(
+                label: 'Повторить запуск',
+                icon: UiIcons.retry,
+                busy: inProgress,
+                onPressed: _retryInitialization,
+              ),
+            ),
+          UiButton.secondary(
+            label: 'Скопировать подробности',
+            icon: UiIcons.copy,
+            onPressed: () => Clipboard.setData(
+              ClipboardData(text: '${widget.error}\n${widget.stackTrace}'),
             ),
           ),
-        ),
+        ],
       ),
     ),
   );
