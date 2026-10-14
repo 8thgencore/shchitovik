@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// element, three status colours.
 ///
 /// Widgets take colours only from these roles (`context.uiColors`), never raw values.
-/// Contrast is checked in `design-system/shchitovik/MASTER.md`.
+/// Pairs meet WCAG 2.1 AA contrast in both themes.
 @immutable
 final class UiColors extends ThemeExtension<UiColors> {
   const UiColors({
