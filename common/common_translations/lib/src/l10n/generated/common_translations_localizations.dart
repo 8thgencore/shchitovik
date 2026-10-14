@@ -1344,6 +1344,108 @@ abstract class CommonTranslationsLocalizations {
   /// In ru, this message translates to:
   /// **'Укажите значение от {min} до {max}'**
   String fieldRange(String min, String max);
+
+  /// No description provided for @projectsAll.
+  ///
+  /// In ru, this message translates to:
+  /// **'Все проекты'**
+  String get projectsAll;
+
+  /// No description provided for @columnNumber.
+  ///
+  /// In ru, this message translates to:
+  /// **'№'**
+  String get columnNumber;
+
+  /// No description provided for @columnCircuit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Линия'**
+  String get columnCircuit;
+
+  /// No description provided for @columnProtection.
+  ///
+  /// In ru, this message translates to:
+  /// **'Защита'**
+  String get columnProtection;
+
+  /// No description provided for @columnCable.
+  ///
+  /// In ru, this message translates to:
+  /// **'Кабель, мм²'**
+  String get columnCable;
+
+  /// No description provided for @columnLength.
+  ///
+  /// In ru, this message translates to:
+  /// **'Длина, м'**
+  String get columnLength;
+
+  /// No description provided for @columnCurrent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ток, А'**
+  String get columnCurrent;
+
+  /// No description provided for @columnPhase.
+  ///
+  /// In ru, this message translates to:
+  /// **'Фаза'**
+  String get columnPhase;
+
+  /// No description provided for @settingsOpen.
+  ///
+  /// In ru, this message translates to:
+  /// **'Открыть настройки'**
+  String get settingsOpen;
+
+  /// No description provided for @stepGoRooms.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перейти к помещениям'**
+  String get stepGoRooms;
+
+  /// No description provided for @stepGoCircuits.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перейти к линиям'**
+  String get stepGoCircuits;
+
+  /// No description provided for @stepGoEstimate.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перейти к смете'**
+  String get stepGoEstimate;
+
+  /// No description provided for @projectNotFoundHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Возможно, его удалили. Откройте список и выберите другой проект.'**
+  String get projectNotFoundHint;
+
+  /// No description provided for @projectsSearch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Поиск проекта'**
+  String get projectsSearch;
+
+  /// No description provided for @projectsNotFound.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нет проектов по запросу «{query}»'**
+  String projectsNotFound(String query);
+
+  /// No description provided for @projectsSearchReset.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сбросить поиск'**
+  String get projectsSearchReset;
+
+  /// No description provided for @projectsSorted.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сначала недавно изменённые'**
+  String get projectsSorted;
 }
 
 class _CommonTranslationsLocalizationsDelegate

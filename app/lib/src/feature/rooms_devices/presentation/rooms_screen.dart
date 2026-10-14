@@ -1,4 +1,5 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,7 +10,7 @@ import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/feature/rooms_devices/presentation/device_editor_sheet.dart';
 import 'package:shchitovik/src/feature/rooms_devices/presentation/pickers.dart';
-import 'package:shchitovik/src/widget/confirm_delete.dart';
+import 'package:shchitovik/src/widget/form_fields.dart';
 import 'package:uuid/uuid.dart';
 
 const _uuid = Uuid();
@@ -52,31 +53,53 @@ class RoomsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.translations;
     final input = (context.watch<ProjectBloc>().state as ProjectReady).document.input;
-    return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'add-room',
-        onPressed: () => _addRoom(context),
-        icon: const Icon(Icons.add),
-        label: Text(t.roomsAdd),
-      ),
-      body: input.rooms.isEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(t.roomsEmptyTitle, style: Theme.of(context).textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    Text(t.roomsEmpty, textAlign: TextAlign.center),
-                  ],
-                ),
-              ),
-            )
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 88),
-              children: [for (final room in input.rooms) _RoomCard(room: room, input: input)],
-            ),
+    if (input.rooms.isEmpty) {
+      return UiEmptyState(
+        icon: UiIcons.rooms,
+        title: t.roomsEmptyTitle,
+        message: t.roomsEmpty,
+        actions: [
+          UiButton(label: t.roomsAdd, icon: UiIcons.add, onPressed: () => _addRoom(context)),
+        ],
+      );
+    }
+    final cards = [for (final room in input.rooms) _RoomCard(room: room, input: input)];
+    return PageBody(
+      children: [
+        UiSectionHeader(
+          t.tabRooms,
+          description: t.stepRoomsSummary(input.rooms.length, input.devices.length),
+          trailing: UiButton.secondary(
+            label: t.roomsAdd,
+            icon: UiIcons.add,
+            onPressed: () => _addRoom(context),
+          ),
+        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final columns = constraints.maxWidth >= UiBreakpoints.twoColumns ? 2 : 1;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var col = 0; col < columns; col++) ...[
+                  if (col > 0) const SizedBox(width: UiSpace.l),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var i = col; i < cards.length; i += columns) ...[
+                          if (i >= columns) const SizedBox(height: UiSpace.l),
+                          cards[i],
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }
@@ -122,11 +145,12 @@ class _RoomCard extends StatelessWidget {
 
   Future<void> _delete(BuildContext context) async {
     final t = context.translations;
-    final confirmed = await confirmDelete(
+    final confirmed = await showUiConfirm(
       context,
       title: t.roomDeleteTitle(room.name),
       message: t.roomDeleteMessage,
       confirmLabel: t.roomDeleteConfirm,
+      cancelLabel: t.cancel,
     );
     if (!confirmed || !context.mounted) return;
     ProjectScope.edit(
@@ -151,39 +175,56 @@ class _RoomCard extends StatelessWidget {
     final t = context.translations;
     final devices = input.devices.where((d) => d.roomId == room.id).toList();
     final total = devices.fold<int>(0, (s, d) => s + d.totalPowerW);
-    return Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    return UiCard(
+      eyebrow: roomKindLabel(context, room.kind),
+      title: room.name,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ListTile(
-            title: Text(room.name, style: Theme.of(context).textTheme.titleMedium),
-            subtitle: Text('${formatNumber(total / 1000, 2)} кВт'),
-            trailing: PopupMenuButton<int>(
-              onSelected: (v) => v == 0 ? _rename(context) : _delete(context),
-              itemBuilder: (_) => [
-                PopupMenuItem(value: 0, child: Text(t.roomRename)),
-                PopupMenuItem(value: 1, child: Text(t.roomDeleteConfirm)),
-              ],
-            ),
+          Text(
+            '${formatNumber(total / 1000, 2)} кВт',
+            style: UiTextStyles.valueStrong.copyWith(color: context.uiColors.text),
           ),
+          UiMenuButton(
+            tooltip: t.moreActions,
+            entries: [
+              UiMenuEntry(
+                label: t.roomRename,
+                icon: UiIcons.edit,
+                onPressed: () => _rename(context),
+              ),
+              UiMenuEntry(
+                label: t.roomDeleteConfirm,
+                icon: UiIcons.delete,
+                destructive: true,
+                onPressed: () => _delete(context),
+              ),
+            ],
+          ),
+        ],
+      ),
+      child: UiDivided(
+        topBorder: true,
+        children: [
           for (final d in devices)
-            ListTile(
+            UiListRow(
               dense: true,
-              title: Text(d.name),
-              subtitle: Text(
-                '${d.quantity > 1 ? '${d.quantity} × ' : ''}${formatNumber(d.powerW / 1000, 2)} кВт'
-                '${d.phases == 3 ? ' · 3ф' : ''}',
+              title: d.name,
+              subtitle: d.phases == 3 ? '3ф' : null,
+              trailing: Text(
+                '${d.quantity > 1 ? '${d.quantity} × ' : ''}${formatNumber(d.powerW / 1000, 2)} кВт',
               ),
               onTap: () => DeviceEditorSheet.show(context, deviceId: d.id),
             ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-              child: TextButton.icon(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: UiSpace.xs, vertical: UiSpace.xs),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: UiButton.ghost(
+                label: t.devicesAdd,
+                icon: UiIcons.add,
+                small: true,
                 onPressed: () => _addDevice(context),
-                icon: const Icon(Icons.add),
-                label: Text(t.devicesAdd),
               ),
             ),
           ),

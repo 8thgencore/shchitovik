@@ -676,4 +676,58 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String fieldRange(String min, String max) {
     return 'Укажите значение от $min до $max';
   }
+
+  @override
+  String get projectsAll => 'Все проекты';
+
+  @override
+  String get columnNumber => '№';
+
+  @override
+  String get columnCircuit => 'Линия';
+
+  @override
+  String get columnProtection => 'Защита';
+
+  @override
+  String get columnCable => 'Кабель, мм²';
+
+  @override
+  String get columnLength => 'Длина, м';
+
+  @override
+  String get columnCurrent => 'Ток, А';
+
+  @override
+  String get columnPhase => 'Фаза';
+
+  @override
+  String get settingsOpen => 'Открыть настройки';
+
+  @override
+  String get stepGoRooms => 'Перейти к помещениям';
+
+  @override
+  String get stepGoCircuits => 'Перейти к линиям';
+
+  @override
+  String get stepGoEstimate => 'Перейти к смете';
+
+  @override
+  String get projectNotFoundHint =>
+      'Возможно, его удалили. Откройте список и выберите другой проект.';
+
+  @override
+  String get projectsSearch => 'Поиск проекта';
+
+  @override
+  String projectsNotFound(String query) {
+    return 'Нет проектов по запросу «$query»';
+  }
+
+  @override
+  String get projectsSearchReset => 'Сбросить поиск';
+
+  @override
+  String get projectsSorted => 'Сначала недавно изменённые';
 }
