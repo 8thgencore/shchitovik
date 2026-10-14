@@ -8,6 +8,7 @@ Flutter workspace of «Щитовик» — switchboard calculator (Android, iOS
   - `electrical_core` — currents, circuits, protection, phases, cables, fault loop, demand.
   - `estimate_core` — apparatus selection, compatibility, estimate.
   - `norms_data` — normative tables and catalogs (JSON with `source` for every table).
+  - `report_pdf` — PDF report of a project.
 
 Plan, decisions and what is left: [docs/PLAN.md](docs/PLAN.md). Publishing waits for the manual part of
 [verification/VERIFICATION.md](verification/VERIFICATION.md).
@@ -60,12 +61,3 @@ selections are stored; everything else is recomputed by `engine` deterministical
 ## Documentation
 
 - Write dartdoc comments for public APIs, starting with a one-sentence summary.
-
-## UI/UX skills
-
-Taste, a11y, bans, voice, and icon library for this project live in `.ux-profile.md`.
-Run `setup-ui-ux-skills` again only to change those defaults.
-Before UI or microcopy work, read `.ux-profile.md`, then the matching domain skill (page-patterns, viewports, forms, surfaces, loaders, empty-states, copy, motion).
-Before creating a new page, read `page-patterns` and name the pattern. Do not write page markup until the pattern is named.
-Layouts must pass `viewports` at 375px and 1280px.
-Before finishing UI, run `ux-audit`.
