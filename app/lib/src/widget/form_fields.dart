@@ -1,4 +1,5 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
@@ -7,24 +8,6 @@ import 'package:shchitovik/src/feature/settings/presentation/settings_scope.dart
 /// Whether the expert interface mode is on.
 bool isExpertMode(BuildContext context) =>
     SettingsScope.of(context).general.interfaceMode == InterfaceModeVO.expert;
-
-/// Section title inside a form.
-class SectionTitle extends StatelessWidget {
-  const SectionTitle(this.text, {super.key});
-
-  /// Title.
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-    child: Text(
-      text,
-      style: Theme.of(context).textTheme.titleSmall
-          ?.copyWith(color: Theme.of(context).colorScheme.primary),
-    ),
-  );
-}
 
 /// Text field that reports its value when editing is finished (enter or focus loss),
 /// so that every keystroke does not trigger a recalculation.
@@ -37,7 +20,7 @@ class CommitTextField extends StatefulWidget {
     required this.label,
     required this.onCommitted,
     this.hint,
-    this.keyboardType,
+    this.numeric = false,
     this.validator,
     super.key,
   });
@@ -51,8 +34,8 @@ class CommitTextField extends StatefulWidget {
   /// Helper text.
   final String? hint;
 
-  /// Keyboard.
-  final TextInputType? keyboardType;
+  /// Mono digits and a decimal keyboard.
+  final bool numeric;
 
   /// Called with the edited text when it differs from [value] and passes [validator].
   final ValueChanged<String> onCommitted;
@@ -99,24 +82,17 @@ class _CommitTextFieldState extends State<CommitTextField> {
   }
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: TextField(
-      controller: _controller,
-      focusNode: _focus,
-      keyboardType: widget.keyboardType,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        helperText: widget.hint,
-        helperMaxLines: 3,
-        errorText: _error,
-        errorMaxLines: 3,
-      ),
-      onChanged: (_) {
-        if (_error != null) setState(() => _error = null);
-      },
-      onSubmitted: (_) => _commit(),
-    ),
+  Widget build(BuildContext context) => UiTextField(
+    controller: _controller,
+    focusNode: _focus,
+    label: widget.label,
+    help: widget.hint,
+    error: _error,
+    numeric: widget.numeric,
+    onChanged: (_) {
+      if (_error != null) setState(() => _error = null);
+    },
+    onSubmitted: (_) => _commit(),
   );
 }
 
@@ -155,57 +131,13 @@ class DecimalField extends StatelessWidget {
     value: value == null ? '' : formatNumber(value, digits),
     label: label,
     hint: hint,
-    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+    numeric: true,
     validator: (text) {
       final parsed = parseDecimal(text);
       if (text.trim().isNotEmpty && parsed == null) return context.translations.fieldNumber;
       return validator?.call(parsed);
     },
     onCommitted: (text) => onChanged(parseDecimal(text)),
-  );
-}
-
-/// Dropdown bound to a value.
-class ChoiceField<T> extends StatelessWidget {
-  const ChoiceField({
-    required this.label,
-    required this.value,
-    required this.options,
-    required this.onChanged,
-    super.key,
-  });
-
-  /// Label.
-  final String label;
-
-  /// Selected value.
-  final T value;
-
-  /// Options with labels.
-  final List<(T, String)> options;
-
-  /// Selection callback.
-  final ValueChanged<T> onChanged;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    child: DropdownButtonFormField<T>(
-      initialValue: value,
-      key: ValueKey(value),
-      isExpanded: true,
-      decoration: InputDecoration(labelText: label),
-      items: [
-        for (final (v, text) in options)
-          DropdownMenuItem(
-            value: v,
-            child: Text(text, overflow: TextOverflow.ellipsis),
-          ),
-      ],
-      onChanged: (v) {
-        if (v != null || null is T) onChanged(v as T);
-      },
-    ),
   );
 }
 
@@ -237,4 +169,40 @@ extension FieldValidators on BuildContext {
 
   /// The text is not blank.
   String? notBlank(String text) => text.trim().isEmpty ? translations.fieldRequired : null;
+}
+
+/// Scrollable page body: content capped at [maxWidth] with the screen gutter.
+class PageBody extends StatelessWidget {
+  const PageBody({required this.children, this.maxWidth, this.bottomInset = 0, super.key});
+
+  /// Blocks of the page, separated by the section gap.
+  final List<Widget> children;
+
+  /// Content width cap; defaults to the full content width.
+  final double? maxWidth;
+
+  /// Extra space at the bottom (above a floating action).
+  final double bottomInset;
+
+  @override
+  Widget build(BuildContext context) {
+    final gutter = context.isExpandedLayout ? UiSpace.xl : UiSpace.l;
+    return ListView(
+      padding: EdgeInsets.fromLTRB(gutter, gutter, gutter, UiSpace.xxl + bottomInset),
+      children: [
+        UiContentWidth(
+          maxWidth: maxWidth ?? UiBreakpoints.contentMax,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < children.length; i++) ...[
+                if (i > 0) const SizedBox(height: UiSpace.l),
+                children[i],
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }

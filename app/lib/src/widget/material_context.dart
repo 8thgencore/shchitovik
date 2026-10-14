@@ -1,10 +1,10 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
 import 'package:shchitovik/src/feature/settings/presentation/settings_scope.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
-import 'package:shchitovik/src/widget/app_theme.dart';
 import 'package:shchitovik/src/widget/media_query_override.dart';
 
 /// Entry point for the application that uses [MaterialApp].
@@ -44,8 +44,8 @@ class _MaterialContextState extends State<MaterialContext> {
       onGenerateTitle: (context) => context.translations.appTitle,
       localizationsDelegates: CommonTranslations.localizationsDelegates,
       supportedLocales: CommonTranslations.supportedLocales,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: UiTheme.light,
+      darkTheme: UiTheme.dark,
       themeMode: materialThemeMode,
       locale: locale,
       routerConfig: _router,

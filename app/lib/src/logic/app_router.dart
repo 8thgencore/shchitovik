@@ -1,3 +1,5 @@
+import 'package:common_ui/common_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/circuit_screen.dart';
@@ -17,6 +19,9 @@ abstract final class AppRoutes {
 
   /// Application settings.
   static const settings = '/settings';
+
+  /// Showcase of the design system; debug builds only.
+  static const uiGallery = '/dev/ui';
 
   /// Project tabs.
   static String projectSetup(String id) => '/projects/$id/setup';
@@ -45,6 +50,11 @@ GoRouter createAppRouter() => GoRouter(
   routes: [
     GoRoute(path: AppRoutes.projects, builder: (context, state) => const ProjectsScreen()),
     GoRoute(path: AppRoutes.settings, builder: (context, state) => const SettingsScreen()),
+    if (kDebugMode)
+      GoRoute(
+        path: AppRoutes.uiGallery,
+        builder: (context, state) => UiGallery(onBack: () => context.go(AppRoutes.settings)),
+      ),
     GoRoute(
       path: '/projects/:id',
       redirect: (context, state) => AppRoutes.projectCircuits(state.pathParameters['id']!),

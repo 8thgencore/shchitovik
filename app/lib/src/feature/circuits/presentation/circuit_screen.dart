@@ -1,4 +1,5 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +22,9 @@ class CircuitScreen extends StatelessWidget {
     final t = context.translations;
     final state = context.watch<ProjectBloc>().state as ProjectReady;
     final circuit = state.result.circuits.where((c) => c.id == circuitId).firstOrNull;
-    if (circuit == null) return Center(child: Text(t.circuitsEmpty));
+    if (circuit == null) {
+      return UiEmptyState(icon: UiIcons.circuits, title: t.circuitsEmpty, message: '');
+    }
     final input = state.document.input;
     final settings = input.circuitSettings[circuitId] ?? const CircuitSettings();
     final expert = isExpertMode(context);
@@ -55,48 +58,103 @@ class CircuitScreen extends StatelessWidget {
       ('cos φ', formatNumber(circuit.cosPhi, 2)),
     ];
 
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 24),
-      children: [
-        ListTile(
-          leading: StatusIcon(circuit.status),
-          title: Text(
-            '${circuit.number}. ${circuit.name}',
-            style: Theme.of(context).textTheme.titleMedium,
+    final header = UiCard(
+      eyebrow: '${t.columnCircuit} №${circuit.number}',
+      title: circuit.name,
+      trailing: StatusBadge(circuit.status),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(UiSpace.l, 0, UiSpace.l, UiSpace.m),
+            child: Text(
+              circuit.protection.description,
+              style: UiTextStyles.bodySmall.copyWith(color: context.uiColors.textMuted),
+            ),
           ),
-          subtitle: Text('${circuit.protection.description} · ${circuit.status.label}'),
-        ),
-        SectionTitle(t.circuitDevices),
-        for (final d in devices)
-          ListTile(
-            dense: true,
-            title: Text(d.name),
-            trailing: Text('${formatNumber(d.totalPowerW / 1000, 2)} кВт'),
+          UiMetricGrid(
+            metrics: [
+              UiMetric(
+                symbol: true,
+                label: 'IB',
+                value: formatNumber(circuit.designCurrentA, 2),
+                unit: 'А',
+              ),
+              UiMetric(symbol: true, label: 'In', value: circuit.protection.label),
+              UiMetric(symbol: true, label: 'Iz', value: formatNumber(cable.ampacityA), unit: 'А'),
+              UiMetric(
+                symbol: true,
+                label: 'ΔU',
+                value: formatNumber(cable.voltageDropPercent, 2),
+                unit: '%',
+                emphasis: (cable.voltageDropPercent ?? 0) > cable.voltageDropLimitPercent
+                    ? context.uiColors.danger
+                    : null,
+              ),
+            ],
           ),
-        SectionTitle(t.circuitValues),
-        for (final (label, value) in values)
-          ListTile(dense: true, title: Text(label), trailing: Text(value)),
-        SectionTitle(t.circuitChecks),
-        for (final check in circuit.allChecks)
-          ListTile(
-            dense: true,
-            leading: CheckStatusIcon(check.status),
-            title: Text(check.message),
-            subtitle: check.reference == null ? null : Text(check.reference!),
-          ),
-        if (circuit.protection.rcd != null) ...[
-          SectionTitle(t.circuitRcdReasons),
-          for (final reason in circuit.protection.rcd!.reasons)
-            ListTile(dense: true, title: Text(reason)),
         ],
-        SectionTitle(t.circuitSettings),
+      ),
+    );
+
+    final checks = UiCard(
+      title: t.circuitChecks,
+      child: UiDivided(
+        topBorder: true,
+        children: [
+          for (final check in circuit.allChecks)
+            UiListRow(
+              dense: true,
+              leading: CheckStatusIcon(check.status),
+              title: check.message,
+              subtitle: check.reference,
+            ),
+        ],
+      ),
+    );
+
+    final valuesCard = UiCard(
+      title: t.circuitValues,
+      child: UiKeyValueList(entries: values),
+    );
+
+    final devicesCard = UiCard(
+      title: t.circuitDevices,
+      child: UiKeyValueList(
+        entries: [
+          for (final d in devices) (d.name, '${formatNumber(d.totalPowerW / 1000, 2)} кВт'),
+        ],
+      ),
+    );
+
+    final rcd = circuit.protection.rcd;
+    final rcdCard = rcd == null
+        ? null
+        : UiCard(
+            title: t.circuitRcdReasons,
+            padding: const EdgeInsets.fromLTRB(UiSpace.l, 0, UiSpace.l, UiSpace.l),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final reason in rcd.reasons)
+                  Padding(
+                    padding: const EdgeInsets.only(top: UiSpace.s),
+                    child: UiNotice(message: reason),
+                  ),
+              ],
+            ),
+          );
+
+    final settingsCard = UiFieldGroup(
+      title: t.circuitSettings,
+      children: [
         DecimalField(
           value: settings.lengthM ?? input.cableDefaults.lengthM,
           label: t.circuitLength,
           digits: 1,
           onChanged: (v) => edit((s) => s.copyWith(lengthM: v)),
         ),
-        ChoiceField<String>(
+        UiSelect<String>(
           label: t.setupMethod,
           value: settings.installationMethodId ?? input.cableDefaults.installationMethodId,
           options: [for (final m in NormsData.embedded.installationMethods) (m.id, m.title)],
@@ -115,72 +173,132 @@ class CircuitScreen extends StatelessWidget {
             digits: 0,
             onChanged: (v) => edit((s) => s.copyWith(groupedCircuits: v?.round())),
           ),
-          SectionTitle(t.circuitExpert),
-          ChoiceField<double?>(
-            label: t.circuitSection,
-            value: settings.sectionMm2,
-            options: [
-              (null, '${t.auto} (${formatNumber(cable.sectionMm2)})'),
-              for (final s in NormsData.embedded.constants.standardSections.take(10))
-                (s, formatNumber(s)),
-            ],
-            onChanged: (v) => edit((s) => s.copyWith(sectionMm2: v)),
-          ),
-          ChoiceField<double?>(
-            label: t.circuitBreaker,
-            value: settings.breakerA,
-            options: [
-              (null, '${t.auto} (${formatNumber(circuit.protection.breakerA, 0)})'),
-              for (final r in NormsData.embedded.breakers.ratedCurrents) (r, formatNumber(r, 0)),
-            ],
-            onChanged: (v) => edit((s) => s.copyWith(breakerA: v)),
-          ),
-          ChoiceField<BreakerCurve?>(
-            label: t.circuitCurve,
-            value: settings.curve,
-            options: [
-              (null, '${t.auto} (${circuit.protection.curve.name.toUpperCase()})'),
-              for (final c in BreakerCurve.values) (c, c.name.toUpperCase()),
-            ],
-            onChanged: (v) => edit((s) => s.copyWith(curve: v)),
-          ),
-          ChoiceField<ProtectionDevice?>(
-            label: t.circuitProtection,
-            value: settings.protection,
-            options: [
-              (null, t.auto),
-              (ProtectionDevice.mcb, t.protectionMcb),
-              (ProtectionDevice.mcbAndRcd, t.protectionMcbRcd),
-              (ProtectionDevice.rcbo, t.protectionRcbo),
-              (ProtectionDevice.mcbUnderGroupRcd, t.protectionGroup),
-            ],
-            onChanged: (v) => edit((s) => s.copyWith(protection: v)),
-          ),
-          if (input.supplyPhases == SupplyPhases.three && circuit.phases == 1)
-            ChoiceField<Phase?>(
-              label: t.circuitPhase,
-              value: settings.phase,
-              options: [(null, t.auto), for (final p in Phase.values) (p, p.label)],
-              onChanged: (v) => edit((s) => s.copyWith(phase: v)),
-            ),
-          if (settings.hasManualOverride)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: OutlinedButton(
-                onPressed: () => edit(
-                  (s) => s.copyWith(
-                    sectionMm2: null,
-                    breakerA: null,
-                    curve: null,
-                    protection: null,
-                    phase: null,
-                  ),
-                ),
-                child: Text(t.circuitResetManual),
-              ),
-            ),
         ],
       ],
     );
+
+    final expertCard = !expert
+        ? null
+        : UiFieldGroup(
+            title: t.circuitExpert,
+            children: [
+              UiSelect<double?>(
+                label: t.circuitSection,
+                value: settings.sectionMm2,
+                options: [
+                  (null, '${t.auto} (${formatNumber(cable.sectionMm2)})'),
+                  for (final s in NormsData.embedded.constants.standardSections.take(10))
+                    (s, formatNumber(s)),
+                ],
+                onChanged: (v) => edit((s) => s.copyWith(sectionMm2: v)),
+              ),
+              UiSelect<double?>(
+                label: t.circuitBreaker,
+                value: settings.breakerA,
+                options: [
+                  (null, '${t.auto} (${formatNumber(circuit.protection.breakerA, 0)})'),
+                  for (final r in NormsData.embedded.breakers.ratedCurrents)
+                    (r, formatNumber(r, 0)),
+                ],
+                onChanged: (v) => edit((s) => s.copyWith(breakerA: v)),
+              ),
+              UiSelect<BreakerCurve?>(
+                label: t.circuitCurve,
+                value: settings.curve,
+                options: [
+                  (null, '${t.auto} (${circuit.protection.curve.name.toUpperCase()})'),
+                  for (final c in BreakerCurve.values) (c, c.name.toUpperCase()),
+                ],
+                onChanged: (v) => edit((s) => s.copyWith(curve: v)),
+              ),
+              UiSelect<ProtectionDevice?>(
+                label: t.circuitProtection,
+                value: settings.protection,
+                options: [
+                  (null, t.auto),
+                  (ProtectionDevice.mcb, t.protectionMcb),
+                  (ProtectionDevice.mcbAndRcd, t.protectionMcbRcd),
+                  (ProtectionDevice.rcbo, t.protectionRcbo),
+                  (ProtectionDevice.mcbUnderGroupRcd, t.protectionGroup),
+                ],
+                onChanged: (v) => edit((s) => s.copyWith(protection: v)),
+              ),
+              if (input.supplyPhases == SupplyPhases.three && circuit.phases == 1)
+                UiSelect<Phase?>(
+                  label: t.circuitPhase,
+                  value: settings.phase,
+                  options: [(null, t.auto), for (final p in Phase.values) (p, p.label)],
+                  onChanged: (v) => edit((s) => s.copyWith(phase: v)),
+                ),
+              if (settings.hasManualOverride)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: UiButton.secondary(
+                    label: t.circuitResetManual,
+                    icon: UiIcons.reset,
+                    onPressed: () => edit(
+                      (s) => s.copyWith(
+                        sectionMm2: null,
+                        breakerA: null,
+                        curve: null,
+                        protection: null,
+                        phase: null,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          );
+
+    if (!context.isExpandedLayout) {
+      return PageBody(
+        children: [
+          header,
+          devicesCard,
+          valuesCard,
+          checks,
+          ?rcdCard,
+          settingsCard,
+          ?expertCard,
+        ],
+      );
+    }
+    return PageBody(
+      children: [
+        header,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: _Column(children: [checks, valuesCard, ?rcdCard]),
+            ),
+            const SizedBox(width: UiSpace.l),
+            Expanded(
+              flex: 2,
+              child: _Column(children: [devicesCard, settingsCard, ?expertCard]),
+            ),
+          ],
+        ),
+      ],
+    );
   }
+}
+
+/// Cards stacked with the section gap.
+class _Column extends StatelessWidget {
+  const _Column({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      for (var i = 0; i < children.length; i++) ...[
+        if (i > 0) const SizedBox(height: UiSpace.l),
+        children[i],
+      ],
+    ],
+  );
 }

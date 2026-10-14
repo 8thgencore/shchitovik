@@ -1,7 +1,7 @@
 import 'package:common_translations/common_translations.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shchitovik/src/widget/sheet_form.dart';
 
 /// Result of [CreateProjectSheet].
 typedef NewProjectParams = ({String name, ObjectType objectType, SupplyPhases supplyPhases});
@@ -12,7 +12,7 @@ class CreateProjectSheet extends StatefulWidget {
 
   /// Shows the sheet; `null` if cancelled.
   static Future<NewProjectParams?> show(BuildContext context) =>
-      SheetForm.show<NewProjectParams>(context, (_) => const CreateProjectSheet());
+      showUiSheet<NewProjectParams>(context, builder: (_) => const CreateProjectSheet());
 
   @override
   State<CreateProjectSheet> createState() => _CreateProjectSheetState();
@@ -40,42 +40,50 @@ class _CreateProjectSheetState extends State<CreateProjectSheet> {
   @override
   Widget build(BuildContext context) {
     final t = context.translations;
-    return SheetForm(
+    return UiSheet(
       title: t.createProjectTitle,
-      fields: [
-        TextField(
-          controller: _name,
-          autofocus: true,
-          decoration: InputDecoration(labelText: t.createProjectName),
-          onSubmitted: (_) => _submit(),
-        ),
-        const SizedBox(height: 16),
-        Text(t.objectTypeTitle, style: Theme.of(context).textTheme.labelLarge),
-        RadioGroup<ObjectType>(
-          groupValue: _objectType,
-          onChanged: (v) => setState(() => _objectType = v!),
-          child: Column(
-            children: [
-              for (final type in ObjectType.values)
-                RadioListTile<ObjectType>(value: type, title: Text(type.label), dense: true),
-            ],
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(t.supplyTitle, style: Theme.of(context).textTheme.labelLarge),
-        const SizedBox(height: 8),
-        SegmentedButton<SupplyPhases>(
-          segments: [
-            ButtonSegment(value: SupplyPhases.single, label: Text(t.supplySingle)),
-            ButtonSegment(value: SupplyPhases.three, label: Text(t.supplyThree)),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(UiSpace.xl, UiSpace.s, UiSpace.xl, UiSpace.xl),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            UiTextField(
+              controller: _name,
+              autofocus: true,
+              label: t.createProjectName,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: UiSpace.l),
+            UiFieldLabel(t.objectTypeTitle),
+            UiCard(
+              child: UiDivided(
+                children: [
+                  for (final type in ObjectType.values)
+                    UiChoiceRow(
+                      title: type.label,
+                      selected: type == _objectType,
+                      onTap: () => setState(() => _objectType = type),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: UiSpace.l),
+            UiSegmented<SupplyPhases>(
+              label: t.supplyTitle,
+              segments: [
+                UiSegment(value: SupplyPhases.single, label: t.supplySingle),
+                UiSegment(value: SupplyPhases.three, label: t.supplyThree),
+              ],
+              selected: _supply,
+              onChanged: (v) => setState(() => _supply = v),
+            ),
           ],
-          selected: {_supply},
-          onSelectionChanged: (s) => setState(() => _supply = s.single),
         ),
-      ],
+      ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(t.cancel)),
-        FilledButton(onPressed: _submit, child: Text(t.create)),
+        UiButton.secondary(label: t.cancel, onPressed: () => Navigator.of(context).pop()),
+        UiButton(label: t.create, icon: UiIcons.add, onPressed: _submit),
       ],
     );
   }

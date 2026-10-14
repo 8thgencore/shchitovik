@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:common_database/common_database.dart';
 import 'package:common_logger/common_logger.dart';
+import 'package:common_ui/common_ui.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,6 +50,20 @@ void main() {
     }
   }
 
+  /// Closes the database from the fake zone, pumping until it is done.
+  ///
+  /// Drift releases a cancelled stream query with a zero timer in the zone that created it;
+  /// a `close` awaited in the real zone would wait for that fake timer forever.
+  Future<void> closeDatabase(WidgetTester tester) async {
+    var closed = false;
+    unawaited(database.close().then((_) => closed = true));
+    for (var i = 0; i < 50 && !closed; i++) {
+      await tester.pump(const Duration(milliseconds: 10));
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 10)));
+    }
+    expect(closed, isTrue, reason: 'database did not close');
+  }
+
   testWidgets('demo project: list → circuits → circuit details → estimate', (tester) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.5;
@@ -63,24 +80,28 @@ void main() {
     await settle(tester);
     expect(find.text('Демо: 1-комнатная квартира'), findsOneWidget);
     expect(find.text('Ввод'), findsWidgets);
-    expect(find.textContaining('Рейка 1'), findsOneWidget);
+    expect(find.textContaining('РЕЙКА 1'), findsOneWidget);
+    expect(find.byType(UiListRow), findsNothing);
 
     await tester.tap(find.text('Список'));
     await settle(tester);
-    expect(find.textContaining('1. Освещение'), findsOneWidget);
+    expect(find.byType(UiListRow), findsWidgets);
 
-    await tester.tap(find.textContaining('1. Освещение'));
+    await tester.tap(find.textContaining('Освещение').first);
     await settle(tester);
     expect(find.text('Приборы'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Проверки'), 300);
+    final page = find
+        .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
+        .first;
+    await tester.scrollUntilVisible(find.text('Проверки'), 300, scrollable: page);
     expect(find.text('Проверки'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Параметры линии'), 300);
+    await tester.scrollUntilVisible(find.text('Параметры линии'), 300, scrollable: page);
     expect(find.text('Длина, м'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.arrow_back));
+    await tester.tap(find.byTooltip('Назад'));
     await settle(tester);
     // The «Список» choice is remembered in the settings.
-    expect(find.textContaining('1. Освещение'), findsOneWidget);
+    expect(find.byType(UiListRow), findsWidgets);
     await tester.tap(find.text('Смета').first);
     await settle(tester);
     expect(find.text('Итого'), findsOneWidget);
@@ -93,7 +114,7 @@ void main() {
     await settle(tester);
     expect(find.text('Название проекта'), findsOneWidget);
 
-    await tester.runAsync(database.close);
+    await closeDatabase(tester);
   });
 
   testWidgets('new project: create → add a room from a template → circuits appear', (tester) async {
@@ -135,10 +156,12 @@ void main() {
     );
     expect(find.textContaining('Варочная панель индукционная'), findsOneWidget);
 
-    await tester.runAsync(database.close);
+    await closeDatabase(tester);
   });
 
-  testWidgets('expanded layout: rail navigation, the board is the home section', (tester) async {
+  testWidgets('expanded layout: sidebar navigation, the board is the home section', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(3200, 2000);
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
@@ -151,11 +174,13 @@ void main() {
 
     await tester.tap(find.text('Частный дом'));
     await settle(tester);
-    expect(find.byType(NavigationRail), findsOneWidget);
-    expect(find.text('Демо: частный дом · Щит'), findsOneWidget);
-    expect(find.textContaining('Рейка 1'), findsOneWidget);
+    final title = find.descendant(of: find.byType(UiTopBar), matching: find.text('Щит'));
+    expect(find.byType(UiSidebar), findsOneWidget);
+    expect(find.text('Демо: частный дом'), findsOneWidget);
+    expect(title, findsOneWidget);
+    expect(find.textContaining('РЕЙКА 1'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.textContaining('1. '),
+      find.byType(UiTable),
       300,
       scrollable: find
           .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
@@ -165,8 +190,11 @@ void main() {
 
     await tester.tap(find.text('Помещения'));
     await settle(tester);
-    expect(find.text('Демо: частный дом · Помещения'), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(UiTopBar), matching: find.text('Помещения')),
+      findsOneWidget,
+    );
 
-    await tester.runAsync(database.close);
+    await closeDatabase(tester);
   });
 }
