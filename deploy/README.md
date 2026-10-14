@@ -1,6 +1,6 @@
 # Деплой на VPS
 
-nginx раздаёт Web-версию и каталог цен с `shchitovik.ru`. Выкладка — ручные задачи `deploy_web` и
+nginx или Caddy раздаёт Web-версию и каталог цен с `shchitovik.ru`; конфиги равнозначны, выберите один. Выкладка — ручные задачи `deploy_web` и
 `deploy_catalog` в GitLab CI или workflow Release в GitHub Actions.
 
 ## Настройка сервера (один раз)
@@ -8,11 +8,24 @@ nginx раздаёт Web-версию и каталог цен с `shchitovik.ru
 ```bash
 sudo mkdir -p /var/www/shchitovik/{web,catalog}
 sudo useradd -m -s /bin/bash deploy && sudo chown -R deploy: /var/www/shchitovik
-# A-запись shchitovik.ru → VPS, затем:
+# A-запись shchitovik.ru → VPS
+```
+
+**nginx** — сертификат через certbot:
+
+```bash
 sudo cp deploy/nginx/shchitovik.conf /etc/nginx/sites-available/
 sudo ln -s /etc/nginx/sites-available/shchitovik.conf /etc/nginx/sites-enabled/
 sudo certbot --nginx -d shchitovik.ru
 sudo nginx -t && sudo systemctl reload nginx
+```
+
+**Caddy** — сертификат Caddy получает и продлевает сам, нужны открытые порты 80 и 443:
+
+```bash
+sudo cp deploy/caddy/Caddyfile /etc/caddy/Caddyfile
+sudo caddy validate --config /etc/caddy/Caddyfile
+sudo systemctl reload caddy
 ```
 
 Открытый SSH-ключ для CI — в `~deploy/.ssh/authorized_keys`.
