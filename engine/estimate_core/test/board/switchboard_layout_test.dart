@@ -1,7 +1,6 @@
 import 'package:electrical_core/electrical_core.dart';
 import 'package:estimate_core/estimate_core.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:shchitovik/src/feature/circuits/domain/switchboard_layout.dart';
+import 'package:test/test.dart';
 
 List<BoardItem> _circuits(List<int> widths, {String? groupId}) => [
   for (var i = 0; i < widths.length; i++)

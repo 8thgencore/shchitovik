@@ -29,6 +29,7 @@ final class ProjectReportData {
     required this.input,
     required this.result,
     this.estimate,
+    this.board,
   });
 
   /// Project name.
@@ -48,6 +49,9 @@ final class ProjectReportData {
 
   /// Estimate; `null` — the estimate sections are omitted.
   final EstimateResult? estimate;
+
+  /// Switchboard; `null` — the switchboard section is omitted.
+  final SwitchboardLayout? board;
 }
 
 /// Disclaimer printed on the first page.
@@ -59,7 +63,7 @@ const reportDisclaimer =
 /// Builds the A4 PDF report.
 ///
 /// Sections: title, initial data, input load, circuits, notes on checks, phase balance,
-/// specification and estimate, assumptions and exclusions.
+/// specification and estimate, switchboard, assumptions and exclusions.
 Future<Uint8List> buildProjectReport(ProjectReportData data, ReportFonts fonts) {
   final document = pw.Document(
     title: data.projectName,
@@ -80,6 +84,7 @@ Future<Uint8List> buildProjectReport(ProjectReportData data, ReportFonts fonts) 
         ..._notes(data),
         ..._phaseBalance(data),
         if (data.estimate != null) ..._estimate(data.estimate!),
+        if (data.board != null) ..._switchboard(data, data.board!),
         ..._assumptions(data),
       ],
     ),
@@ -432,6 +437,161 @@ List<pw.Widget> _estimate(EstimateResult estimate) {
     _paragraph('Не включено: ${estimate.notIncluded.join('; ')}.', size: _small),
   ];
 }
+
+/// Page width between the margins of A4 landscape.
+const _contentWidth = 841.89 - 56;
+
+/// Conductor colours of the phases by ГОСТ 33542-2015 (IEC 60445): L1 brown, L2 black, L3 grey.
+PdfColor _phaseColor(Phase? phase) => switch (phase) {
+  Phase.l1 => const PdfColor.fromInt(0xFF795548),
+  Phase.l2 => const PdfColor.fromInt(0xFF212121),
+  Phase.l3 => const PdfColor.fromInt(0xFF9E9E9E),
+  null => const PdfColor.fromInt(0xFF2B5C8A),
+};
+
+List<pw.Widget> _switchboard(ProjectReportData data, SwitchboardLayout board) {
+  final perRail = board.rails.fold(board.modulesPerRail, (m, r) => r.used > m ? r.used : m);
+  final module = (_contentWidth / perRail).clamp(0.0, 32.0);
+  return [
+    pw.NewPage(),
+    _heading('8. Щит'),
+    _paragraph(
+      'Корпус ${board.enclosureRails}×${board.modulesPerRail} = '
+      '${board.enclosureRails * board.modulesPerRail} мод., занято ${board.occupiedModules}. '
+      'Ширина аппаратов — по моделям сметы; резерв не менее '
+      '${_num(enclosureReserveShare * 100, 0)} % — допущение. Полоса — фаза (L1 коричневая, '
+      'L2 чёрная, L3 серая).',
+    ),
+    for (var r = 0; r < board.rails.length; r++)
+      pw.Padding(
+        padding: const pw.EdgeInsets.only(top: 6),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(
+              'Рейка ${r + 1} · ${board.rails[r].used}/${board.rails[r].capacity}'
+              '${r >= board.enclosureRails ? ' · не помещается в корпус' : ''}',
+              style: const pw.TextStyle(fontSize: _small, color: _grey),
+            ),
+            pw.SizedBox(height: 2),
+            pw.Row(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                for (final item in board.rails[r].items) _boardModule(data, item, module),
+                for (var i = board.rails[r].used; i < board.rails[r].capacity; i++)
+                  pw.Container(
+                    width: module,
+                    height: 64,
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: _grey, width: 0.5, style: pw.BorderStyle.dashed),
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    pw.SizedBox(height: 4),
+    for (final w in board.warnings) _paragraph('• ${_boardWarning(data, w)}', size: _small),
+  ];
+}
+
+pw.Widget _boardModule(ProjectReportData data, BoardItem item, double module) {
+  final result = data.result;
+  final (top, title, bottom, strip) = switch (item.kind) {
+    BoardItemKind.incomer => (
+      'Ввод',
+      'C${_num(result.incomer.breakerA, 0)}',
+      '${_num(result.incomer.designCurrentA)} А',
+      const PdfColor.fromInt(0xFF2B5C8A),
+    ),
+    BoardItemKind.fireRcd => (
+      'УЗО',
+      '${_num(result.fireRcd!.residualMa, 0)} мА',
+      '${_num(result.fireRcd!.ratedA, 0)} А',
+      const PdfColor.fromInt(0xFFB3261E),
+    ),
+    BoardItemKind.auxiliary => () {
+      final line = data.estimate?.lines.where((l) => l.id == item.id).firstOrNull;
+      return ('Доп.', line?.title ?? '', line?.description ?? '', _grey);
+    }(),
+    BoardItemKind.groupRcd => () {
+      final rcd = result.sharedRcds.firstWhere((x) => x.id == item.id);
+      return (
+        'УЗО',
+        '${_num(rcd.residualMa, 0)} мА',
+        '${_num(rcd.ratedA, 0)} А',
+        const PdfColor.fromInt(0xFF2B5C8A),
+      );
+    }(),
+    BoardItemKind.circuit => () {
+      final c = result.circuits.firstWhere((x) => x.id == item.id);
+      return (
+        '${c.number} · ${c.phase?.label ?? '3ф'}',
+        c.protection.label,
+        c.name,
+        _phaseColor(c.phase),
+      );
+    }(),
+  };
+  return pw.Container(
+    width: item.units * module,
+    height: 64,
+    decoration: pw.BoxDecoration(
+      border: pw.Border.all(color: const PdfColor.fromInt(0xFF444444), width: 0.6),
+      color: PdfColors.white,
+    ),
+    child: pw.Column(
+      children: [
+        pw.Container(
+          height: 10,
+          color: strip,
+          alignment: pw.Alignment.center,
+          child: pw.Text(
+            _printable(top),
+            maxLines: 1,
+            style: pw.TextStyle(
+              fontSize: 6,
+              color: strip.luminance < 0.4 ? PdfColors.white : PdfColors.black,
+            ),
+          ),
+        ),
+        pw.SizedBox(height: 3),
+        pw.Text(
+          _printable(title),
+          maxLines: 1,
+          style: const pw.TextStyle(fontSize: 7, fontWeight: pw.FontWeight.bold),
+        ),
+        pw.Spacer(),
+        pw.Padding(
+          padding: const pw.EdgeInsets.fromLTRB(1, 0, 1, 2),
+          child: pw.Text(
+            _printable(bottom),
+            maxLines: 3,
+            textAlign: pw.TextAlign.center,
+            style: const pw.TextStyle(fontSize: 5.5),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+String _boardWarning(ProjectReportData data, BoardWarning warning) => switch (warning) {
+  BoardRailOverfull(:final rail) => 'Рейка ${rail + 1} переполнена: аппараты шире рейки.',
+  BoardEnclosureTooSmall() => 'Аппараты не помещаются в выбранный корпус.',
+  BoardReserveLow() =>
+    'Резерв меньше ${_num(enclosureReserveShare * 100, 0)} % — нет места для новых линий.',
+  BoardGroupSplit(:final rcdId) => () {
+    final numbers = [
+      for (final c in data.result.circuits)
+        if (data.result.sharedRcds.any((r) => r.id == rcdId && r.circuitIds.contains(c.id)))
+          '№${c.number}',
+    ];
+    return 'Группа УЗО (линии ${numbers.join(', ')}) разнесена: аппараты не стоят подряд '
+        'на одной рейке, гребёнкой их не соединить — нужны перемычки.';
+  }(),
+};
 
 List<pw.Widget> _assumptions(ProjectReportData data) => [
   _heading('Допущения расчёта'),

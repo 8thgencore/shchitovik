@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:electrical_core/electrical_core.dart';
+import 'package:estimate_core/estimate_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shchitovik/src/feature/project_io/domain/project_file_codec.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
@@ -27,6 +28,28 @@ void main() {
     expect(json['algorithm_version'], algorithmVersion);
     final decoded = ProjectFileCodec.decode(file);
     expect(ProjectDocumentCodec.encode(decoded), ProjectDocumentCodec.encode(document));
+  });
+
+  test('round trip keeps a manual switchboard arrangement', () {
+    final manual = document.copyWith(
+      estimate: const EstimateInput(
+        board: BoardArrangement(
+          enclosure: (2, 18),
+          rails: [
+            ['incomer/mcb', 'c2'],
+            ['c1'],
+          ],
+        ),
+      ),
+    );
+    final file = ProjectFileCodec.encode(
+      manual,
+      appVersion: '0.1.0',
+      exportedAt: DateTime.utc(2026),
+    );
+    final board = ProjectFileCodec.decode(file).estimate.board;
+    expect(board.enclosure, (2, 18));
+    expect(board.rails, manual.estimate.board.rails);
   });
 
   test('rejects foreign files and newer versions', () {
