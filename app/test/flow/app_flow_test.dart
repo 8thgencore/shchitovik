@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:shchitovik/src/feature/catalog_sync/injection.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/switchboard_view.dart';
 import 'package:shchitovik/src/feature/projects/injection.dart';
 import 'package:shchitovik/src/feature/settings/injection.dart';
 import 'package:shchitovik/src/logic/composition_root.dart';
@@ -194,6 +195,49 @@ void main() {
       find.descendant(of: find.byType(UiTopBar), matching: find.text('Помещения')),
       findsOneWidget,
     );
+
+    await closeDatabase(tester);
+  });
+
+  testWidgets('board: rearrange a device, the arrangement is saved, reset returns to auto', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(3200, 2000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    final deps = await tester.runAsync(dependencies);
+    await tester.pumpWidget(
+      RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
+    );
+    await settle(tester);
+    await tester.tap(find.text('Частный дом'));
+    await settle(tester);
+
+    expect(find.text('Раскладка вручную'), findsNothing);
+    await tester.tap(find.text('Переставить'));
+    await tester.pump();
+    final incomer = find.descendant(
+      of: find.byType(SwitchboardView),
+      matching: find.text('Ввод'),
+    );
+    await tester.tap(incomer);
+    await tester.pump();
+    await tester.tap(find.byTooltip('Сдвинуть вправо'));
+    await settle(tester);
+    // The arrangement comes back from the database through the project stream.
+    expect(find.text('Раскладка вручную'), findsOneWidget);
+    final board = tester.widget<SwitchboardView>(find.byType(SwitchboardView)).state;
+    expect(board.document.estimate.board.rails!.first.take(2), [
+      isNot('incomer/mcb'),
+      'incomer/mcb',
+    ]);
+
+    await tester.tap(find.text('Готово'));
+    await tester.pump();
+    await tester.tap(find.text('Сбросить раскладку'));
+    await settle(tester);
+    expect(find.text('Раскладка вручную'), findsNothing);
 
     await closeDatabase(tester);
   });

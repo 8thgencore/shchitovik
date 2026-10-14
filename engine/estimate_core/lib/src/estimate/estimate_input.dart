@@ -1,4 +1,5 @@
 import 'package:electrical_core/electrical_core.dart' show unset;
+import 'package:estimate_core/src/board/board_arrangement.dart';
 import 'package:estimate_core/src/catalog/catalog.dart';
 import 'package:estimate_core/src/catalog/price.dart';
 import 'package:meta/meta.dart';
@@ -64,6 +65,7 @@ final class EstimateInput {
     this.overheadSupply = false,
     this.selections = const {},
     this.cableCustomPrices = const {},
+    this.board = const BoardArrangement(),
   });
 
   /// Parses JSON produced by [toJson].
@@ -82,6 +84,9 @@ final class EstimateInput {
       for (final e in (json['cable_custom_prices'] as Map<String, Object?>? ?? const {}).entries)
         e.key: PriceRange.fromJson(e.value! as Map<String, Object?>),
     },
+    board: json['board'] == null
+        ? const BoardArrangement()
+        : BoardArrangement.fromJson(json['board']! as Map<String, Object?>),
   );
 
   /// Price scenario.
@@ -108,6 +113,9 @@ final class EstimateInput {
   /// Cable price per metre entered by the user, by circuit id (`incomer` for the incomer cable).
   final Map<String, PriceRange> cableCustomPrices;
 
+  /// Switchboard arrangement.
+  final BoardArrangement board;
+
   /// Returns a copy with the given fields replaced; pass `null` explicitly to clear an
   /// optional field.
   EstimateInput copyWith({
@@ -119,6 +127,7 @@ final class EstimateInput {
     bool? overheadSupply,
     Map<String, ApparatusSelection>? selections,
     Map<String, PriceRange>? cableCustomPrices,
+    BoardArrangement? board,
   }) => EstimateInput(
     scenario: scenario ?? this.scenario,
     cableMarkId: identical(cableMarkId, unset) ? this.cableMarkId : cableMarkId as String?,
@@ -130,6 +139,7 @@ final class EstimateInput {
     overheadSupply: overheadSupply ?? this.overheadSupply,
     selections: selections ?? this.selections,
     cableCustomPrices: cableCustomPrices ?? this.cableCustomPrices,
+    board: board ?? this.board,
   );
 
   /// Serializes to JSON.
@@ -142,5 +152,6 @@ final class EstimateInput {
     'overhead_supply': overheadSupply,
     'selections': {for (final e in selections.entries) e.key: e.value.toJson()},
     'cable_custom_prices': {for (final e in cableCustomPrices.entries) e.key: e.value.toJson()},
+    if (!board.isAuto) 'board': board.toJson(),
   };
 }

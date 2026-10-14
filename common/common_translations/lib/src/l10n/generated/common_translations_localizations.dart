@@ -1243,6 +1243,108 @@ abstract class CommonTranslationsLocalizations {
   /// **'Доп.'**
   String get boardAuxiliary;
 
+  /// No description provided for @boardRearrange.
+  ///
+  /// In ru, this message translates to:
+  /// **'Переставить'**
+  String get boardRearrange;
+
+  /// No description provided for @boardRearrangeDone.
+  ///
+  /// In ru, this message translates to:
+  /// **'Готово'**
+  String get boardRearrangeDone;
+
+  /// No description provided for @boardRearrangeHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Нажмите на аппарат и двигайте его кнопками или стрелками клавиатуры. На широком экране аппарат можно перетащить.'**
+  String get boardRearrangeHint;
+
+  /// No description provided for @boardManual.
+  ///
+  /// In ru, this message translates to:
+  /// **'Раскладка вручную'**
+  String get boardManual;
+
+  /// No description provided for @boardReset.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сбросить раскладку'**
+  String get boardReset;
+
+  /// No description provided for @boardEnclosureLabel.
+  ///
+  /// In ru, this message translates to:
+  /// **'Корпус'**
+  String get boardEnclosureLabel;
+
+  /// No description provided for @boardEnclosureOption.
+  ///
+  /// In ru, this message translates to:
+  /// **'{rails}×{perRail} ({total} мод.)'**
+  String boardEnclosureOption(int rails, int perRail, int total);
+
+  /// No description provided for @boardMoveLeft.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сдвинуть влево'**
+  String get boardMoveLeft;
+
+  /// No description provided for @boardMoveRight.
+  ///
+  /// In ru, this message translates to:
+  /// **'Сдвинуть вправо'**
+  String get boardMoveRight;
+
+  /// No description provided for @boardMoveUp.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перенести на рейку выше'**
+  String get boardMoveUp;
+
+  /// No description provided for @boardMoveDown.
+  ///
+  /// In ru, this message translates to:
+  /// **'Перенести на рейку ниже'**
+  String get boardMoveDown;
+
+  /// No description provided for @boardSelected.
+  ///
+  /// In ru, this message translates to:
+  /// **'{label}, выбран'**
+  String boardSelected(String label);
+
+  /// No description provided for @boardRailOutside.
+  ///
+  /// In ru, this message translates to:
+  /// **'не помещается в корпус'**
+  String get boardRailOutside;
+
+  /// No description provided for @boardWarningOverfull.
+  ///
+  /// In ru, this message translates to:
+  /// **'Рейка {number} переполнена: аппараты шире рейки.'**
+  String boardWarningOverfull(int number);
+
+  /// No description provided for @boardWarningTooSmall.
+  ///
+  /// In ru, this message translates to:
+  /// **'Аппараты не помещаются в выбранный корпус — лишние рейки показаны ниже.'**
+  String get boardWarningTooSmall;
+
+  /// No description provided for @boardWarningReserve.
+  ///
+  /// In ru, this message translates to:
+  /// **'Резерв меньше {percent} % — для новых линий места нет.'**
+  String boardWarningReserve(int percent);
+
+  /// No description provided for @boardWarningGroupSplit.
+  ///
+  /// In ru, this message translates to:
+  /// **'Группа УЗО (линии {circuits}) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить — нужны перемычки.'**
+  String boardWarningGroupSplit(String circuits);
+
   /// No description provided for @projectsEmptyHint.
   ///
   /// In ru, this message translates to:
