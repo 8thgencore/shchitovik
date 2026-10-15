@@ -27,7 +27,7 @@ List<({ApparatusProduct product, Compatibility compatibility})> compatibleProduc
   ApparatusRequirement requirement,
   EstimateCatalog catalog,
 ) {
-  final result = [
+  final List<({Compatibility compatibility, ApparatusProduct product})> result = [
     for (final p in catalog.products)
       if (p.active && p.function == requirement.function)
         (product: p, compatibility: checkCompatibility(p, requirement)),
@@ -35,11 +35,11 @@ List<({ApparatusProduct product, Compatibility compatibility})> compatibleProduc
   String manufacturer(ApparatusProduct p) =>
       (catalog.manufacturers[p.manufacturerId]?.name ?? p.manufacturerId).toLowerCase();
   result.sort((a, b) {
-    final byStatus = a.compatibility.status.index.compareTo(b.compatibility.status.index);
+    final int byStatus = a.compatibility.status.index.compareTo(b.compatibility.status.index);
     if (byStatus != 0) return byStatus;
-    final byManufacturer = manufacturer(a.product).compareTo(manufacturer(b.product));
+    final int byManufacturer = manufacturer(a.product).compareTo(manufacturer(b.product));
     if (byManufacturer != 0) return byManufacturer;
-    final bySeries = a.product.series.toLowerCase().compareTo(b.product.series.toLowerCase());
+    final int bySeries = a.product.series.toLowerCase().compareTo(b.product.series.toLowerCase());
     return bySeries != 0 ? bySeries : a.product.id.compareTo(b.product.id);
   });
   return result;
@@ -60,25 +60,26 @@ EstimateResult calculateEstimate(
   EstimateCatalog? catalog,
 }) => _Estimate(input, result, estimate, catalog ?? EstimateCatalog.embedded).run();
 
-final class _Estimate {
-  _Estimate(this.input, this.result, this.estimate, this.catalog);
-
-  final ProjectInput input;
-  final ProjectResult result;
-  final EstimateInput estimate;
-  final EstimateCatalog catalog;
+final class _Estimate(
+  final ProjectInput input,
+  final ProjectResult result,
+  final EstimateInput estimate,
+  final EstimateCatalog catalog,
+) {
   final warnings = <EstimateWarning>[];
 
   Tier get tier => estimate.scenario.tier;
 
   EstimateResult run() {
-    final slots = slotsFor(input, result);
-    final preferred = _preferredSeries(slots);
-    final apparatus = [for (final slot in slots) _apparatusLine(slot, preferred)];
-    final auxiliary = _auxiliaryLines();
-    final cables = _cableLines();
+    final List<ApparatusSlot> slots = slotsFor(input, result);
+    final Map<ApparatusFunction, String> preferred = _preferredSeries(slots);
+    final List<EstimateLine> apparatus = [
+      for (final slot in slots) _apparatusLine(slot, preferred),
+    ];
+    final List<EstimateLine> auxiliary = _auxiliaryLines();
+    final List<EstimateLine> cables = _cableLines();
 
-    final stale = apparatus
+    final int stale = apparatus
         .where((l) => l.source != PriceSource.selection && estimate.selections.containsKey(l.id))
         .length;
     if (stale > 0) {
@@ -91,7 +92,7 @@ final class _Estimate {
         ),
       );
     }
-    final fallback = apparatus.where((l) => l.source == PriceSource.fallback).length;
+    final int fallback = apparatus.where((l) => l.source == PriceSource.fallback).length;
     if (fallback > 0) {
       warnings.add(
         EstimateWarning(
@@ -101,7 +102,7 @@ final class _Estimate {
         ),
       );
     }
-    final missingCable = cables.where((l) => l.missing.isNotEmpty).length;
+    final int missingCable = cables.where((l) => l.missing.isNotEmpty).length;
     if (missingCable > 0) {
       warnings.add(
         EstimateWarning(
@@ -111,7 +112,7 @@ final class _Estimate {
         ),
       );
     }
-    final notPassed = result.circuits.where((c) => c.status != CalculationStatus.passed).length;
+    final int notPassed = result.circuits.where((c) => c.status != CalculationStatus.passed).length;
     if (notPassed > 0) {
       warnings.add(
         EstimateWarning(
@@ -131,9 +132,9 @@ final class _Estimate {
 
     PriceRange sum(Iterable<EstimateLine> lines) =>
         lines.fold(PriceRange.zero, (s, l) => s + l.total);
-    final apparatusTotal = sum(apparatus);
-    final auxiliaryTotal = sum(auxiliary);
-    final cableTotal = sum(cables);
+    final PriceRange apparatusTotal = sum(apparatus);
+    final PriceRange auxiliaryTotal = sum(auxiliary);
+    final PriceRange cableTotal = sum(cables);
     return EstimateResult(
       lines: [...apparatus, ...auxiliary, ...cables],
       apparatusTotal: apparatusTotal,
@@ -152,11 +153,13 @@ final class _Estimate {
   /// typical price, then series name.
   Map<ApparatusFunction, String> _preferredSeries(List<ApparatusSlot> slots) {
     final result = <ApparatusFunction, String>{};
-    for (final function in ApparatusFunction.values) {
-      final functionSlots = slots.where((s) => s.requirement.function == function).toList();
+    for (final ApparatusFunction function in ApparatusFunction.values) {
+      final List<ApparatusSlot> functionSlots = slots
+          .where((s) => s.requirement.function == function)
+          .toList();
       if (functionSlots.isEmpty) continue;
       final bySeries = <String, ({int covered, int price})>{};
-      final seriesKeys = {
+      final Set<String> seriesKeys = {
         for (final p in catalog.products)
           if (p.active &&
               p.function == function &&
@@ -167,7 +170,7 @@ final class _Estimate {
         var covered = 0;
         var price = 0;
         for (final slot in functionSlots) {
-          final cheapest = _cheapest(
+          final ApparatusProduct? cheapest = _cheapest(
             slot.requirement,
             (p) => '${p.manufacturerId}|${p.series}' == key,
           );
@@ -178,13 +181,13 @@ final class _Estimate {
         }
         bySeries[key] = (covered: covered, price: price);
       }
-      final ranked = bySeries.entries.where((e) => e.value.covered > 0).toList()
-        ..sort((a, b) {
-          final byCovered = b.value.covered.compareTo(a.value.covered);
-          if (byCovered != 0) return byCovered;
-          final byPrice = a.value.price.compareTo(b.value.price);
-          return byPrice != 0 ? byPrice : a.key.compareTo(b.key);
-        });
+      final List<MapEntry<String, ({int covered, int price})>> ranked =
+          bySeries.entries.where((e) => e.value.covered > 0).toList()..sort((a, b) {
+            final int byCovered = b.value.covered.compareTo(a.value.covered);
+            if (byCovered != 0) return byCovered;
+            final int byPrice = a.value.price.compareTo(b.value.price);
+            return byPrice != 0 ? byPrice : a.key.compareTo(b.key);
+          });
       if (ranked.isNotEmpty) result[function] = ranked.first.key;
     }
     return result;
@@ -197,11 +200,11 @@ final class _Estimate {
   ) {
     ApparatusProduct? best;
     CompatibilityStatus? bestStatus;
-    for (final p in catalog.products) {
+    for (final ApparatusProduct p in catalog.products) {
       if (!p.active || p.function != requirement.function || !filter(p)) continue;
-      final status = checkCompatibility(p, requirement).status;
+      final CompatibilityStatus status = checkCompatibility(p, requirement).status;
       if (status == CompatibilityStatus.incompatible) continue;
-      final better =
+      final bool better =
           best == null ||
           status.index < bestStatus!.index ||
           (status == bestStatus &&
@@ -217,12 +220,12 @@ final class _Estimate {
   }
 
   EstimateLine _apparatusLine(ApparatusSlot slot, Map<ApparatusFunction, String> preferred) {
-    final requirement = slot.requirement;
-    final selection = estimate.selections[slot.id];
+    final ApparatusRequirement requirement = slot.requirement;
+    final ApparatusSelection? selection = estimate.selections[slot.id];
     if (selection != null) {
-      final compatibility = checkCompatibility(selection.product, requirement);
+      final Compatibility compatibility = checkCompatibility(selection.product, requirement);
       if (compatibility.isCompatible) {
-        final price = selection.customPrice ?? selection.product.price;
+        final PriceRange price = selection.customPrice ?? selection.product.price;
         return _productLine(
           slot,
           selection.product,
@@ -233,8 +236,8 @@ final class _Estimate {
       }
     }
 
-    final preferredKey = preferred[requirement.function];
-    final product =
+    final String? preferredKey = preferred[requirement.function];
+    final ApparatusProduct? product =
         (preferredKey == null
             ? null
             : _cheapest(requirement, (p) => '${p.manufacturerId}|${p.series}' == preferredKey)) ??
@@ -250,8 +253,8 @@ final class _Estimate {
       );
     }
 
-    final fallback = _fallback(requirement);
-    final price = fallback?.price ?? PriceRange.zero;
+    final FallbackPrice? fallback = _fallback(requirement);
+    final PriceRange price = fallback?.price ?? PriceRange.zero;
     return EstimateLine(
       id: slot.id,
       category: EstimateCategory.apparatus,
@@ -276,7 +279,7 @@ final class _Estimate {
     PriceRange price,
     PriceSource source,
   ) {
-    final manufacturer =
+    final String manufacturer =
         catalog.manufacturers[product.manufacturerId]?.name ?? product.manufacturerId;
     return EstimateLine(
       id: slot.id,
@@ -301,7 +304,7 @@ final class _Estimate {
   }
 
   FallbackPrice? _fallback(ApparatusRequirement r) {
-    final candidates = catalog.fallbackPrices.where(
+    final Iterable<FallbackPrice> candidates = catalog.fallbackPrices.where(
       (f) =>
           f.function == r.function &&
           f.poles == r.poles &&
@@ -316,12 +319,12 @@ final class _Estimate {
   List<EstimateLine> _auxiliaryLines() {
     final lines = <EstimateLine>[];
     final three = input.supplyPhases == SupplyPhases.three;
-    final incomerA = result.incomer.breakerA ?? 0;
+    final double incomerA = result.incomer.breakerA ?? 0;
 
-    final relay = estimate.voltageRelay ?? true;
+    final bool relay = estimate.voltageRelay ?? true;
     if (relay) {
       final poles = three ? 4 : 2;
-      final device = catalog.auxiliaryDevices
+      final AuxiliaryDevice? device = catalog.auxiliaryDevices
           .where((d) => d.kind == 'voltage_relay' && d.poles == poles && d.tier == tier)
           .where((d) => (d.ratedCurrentA ?? 0) >= incomerA)
           .firstOrNull;
@@ -335,12 +338,12 @@ final class _Estimate {
       );
     }
 
-    final spd =
+    final bool spd =
         estimate.surgeProtection ??
         (input.objectType == ObjectType.house || input.objectType == ObjectType.garageWorkshop);
     if (spd) {
       final kind = estimate.overheadSupply ? 'spd_type1' : 'spd';
-      final device = catalog.auxiliaryDevices
+      final AuxiliaryDevice? device = catalog.auxiliaryDevices
           .where((d) => d.kind == kind && d.poles == (three ? 4 : 2) && d.tier == tier)
           .firstOrNull;
       lines.add(_auxLine('aux/spd', 'УЗИП', device, 'УЗИП'));
@@ -369,35 +372,35 @@ final class _Estimate {
 
   List<EstimateLine> _cableLines() {
     final lines = <EstimateLine>[];
-    final incomerCable = result.incomer.cable;
+    final CableResult? incomerCable = result.incomer.cable;
     if (incomerCable != null) {
       lines.add(_cableLine('incomer', 'Кабель ввода', incomerCable));
     }
-    for (final c in result.circuits) {
+    for (final CircuitResult c in result.circuits) {
       lines.add(_cableLine(c.id, '№${c.number} ${c.name}', c.cable, circuitId: c.id));
     }
     return lines;
   }
 
   EstimateLine _cableLine(String key, String title, CableResult cable, {String? circuitId}) {
-    final markId = cable.material == ConductorMaterial.aluminium
+    final String markId = cable.material == ConductorMaterial.aluminium
         ? aluminiumCableMarkId
         : (estimate.cableMarkId ?? defaultCopperCableMarkId);
-    final mark = catalog.cableMarks.where((m) => m.id == markId).firstOrNull;
-    final item = catalog.cables
+    final CableMark? mark = catalog.cableMarks.where((m) => m.id == markId).firstOrNull;
+    final CableItem? item = catalog.cables
         .where(
           (i) => i.markId == markId && i.cores == cable.cores && i.sectionMm2 == cable.sectionMm2,
         )
         .firstOrNull;
-    final custom = estimate.cableCustomPrices[key];
-    final unitPrice = custom ?? item?.pricePerM;
-    final length = cable.lengthM;
+    final PriceRange? custom = estimate.cableCustomPrices[key];
+    final PriceRange? unitPrice = custom ?? item?.pricePerM;
+    final double? length = cable.lengthM;
     final missing = <String>[
       if (length == null) 'длина',
       if (unitPrice == null) 'цена кабеля',
     ];
-    final quantity = length == null ? 0.0 : length * estimate.cableReserveFactor;
-    final total = missing.isEmpty ? unitPrice!.times(quantity) : PriceRange.zero;
+    final double quantity = length == null ? 0.0 : length * estimate.cableReserveFactor;
+    final PriceRange total = missing.isEmpty ? unitPrice!.times(quantity) : PriceRange.zero;
     return EstimateLine(
       id: 'cable/$key',
       category: EstimateCategory.cable,
@@ -419,8 +422,8 @@ String _positions(int n) => _plural(n, 'позиция', 'позиции', 'по
 String _lines(int n) => _plural(n, 'линия', 'линии', 'линий');
 
 String _plural(int n, String one, String few, String many) {
-  final mod10 = n % 10;
-  final mod100 = n % 100;
+  final int mod10 = n % 10;
+  final int mod100 = n % 100;
   if (mod10 == 1 && mod100 != 11) return one;
   if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
   return many;

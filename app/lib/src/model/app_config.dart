@@ -4,13 +4,13 @@ import 'package:shchitovik/src/model/app_env.dart';
 ///
 /// Configurations are read from environment variables, which are set with --dart-define
 /// or --dart-define-from-file=env/.dev.env.
-class AppConfig {
+class const AppConfig() {
   /// Creates a new [AppConfig] instance.
-  const AppConfig();
+  this;
 
   /// The current environment.
   AppEnv get environment {
-    var env = const String.fromEnvironment('ENVIRONMENT').trim();
+    String env = const String.fromEnvironment('ENVIRONMENT').trim();
 
     if (env.isNotEmpty) {
       return AppEnv.from(env);
@@ -35,9 +35,7 @@ class AppConfig {
 ///
 /// In order to use [AppConfig] in tests, it is needed to
 /// extend this class and provide the dependencies that are needed for the test.
-base class TestConfig implements AppConfig {
-  const TestConfig();
-
+base class const TestConfig() implements AppConfig {
   @override
   Object noSuchMethod(Invocation invocation) {
     throw UnimplementedError(

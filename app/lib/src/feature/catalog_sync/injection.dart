@@ -4,20 +4,17 @@ import 'package:shchitovik/src/feature/catalog_sync/application/catalog_service.
 import 'package:shchitovik/src/feature/catalog_sync/data/catalog_remote_source.dart';
 
 /// Dependencies of catalog updates.
-class CatalogContainer {
-  const CatalogContainer._(this.catalogService);
-
-  /// Creates the container; updates are disabled when [catalogUrl] is empty.
-  factory CatalogContainer.create({required AppDatabase database, required String catalogUrl}) =>
-      CatalogContainer._(
-        CatalogService(
-          database: database,
-          remote: catalogUrl.isEmpty
-              ? null
-              : CatalogRemoteSource(baseUrl: catalogUrl, client: http.Client()),
-        ),
-      );
-
+class const CatalogContainer._(
   /// Catalog provider.
-  final CatalogService catalogService;
+  final CatalogService catalogService,
+) {
+  /// Creates the container; updates are disabled when [catalogUrl] is empty.
+  factory create({required AppDatabase database, required String catalogUrl}) => CatalogContainer._(
+    CatalogService(
+      database: database,
+      remote: catalogUrl.isEmpty
+          ? null
+          : CatalogRemoteSource(baseUrl: catalogUrl, client: http.Client()),
+    ),
+  );
 }

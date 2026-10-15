@@ -1,9 +1,10 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_icons.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_button.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Shows [builder] as a bottom sheet on phones and as a centered panel on wide screens.
 ///
@@ -39,22 +40,21 @@ Future<T?> showUiSheet<T>(BuildContext context, {required WidgetBuilder builder}
 ///
 /// [body] gets the remaining height: pass a `SingleChildScrollView` for short forms (the sheet
 /// sizes to it) or a `ListView` for long lists (the sheet takes the full height).
-class UiSheet extends StatelessWidget {
-  const UiSheet({required this.title, required this.body, this.actions = const [], super.key});
-
+class const UiSheet({
   /// Title.
-  final String title;
+  required final String title,
 
   /// Content.
-  final Widget body;
+  required final Widget body,
 
   /// Buttons; the primary one goes last.
-  final List<Widget> actions;
-
+  final List<Widget> actions = const [],
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final bottomSheet = !context.isExpandedLayout;
+    final UiColors c = context.uiColors;
+    final bool bottomSheet = !context.isExpandedLayout;
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: Column(
@@ -121,10 +121,10 @@ Future<bool> showUiConfirm(
   required String confirmLabel,
   required String cancelLabel,
 }) async {
-  final confirmed = await showDialog<bool>(
+  final bool? confirmed = await showDialog<bool>(
     context: context,
     builder: (context) {
-      final c = context.uiColors;
+      final UiColors c = context.uiColors;
       return Dialog(
         insetPadding: const EdgeInsets.all(UiSpace.xl),
         child: ConstrainedBox(
@@ -189,40 +189,32 @@ void showUiToast(
 
 /// Entry of a [UiMenuButton].
 @immutable
-final class UiMenuEntry {
-  const UiMenuEntry({
-    required this.label,
-    required this.onPressed,
-    this.icon,
-    this.destructive = false,
-  });
-
+final class const UiMenuEntry({
   /// Label.
-  final String label;
+  required final String label,
 
   /// Action.
-  final VoidCallback onPressed;
+  required final VoidCallback onPressed,
 
   /// Icon.
-  final IconData? icon;
+  final IconData? icon,
 
   /// Shown in the danger colour.
-  final bool destructive;
-}
+  final bool destructive = false,
+});
 
 /// «Ещё» icon button with a menu of secondary actions.
-class UiMenuButton extends StatelessWidget {
-  const UiMenuButton({required this.tooltip, required this.entries, super.key});
-
+class const UiMenuButton({
   /// Tooltip and accessible label.
-  final String tooltip;
+  required final String tooltip,
 
   /// Entries.
-  final List<UiMenuEntry> entries;
-
+  required final List<UiMenuEntry> entries,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return MenuAnchor(
       alignmentOffset: const Offset(0, 4),
       menuChildren: [

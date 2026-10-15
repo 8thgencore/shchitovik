@@ -4,14 +4,11 @@ import 'package:http/http.dart' as http;
 import 'package:shchitovik/src/feature/catalog_sync/domain/catalog_manifest.dart';
 
 /// Reads the catalog from the static hosting (`<base>/catalog/…`).
-final class CatalogRemoteSource {
-  CatalogRemoteSource({required this.baseUrl, required this._client});
-
+final class CatalogRemoteSource({
   /// Base URL, e.g. `https://example.ru`.
-  final String baseUrl;
-
-  final http.Client _client;
-
+  required final String baseUrl,
+  required final http.Client _client,
+}) {
   static const _timeout = Duration(seconds: 20);
 
   Uri _uri(String path) => Uri.parse('${baseUrl.replaceAll(RegExp(r'/+$'), '')}/catalog/$path');
@@ -24,7 +21,7 @@ final class CatalogRemoteSource {
   Future<String> file(String path) => _get(path);
 
   Future<String> _get(String path) async {
-    final response = await _client.get(_uri(path)).timeout(_timeout);
+    final http.Response response = await _client.get(_uri(path)).timeout(_timeout);
     if (response.statusCode != 200) {
       throw http.ClientException('HTTP ${response.statusCode}', _uri(path));
     }

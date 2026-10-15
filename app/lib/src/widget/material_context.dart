@@ -1,24 +1,25 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
+import 'package:shchitovik/src/feature/settings/domain/model/settings.dart';
 import 'package:shchitovik/src/feature/settings/presentation/settings_scope.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
 import 'package:shchitovik/src/widget/media_query_override.dart';
 
 /// Entry point for the application that uses [MaterialApp].
-class MaterialContext extends StatefulWidget {
-  const MaterialContext({super.key});
-
+class const MaterialContext({super.key}) extends StatefulWidget {
   @override
   State<MaterialContext> createState() => _MaterialContextState();
 }
 
-class _MaterialContextState extends State<MaterialContext> {
+class _MaterialContextState() extends State<MaterialContext> {
   /// This global key is needed for Flutter to work properly
   /// when Widgets Inspector is enabled.
-  static final _globalKey = GlobalKey(debugLabel: 'MaterialContext');
+  static final GlobalKey<State<StatefulWidget>> _globalKey = GlobalKey(
+    debugLabel: 'MaterialContext',
+  );
 
   late final GoRouter _router = createAppRouter();
 
@@ -30,11 +31,11 @@ class _MaterialContextState extends State<MaterialContext> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = SettingsScope.of(context);
-    final themeMode = settings.general.themeMode;
-    final locale = settings.general.locale;
+    final Settings settings = SettingsScope.of(context);
+    final ThemeModeVO themeMode = settings.general.themeMode;
+    final Locale locale = settings.general.locale;
 
-    final materialThemeMode = switch (themeMode) {
+    final ThemeMode materialThemeMode = switch (themeMode) {
       ThemeModeVO.system => ThemeMode.system,
       ThemeModeVO.light => ThemeMode.light,
       ThemeModeVO.dark => ThemeMode.dark,

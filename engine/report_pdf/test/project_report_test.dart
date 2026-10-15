@@ -20,8 +20,8 @@ void main() {
     ('house', DemoProjects.house()),
   ]) {
     test('$name report is a multi-page PDF', () async {
-      final result = calculateProject(input);
-      final bytes = await buildProjectReport(
+      final ProjectResult result = calculateProject(input);
+      final Uint8List bytes = await buildProjectReport(
         ProjectReportData(
           projectName: 'Демо: $name',
           generatedAt: DateTime.utc(2026, 10, 8, 12),
@@ -40,14 +40,16 @@ void main() {
   }
 
   test('switchboard section is drawn with a split group warning', () async {
-    final input = DemoProjects.threeRoomApartment().copyWith(rcdStrategy: RcdStrategy.groupedRcd);
-    final result = calculateProject(input);
-    final estimate = calculateEstimate(input, result, const EstimateInput());
-    final items = switchboardItems(input, result, estimate);
-    final auto = layoutSwitchboard(items);
+    final ProjectInput input = DemoProjects.threeRoomApartment().copyWith(
+      rcdStrategy: RcdStrategy.groupedRcd,
+    );
+    final ProjectResult result = calculateProject(input);
+    final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
+    final List<BoardItem> items = switchboardItems(input, result, estimate);
+    final SwitchboardLayout auto = layoutSwitchboard(items);
     // Group RCD moved to the end of the last rail: the group is split.
-    final rcd = items.firstWhere((i) => i.kind == BoardItemKind.groupRcd);
-    final board = arrangeSwitchboard(
+    final BoardItem rcd = items.firstWhere((i) => i.kind == BoardItemKind.groupRcd);
+    final SwitchboardLayout board = arrangeSwitchboard(
       items,
       placeBoardItem(const BoardArrangement(), auto, rcd.id, auto.rails.length - 1, 99),
     );
@@ -64,8 +66,8 @@ void main() {
       ),
       fonts,
     );
-    final without = await build(null);
-    final withBoard = await build(board);
+    final Uint8List without = await build(null);
+    final Uint8List withBoard = await build(board);
     File('build/report_board.pdf').writeAsBytesSync(withBoard);
     File('build/report_no_board.pdf').writeAsBytesSync(without);
     // The rails are vector boxes and text: the report grows by the board.
@@ -73,8 +75,10 @@ void main() {
   });
 
   test('report without estimate and without lengths', () async {
-    final input = DemoProjects.oneRoomApartment().copyWith(cableDefaults: const CableDefaults());
-    final bytes = await buildProjectReport(
+    final ProjectInput input = DemoProjects.oneRoomApartment().copyWith(
+      cableDefaults: const CableDefaults(),
+    );
+    final Uint8List bytes = await buildProjectReport(
       ProjectReportData(
         projectName: 'Без длин',
         generatedAt: DateTime.utc(2026),

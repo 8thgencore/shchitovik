@@ -6,38 +6,28 @@ import 'package:meta/meta.dart';
 ///
 /// Calculation results are not part of it — they are recomputed by `calculateProject`.
 @immutable
-final class ProjectDocument {
-  const ProjectDocument({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.input,
-    this.note = '',
-    this.estimate = const EstimateInput(),
-  });
-
+final class const ProjectDocument({
   /// UUID.
-  final String id;
+  required final String id,
 
   /// Name.
-  final String name;
-
-  /// Free-form note.
-  final String note;
+  required final String name,
 
   /// Creation time, UTC.
-  final DateTime createdAt;
+  required final DateTime createdAt,
 
   /// Last change, UTC.
-  final DateTime updatedAt;
+  required final DateTime updatedAt,
 
   /// Calculation input.
-  final ProjectInput input;
+  required final ProjectInput input,
+
+  /// Free-form note.
+  final String note = '',
 
   /// Estimate choices.
-  final EstimateInput estimate;
-
+  final EstimateInput estimate = const EstimateInput(),
+}) {
   /// Returns a copy with the given fields replaced.
   ProjectDocument copyWith({
     String? id,
@@ -60,23 +50,16 @@ final class ProjectDocument {
 
 /// Short project info for lists.
 @immutable
-final class ProjectSummary {
-  const ProjectSummary({
-    required this.id,
-    required this.name,
-    required this.objectType,
-    required this.updatedAt,
-  });
-
+final class const ProjectSummary({
   /// UUID.
-  final String id;
+  required final String id,
 
   /// Name.
-  final String name;
+  required final String name,
 
   /// Object type.
-  final ObjectType objectType;
+  required final ObjectType objectType,
 
   /// Last change, UTC.
-  final DateTime updatedAt;
-}
+  required final DateTime updatedAt,
+});

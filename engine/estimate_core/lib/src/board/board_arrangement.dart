@@ -6,20 +6,23 @@ import 'package:meta/meta.dart';
 ///
 /// Each field left `null` is chosen automatically by `layoutSwitchboard`.
 @immutable
-final class BoardArrangement {
-  const BoardArrangement({this.enclosure, this.rails});
+final class const BoardArrangement({
+  /// Enclosure as (rails, modules per rail); `null` — the smallest typical one with reserve.
+  final (int, int)? enclosure,
 
+  /// Item ids ([BoardItem.id]) by rail, top to bottom, left to right; `null` — mounting order.
+  final List<List<String>>? rails,
+}) {
   /// Captures the placement of [layout] as a manual arrangement keeping [enclosure].
-  factory BoardArrangement.fromLayout(SwitchboardLayout layout, {(int, int)? enclosure}) =>
-      BoardArrangement(
-        enclosure: enclosure,
-        rails: [
-          for (final rail in layout.rails) [for (final item in rail.items) item.id],
-        ],
-      );
+  factory fromLayout(SwitchboardLayout layout, {(int, int)? enclosure}) => BoardArrangement(
+    enclosure: enclosure,
+    rails: [
+      for (final rail in layout.rails) [for (final item in rail.items) item.id],
+    ],
+  );
 
   /// Parses JSON produced by [toJson].
-  factory BoardArrangement.fromJson(Map<String, Object?> json) {
+  factory fromJson(Map<String, Object?> json) {
     final enclosure = json['enclosure'] as List<Object?>?;
     final rails = json['rails'] as List<Object?>?;
     return BoardArrangement(
@@ -31,12 +34,6 @@ final class BoardArrangement {
             ],
     );
   }
-
-  /// Enclosure as (rails, modules per rail); `null` — the smallest typical one with reserve.
-  final (int, int)? enclosure;
-
-  /// Item ids ([BoardItem.id]) by rail, top to bottom, left to right; `null` — mounting order.
-  final List<List<String>>? rails;
 
   /// Whether nothing is set manually.
   bool get isAuto => enclosure == null && rails == null;
@@ -55,7 +52,7 @@ final class BoardArrangement {
 }
 
 /// Direction of a manual move on the switchboard.
-enum BoardMove {
+enum BoardMove() {
   /// One place to the left; from the rail start — to the end of the rail above.
   left,
 
@@ -77,10 +74,10 @@ BoardArrangement moveBoardItem(
   String id,
   BoardMove move,
 ) {
-  final rails = _ids(layout);
-  final (r, i) = _find(rails, id) ?? (-1, -1);
+  final List<List<String>> rails = _ids(layout);
+  final (int r, int i) = _find(rails, id) ?? (-1, -1);
   if (r < 0) return arrangement;
-  final rail = rails[r];
+  final List<String> rail = rails[r];
   switch (move) {
     case BoardMove.left when i > 0:
       rail.insert(i - 1, rail.removeAt(i));
@@ -92,11 +89,11 @@ BoardArrangement moveBoardItem(
       rails[r + 1].insert(0, rail.removeAt(i));
     case BoardMove.up when r > 0:
     case BoardMove.down when r < rails.length - 1:
-      final target = move == BoardMove.up ? r - 1 : r + 1;
-      final offset = layout.rails[r].items.take(i).fold(0, (s, x) => s + x.units);
+      final int target = move == BoardMove.up ? r - 1 : r + 1;
+      final int offset = layout.rails[r].items.take(i).fold(0, (s, x) => s + x.units);
       var index = 0;
       var position = 0;
-      for (final item in layout.rails[target].items) {
+      for (final BoardItem item in layout.rails[target].items) {
         if (position >= offset) break;
         position += item.units;
         index++;
@@ -117,12 +114,12 @@ BoardArrangement placeBoardItem(
   int rail,
   int index,
 ) {
-  final rails = _ids(layout);
-  final source = _find(rails, id);
+  final List<List<String>> rails = _ids(layout);
+  final (int, int)? source = _find(rails, id);
   if (source == null || rail < 0 || rail >= rails.length) return arrangement;
-  final (r, i) = source;
+  final (int r, int i) = source;
   rails[r].removeAt(i);
-  final target = r == rail && i < index ? index - 1 : index;
+  final int target = r == rail && i < index ? index - 1 : index;
   rails[rail].insert(target.clamp(0, rails[rail].length), id);
   return arrangement.copyWith(rails: rails);
 }
@@ -133,7 +130,7 @@ List<List<String>> _ids(SwitchboardLayout layout) => [
 
 (int, int)? _find(List<List<String>> rails, String id) {
   for (var r = 0; r < rails.length; r++) {
-    final i = rails[r].indexOf(id);
+    final int i = rails[r].indexOf(id);
     if (i >= 0) return (r, i);
   }
   return null;

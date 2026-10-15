@@ -1,68 +1,55 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_icons.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_pressable.dart';
 import 'package:common_ui/src/widgets/ui_status.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Row of a list inside a card: optional number or icon, title, subtitle, trailing content.
 ///
 /// A [stripe] tone marks rows that need attention with a 3px bar on the leading edge.
-class UiListRow extends StatelessWidget {
-  const UiListRow({
-    required this.title,
-    this.subtitle,
-    this.number,
-    this.leading,
-    this.trailing,
-    this.below,
-    this.stripe,
-    this.onTap,
-    this.selected = false,
-    this.chevron = false,
-    this.dense = false,
-    super.key,
-  });
-
+class const UiListRow({
   /// Title.
-  final String title;
+  required final String title,
 
   /// Secondary line.
-  final String? subtitle;
+  final String? subtitle,
 
   /// Number in the mono column («1», «№3»).
-  final String? number;
+  final String? number,
 
   /// Leading widget: an icon.
-  final Widget? leading;
+  final Widget? leading,
 
   /// Trailing widget: a value, a badge, a menu.
-  final Widget? trailing;
+  final Widget? trailing,
 
   /// Extra widget under the subtitle: a badge on phones.
-  final Widget? below;
+  final Widget? below,
 
   /// Attention bar on the leading edge.
-  final UiTone? stripe;
+  final UiTone? stripe,
 
   /// Tap handler; makes the row interactive.
-  final VoidCallback? onTap;
+  final VoidCallback? onTap,
 
   /// Selected state (tinted).
-  final bool selected;
+  final bool selected = false,
 
   /// Show a chevron that hints at a detail page.
-  final bool chevron;
+  final bool chevron = false,
 
   /// 44 px minimum instead of 56.
-  final bool dense;
-
+  final bool dense = false,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     Widget body(UiPressState? state) {
-      final background = selected
+      final Color background = selected
           ? c.accentSoft
           : state != null && (state.hovered || state.pressed)
           ? c.sunken
@@ -154,34 +141,26 @@ class UiListRow extends StatelessWidget {
 }
 
 /// Row with a radio mark: one of several mutually exclusive options.
-class UiChoiceRow extends StatelessWidget {
-  const UiChoiceRow({
-    required this.title,
-    required this.selected,
-    required this.onTap,
-    this.subtitle,
-    this.trailing,
-    super.key,
-  });
-
+class const UiChoiceRow({
   /// Title.
-  final String title;
-
-  /// Secondary line.
-  final String? subtitle;
+  required final String title,
 
   /// Whether this option is chosen.
-  final bool selected;
+  required final bool selected,
 
   /// Choose this option.
-  final VoidCallback? onTap;
+  required final VoidCallback? onTap,
+
+  /// Secondary line.
+  final String? subtitle,
 
   /// Trailing widget: a price.
-  final Widget? trailing;
-
+  final Widget? trailing,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return Semantics(
       inMutuallyExclusiveGroup: true,
       checked: selected,
@@ -196,12 +175,8 @@ class UiChoiceRow extends StatelessWidget {
   }
 }
 
-class _RadioMark extends StatelessWidget {
-  const _RadioMark({required this.selected, required this.color});
-
-  final bool selected;
-  final Color color;
-
+class const _RadioMark({required final bool selected, required final Color color})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox.square(
     dimension: 18,
@@ -215,30 +190,23 @@ class _RadioMark extends StatelessWidget {
 }
 
 /// Row with a label, a description and a [UiSwitch]; the whole row toggles.
-class UiSwitchRow extends StatelessWidget {
-  const UiSwitchRow({
-    required this.title,
-    required this.value,
-    required this.onChanged,
-    this.subtitle,
-    super.key,
-  });
-
+class const UiSwitchRow({
   /// Title.
-  final String title;
-
-  /// One line under the title.
-  final String? subtitle;
+  required final String title,
 
   /// Current value.
-  final bool value;
+  required final bool value,
 
   /// Change handler; `null` disables the row.
-  final ValueChanged<bool>? onChanged;
+  required final ValueChanged<bool>? onChanged,
 
+  /// One line under the title.
+  final String? subtitle,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return UiPressable(
       onPressed: onChanged == null ? null : () => onChanged!(!value),
       toggled: value,
@@ -276,25 +244,24 @@ class UiSwitchRow extends StatelessWidget {
 }
 
 /// Square switch, drawn like a relay contact: track and a sliding block.
-class UiSwitch extends StatelessWidget {
-  const UiSwitch({required this.value, required this.onChanged, super.key});
-
+class const UiSwitch({
   /// Current value.
-  final bool value;
+  required final bool value,
 
   /// Change handler; `null` disables the switch.
-  final ValueChanged<bool>? onChanged;
-
+  required final ValueChanged<bool>? onChanged,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     final enabled = onChanged != null;
-    final track = !enabled
+    final Color track = !enabled
         ? c.sunken
         : value
         ? c.primary
         : c.surface;
-    final thumb = !enabled
+    final Color thumb = !enabled
         ? c.border
         : value
         ? c.onPrimary
@@ -335,18 +302,17 @@ class UiSwitch extends StatelessWidget {
 }
 
 /// Label–value pairs: labels muted on the left, mono values on the right.
-class UiKeyValueList extends StatelessWidget {
-  const UiKeyValueList({required this.entries, this.padding, super.key});
-
+class const UiKeyValueList({
   /// Pairs.
-  final List<(String label, String value)> entries;
+  required final List<(String label, String value)> entries,
 
   /// Padding; defaults to the card padding.
-  final EdgeInsetsGeometry? padding;
-
+  final EdgeInsetsGeometry? padding,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return Padding(
       padding: padding ?? const EdgeInsets.fromLTRB(UiSpace.l, 0, UiSpace.l, UiSpace.l),
       child: Column(

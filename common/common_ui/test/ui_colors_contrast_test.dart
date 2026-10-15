@@ -6,18 +6,22 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// WCAG 2.1 contrast ratio of two opaque colours.
 double contrast(Color a, Color b) {
-  final la = a.computeLuminance();
-  final lb = b.computeLuminance();
+  final double la = a.computeLuminance();
+  final double lb = b.computeLuminance();
   return (math.max(la, lb) + .05) / (math.min(la, lb) + .05);
 }
 
 void main() {
   for (final (name, c) in [('light', UiColors.light), ('dark', UiColors.dark)]) {
     group('$name theme', () {
-      final grounds = {'canvas': c.canvas, 'surface': c.surface, 'sunken': c.sunken};
+      final Map<String, Color> grounds = {
+        'canvas': c.canvas,
+        'surface': c.surface,
+        'sunken': c.sunken,
+      };
 
       // Text roles: 4.5:1 (WCAG 1.4.3) on every ground they appear on.
-      final text = {
+      final Map<String, Color> text = {
         'text': c.text,
         'textMuted': c.textMuted,
         'accentText': c.accentText,
@@ -54,7 +58,7 @@ void main() {
       }
 
       // Status text on its own tint (badges, notices).
-      for (final tone in UiTone.values) {
+      for (final UiTone tone in UiTone.values) {
         test('${tone.name} on its tint ≥ 4.5', () {
           expect(contrast(tone.color(c), tone.soft(c)), greaterThanOrEqualTo(4.5));
         });

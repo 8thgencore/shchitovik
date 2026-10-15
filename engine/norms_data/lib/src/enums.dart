@@ -1,30 +1,29 @@
 /// Conductor material.
-enum ConductorMaterial {
-  copper('copper'),
-  aluminium('aluminium');
-
-  const ConductorMaterial(this.key);
-
+enum ConductorMaterial(
   /// Key used in the datasets.
-  final String key;
+  final String key,
+) {
+  copper('copper'),
+  aluminium('aluminium'),
 }
 
 /// Conductor insulation; defines the maximum operating temperature (ГОСТ Р 50571.5.52, табл. 52.1).
-enum Insulation {
+enum Insulation(
+  /// Key used in the datasets.
+  final String key,
+) {
   /// Thermoplastic (PVC), 70 °C.
   pvc('pvc'),
 
   /// Thermosetting (XLPE/EPR), 90 °C.
-  xlpe('xlpe');
-
-  const Insulation(this.key);
-
-  /// Key used in the datasets.
-  final String key;
+  xlpe('xlpe'),
 }
 
 /// Reference installation method of ГОСТ Р 50571.5.52, табл. B.52.1.
-enum ReferenceMethod {
+enum ReferenceMethod(
+  /// Key used in the datasets.
+  final String key,
+) {
   a1('A1'),
   a2('A2'),
   b1('B1'),
@@ -36,11 +35,6 @@ enum ReferenceMethod {
   /// Multicore cable in free air or on a perforated tray.
   e('E');
 
-  const ReferenceMethod(this.key);
-
-  /// Key used in the datasets.
-  final String key;
-
   /// Whether the method is a cable laid in the ground (D1, D2).
   bool get isInGround => this == d1 || this == d2;
 
@@ -49,4 +43,7 @@ enum ReferenceMethod {
 }
 
 /// Medium surrounding the cable.
-enum CableEnvironment { air, ground }
+enum CableEnvironment() {
+  air,
+  ground,
+}

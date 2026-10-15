@@ -3,7 +3,7 @@ import 'package:estimate_core/estimate_core.dart';
 /// Number with a comma and at most [digits] decimals; `—` for null.
 String formatNumber(double? value, [int digits = 1]) {
   if (value == null) return '—';
-  var s = value.toStringAsFixed(digits);
+  String s = value.toStringAsFixed(digits);
   if (s.contains('.')) s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
   return s.replaceAll('.', ',');
 }
@@ -25,7 +25,7 @@ String formatPriceRange(PriceRange price) =>
 
 /// Parses a decimal entered with a comma or a dot; `null` if empty or invalid.
 double? parseDecimal(String text) {
-  final normalized = text.trim().replaceAll(',', '.').replaceAll(' ', '');
+  final String normalized = text.trim().replaceAll(',', '.').replaceAll(' ', '');
   if (normalized.isEmpty) return null;
   return double.tryParse(normalized);
 }

@@ -14,7 +14,7 @@ void main() {
 
 /// Generates the Dart source with every dataset as a compact JSON string constant.
 String generateEmbeddedDatasets(Directory dataDir) {
-  final files = dataDir.listSync().whereType<File>().where((f) => f.path.endsWith('.json')).toList()
+  final List<File> files = dataDir.listSync().whereType<File>().where((f) => f.path.endsWith('.json')).toList()
     ..sort((a, b) => a.path.compareTo(b.path));
 
   final buffer = StringBuffer()
@@ -24,9 +24,9 @@ String generateEmbeddedDatasets(Directory dataDir) {
     ..writeln('/// Normative datasets keyed by file name without extension, as compact JSON.')
     ..writeln('const Map<String, String> embeddedDatasets = {');
   for (final file in files) {
-    final name = file.uri.pathSegments.last.replaceAll('.json', '');
+    final String name = file.uri.pathSegments.last.replaceAll('.json', '');
     // Re-encode compactly; jsonEncode escapes quotes, so a single-quoted raw string is not needed.
-    final compact = jsonEncode(jsonDecode(file.readAsStringSync()));
+    final String compact = jsonEncode(jsonDecode(file.readAsStringSync()));
     buffer.writeln("  '$name': ${_dartString(compact)},");
   }
   buffer.writeln('};');

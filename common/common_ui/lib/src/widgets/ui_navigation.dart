@@ -1,43 +1,35 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_icons.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_pressable.dart';
 import 'package:common_ui/src/widgets/ui_surfaces.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Top bar of a screen: leading button, stamp label and title, actions, optional bottom part.
 ///
 /// Flat surface with a hairline below; used as `Scaffold.appBar`.
-class UiTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const UiTopBar({
-    required this.title,
-    this.eyebrow,
-    this.leading,
-    this.actions = const [],
-    this.bottom,
-    this.large = false,
-    super.key,
-  });
-
+class const UiTopBar({
   /// Title.
-  final String title;
+  required final String title,
 
   /// Stamp label above the title: the project name on wide screens.
-  final String? eyebrow;
+  final String? eyebrow,
 
   /// Leading widget: a back button.
-  final Widget? leading;
+  final Widget? leading,
 
   /// Actions at the end.
-  final List<Widget> actions;
+  final List<Widget> actions = const [],
 
   /// Part under the bar: wizard steps.
-  final PreferredSizeWidget? bottom;
+  final PreferredSizeWidget? bottom,
 
   /// Larger title for wide screens.
-  final bool large;
-
+  final bool large = false,
+  super.key,
+}) extends StatelessWidget implements PreferredSizeWidget {
   double get _barHeight => eyebrow != null || large ? 68 : 56;
 
   @override
@@ -45,7 +37,7 @@ class UiTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return Semantics(
       container: true,
       child: DecoratedBox(
@@ -104,33 +96,26 @@ class UiTopBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 /// Side navigation of the expanded layout: brand, context block, sections, footer links.
-class UiSidebar extends StatelessWidget {
-  const UiSidebar({
-    required this.brand,
-    required this.items,
-    this.header,
-    this.footer = const [],
-    super.key,
-  });
-
+class const UiSidebar({
   /// Product name next to the mark.
-  final String brand;
-
-  /// Block under the brand: the current project.
-  final Widget? header;
+  required final String brand,
 
   /// Main sections.
-  final List<Widget> items;
+  required final List<Widget> items,
+
+  /// Block under the brand: the current project.
+  final Widget? header,
 
   /// Links at the bottom: all projects, settings.
-  final List<Widget> footer;
-
+  final List<Widget> footer = const [],
+  super.key,
+}) extends StatelessWidget {
   /// Width of the sidebar.
   static const width = 248.0;
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface,
@@ -202,39 +187,31 @@ class UiSidebar extends StatelessWidget {
 }
 
 /// Section link in a [UiSidebar]; the selected one gets an accent bar.
-class UiNavItem extends StatelessWidget {
-  const UiNavItem({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-    this.selected = false,
-    this.count,
-    super.key,
-  });
-
+class const UiNavItem({
   /// Icon.
-  final IconData icon;
+  required final IconData icon,
 
   /// Label.
-  final String label;
+  required final String label,
 
   /// Open the section.
-  final VoidCallback onPressed;
+  required final VoidCallback onPressed,
 
   /// Current section.
-  final bool selected;
+  final bool selected = false,
 
   /// Number at the end: items in the section.
-  final String? count;
-
+  final String? count,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return UiPressable(
       onPressed: onPressed,
       selected: selected,
       builder: (context, state) {
-        final foreground = selected || state.hovered ? c.text : c.textMuted;
+        final Color foreground = selected || state.hovered ? c.text : c.textMuted;
         return UiFocusRing(
           visible: state.focused,
           inset: true,
@@ -285,7 +262,7 @@ class UiNavItem extends StatelessWidget {
 }
 
 /// State of a wizard step.
-enum UiStepState {
+enum UiStepState() {
   /// Not reached or incomplete.
   upcoming,
 
@@ -298,29 +275,26 @@ enum UiStepState {
 
 /// Step of a [UiStepBar].
 @immutable
-final class UiStep {
-  const UiStep({required this.label, required this.state, this.summary});
-
+final class const UiStep({
   /// Name.
-  final String label;
-
-  /// One-line summary under the name: «3 помещения».
-  final String? summary;
+  required final String label,
 
   /// State.
-  final UiStepState state;
-}
+  required final UiStepState state,
+
+  /// One-line summary under the name: «3 помещения».
+  final String? summary,
+});
 
 /// Wizard progress on phones: one bar per step, accent on the current one; steps are tappable.
-class UiStepBar extends StatelessWidget implements PreferredSizeWidget {
-  const UiStepBar({required this.steps, required this.onSelected, super.key});
-
+class const UiStepBar({
   /// Steps.
-  final List<UiStep> steps;
+  required final List<UiStep> steps,
 
   /// Open a step by index.
-  final ValueChanged<int> onSelected;
-
+  required final ValueChanged<int> onSelected,
+  super.key,
+}) extends StatelessWidget implements PreferredSizeWidget {
   /// Height of the bar.
   static const height = 64.0;
 
@@ -329,7 +303,7 @@ class UiStepBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return SizedBox(
       height: preferredSize.height,
       child: Padding(
@@ -342,7 +316,7 @@ class UiStepBar extends StatelessWidget implements PreferredSizeWidget {
                   onPressed: () => onSelected(i),
                   selected: steps[i].state == UiStepState.current,
                   builder: (context, state) {
-                    final step = steps[i];
+                    final UiStep step = steps[i];
                     final current = step.state == UiStepState.current;
                     final done = step.state == UiStepState.done;
                     return UiFocusRing(

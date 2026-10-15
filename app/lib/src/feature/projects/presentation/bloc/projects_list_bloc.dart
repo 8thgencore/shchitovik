@@ -6,75 +6,47 @@ import 'package:shchitovik/src/feature/projects/application/projects_service.dar
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 
 /// Events of [ProjectsListBloc].
-sealed class ProjectsListEvent {
-  const ProjectsListEvent();
-}
+sealed class const ProjectsListEvent();
 
-final class _ProjectsChanged extends ProjectsListEvent {
-  const _ProjectsChanged(this.projects);
-
-  final List<ProjectSummary> projects;
-}
+final class const _ProjectsChanged(final List<ProjectSummary> projects) extends ProjectsListEvent;
 
 /// Creates an empty project; [created] completes with its id.
-final class ProjectCreateRequested extends ProjectsListEvent {
-  const ProjectCreateRequested({
-    required this.name,
-    required this.objectType,
-    required this.supplyPhases,
-    required this.created,
-  });
-
-  final String name;
-  final ObjectType objectType;
-  final SupplyPhases supplyPhases;
-  final Completer<String> created;
-}
+final class const ProjectCreateRequested({
+  required final String name,
+  required final ObjectType objectType,
+  required final SupplyPhases supplyPhases,
+  required final Completer<String> created,
+}) extends ProjectsListEvent;
 
 /// Creates a demo project; [created] completes with its id.
-final class ProjectDemoRequested extends ProjectsListEvent {
-  const ProjectDemoRequested(this.kind, this.created);
-
-  final DemoProjectKind kind;
-  final Completer<String> created;
-}
+final class const ProjectDemoRequested(final DemoProjectKind kind, final Completer<String> created)
+    extends ProjectsListEvent;
 
 /// Duplicates a project.
-final class ProjectDuplicateRequested extends ProjectsListEvent {
-  const ProjectDuplicateRequested(this.id);
-
-  final String id;
-}
+final class const ProjectDuplicateRequested(final String id) extends ProjectsListEvent;
 
 /// Deletes a project.
-final class ProjectDeleteRequested extends ProjectsListEvent {
-  const ProjectDeleteRequested(this.id);
-
-  final String id;
-}
+final class const ProjectDeleteRequested(final String id) extends ProjectsListEvent;
 
 /// Imports a `.shchitovik` file; [imported] completes with the new project or an error.
-final class ProjectImportRequested extends ProjectsListEvent {
-  const ProjectImportRequested(this.contents, this.imported);
-
-  final String contents;
-  final Completer<ProjectDocument> imported;
-}
+final class const ProjectImportRequested(
+  final String contents,
+  final Completer<ProjectDocument> imported,
+) extends ProjectsListEvent;
 
 /// State: the project list (`null` while loading).
-final class ProjectsListState {
-  const ProjectsListState(this.projects);
-
+final class const ProjectsListState(
   /// Projects, most recently updated first.
-  final List<ProjectSummary>? projects;
-}
+  final List<ProjectSummary>? projects,
+);
 
 /// Project list and actions on projects.
-final class ProjectsListBloc extends Bloc<ProjectsListEvent, ProjectsListState> {
-  ProjectsListBloc({required this._service}) : super(const ProjectsListState(null)) {
+final class ProjectsListBloc({required final ProjectsService _service})
+    extends Bloc<ProjectsListEvent, ProjectsListState> {
+  this : super(const ProjectsListState(null)) {
     on<_ProjectsChanged>((event, emit) => emit(ProjectsListState(event.projects)));
     on<ProjectCreateRequested>((event, _) async {
-      final document = await _service.create(
+      final ProjectDocument document = await _service.create(
         name: event.name,
         objectType: event.objectType,
         supplyPhases: event.supplyPhases,
@@ -96,7 +68,6 @@ final class ProjectsListBloc extends Bloc<ProjectsListEvent, ProjectsListState> 
     _subscription = _service.watchProjects().listen((p) => add(_ProjectsChanged(p)));
   }
 
-  final ProjectsService _service;
   late final StreamSubscription<List<ProjectSummary>> _subscription;
 
   @override

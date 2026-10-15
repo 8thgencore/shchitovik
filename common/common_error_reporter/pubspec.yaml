@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   common_logger:
     path: ../common_logger
-  sentry_flutter: ^9.30.1
+  sentry_flutter: ^10.1.0
 
 dev_dependencies:
   flutter_test:

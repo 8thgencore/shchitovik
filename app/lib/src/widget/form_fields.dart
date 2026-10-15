@@ -1,6 +1,6 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
 import 'package:shchitovik/src/feature/settings/presentation/settings_scope.dart';
@@ -14,40 +14,31 @@ bool isExpertMode(BuildContext context) =>
 ///
 /// [validator] runs on that same moment: invalid text is not reported and shows the error,
 /// which disappears with the first corrective keystroke.
-class CommitTextField extends StatefulWidget {
-  const CommitTextField({
-    required this.value,
-    required this.label,
-    required this.onCommitted,
-    this.hint,
-    this.numeric = false,
-    this.validator,
-    super.key,
-  });
-
+class const CommitTextField({
   /// Current value from the model.
-  final String value;
+  required final String value,
 
   /// Label.
-  final String label;
-
-  /// Helper text.
-  final String? hint;
-
-  /// Mono digits and a decimal keyboard.
-  final bool numeric;
+  required final String label,
 
   /// Called with the edited text when it differs from [value] and passes [validator].
-  final ValueChanged<String> onCommitted;
+  required final ValueChanged<String> onCommitted,
+
+  /// Helper text.
+  final String? hint,
+
+  /// Mono digits and a decimal keyboard.
+  final bool numeric = false,
 
   /// Error message for the edited text, `null` when it is valid.
-  final String? Function(String text)? validator;
-
+  final String? Function(String text)? validator,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<CommitTextField> createState() => _CommitTextFieldState();
 }
 
-class _CommitTextFieldState extends State<CommitTextField> {
+class _CommitTextFieldState() extends State<CommitTextField> {
   late final _controller = TextEditingController(text: widget.value);
   final _focus = FocusNode();
   String? _error;
@@ -69,7 +60,7 @@ class _CommitTextFieldState extends State<CommitTextField> {
   }
 
   void _commit() {
-    final error = widget.validator?.call(_controller.text);
+    final String? error = widget.validator?.call(_controller.text);
     if (error != _error) setState(() => _error = error);
     if (error == null && _controller.text != widget.value) widget.onCommitted(_controller.text);
   }
@@ -97,35 +88,26 @@ class _CommitTextFieldState extends State<CommitTextField> {
 }
 
 /// Decimal field; empty input means `null`, text that is not a number shows an error.
-class DecimalField extends StatelessWidget {
-  const DecimalField({
-    required this.value,
-    required this.label,
-    required this.onChanged,
-    this.hint,
-    this.digits = 2,
-    this.validator,
-    super.key,
-  });
-
+class const DecimalField({
   /// Current value.
-  final double? value;
+  required final double? value,
 
   /// Label.
-  final String label;
-
-  /// Helper text.
-  final String? hint;
-
-  /// Decimals shown.
-  final int digits;
+  required final String label,
 
   /// Called with the parsed value (`null` when cleared) once it passes [validator].
-  final ValueChanged<double?> onChanged;
+  required final ValueChanged<double?> onChanged,
+
+  /// Helper text.
+  final String? hint,
+
+  /// Decimals shown.
+  final int digits = 2,
 
   /// Error message for the parsed value, `null` when it is acceptable.
-  final String? Function(double? value)? validator;
-
+  final String? Function(double? value)? validator,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CommitTextField(
     value: value == null ? '' : formatNumber(value, digits),
@@ -133,7 +115,7 @@ class DecimalField extends StatelessWidget {
     hint: hint,
     numeric: true,
     validator: (text) {
-      final parsed = parseDecimal(text);
+      final double? parsed = parseDecimal(text);
       if (text.trim().isNotEmpty && parsed == null) return context.translations.fieldNumber;
       return validator?.call(parsed);
     },
@@ -172,21 +154,20 @@ extension FieldValidators on BuildContext {
 }
 
 /// Scrollable page body: content capped at [maxWidth] with the screen gutter.
-class PageBody extends StatelessWidget {
-  const PageBody({required this.children, this.maxWidth, this.bottomInset = 0, super.key});
-
+class const PageBody({
   /// Blocks of the page, separated by the section gap.
-  final List<Widget> children;
+  required final List<Widget> children,
 
   /// Content width cap; defaults to the full content width.
-  final double? maxWidth;
+  final double? maxWidth,
 
   /// Extra space at the bottom (above a floating action).
-  final double bottomInset;
-
+  final double bottomInset = 0,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final gutter = context.isExpandedLayout ? UiSpace.xl : UiSpace.l;
+    final double gutter = context.isExpandedLayout ? UiSpace.xl : UiSpace.l;
     return ListView(
       padding: EdgeInsets.fromLTRB(gutter, gutter, gutter, UiSpace.xxl + bottomInset),
       children: [

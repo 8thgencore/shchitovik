@@ -1,49 +1,41 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_surfaces.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// One reading: stamp label, mono value and unit.
 @immutable
-final class UiMetric {
-  const UiMetric({
-    required this.label,
-    required this.value,
-    this.unit,
-    this.emphasis,
-    this.symbol = false,
-  });
-
+final class const UiMetric({
   /// What is measured.
-  final String label;
-
-  /// [label] is a quantity symbol (In, ΔU) and keeps its case.
-  final bool symbol;
+  required final String label,
 
   /// Value without the unit.
-  final String value;
+  required final String value,
 
   /// Unit or a «/ total» suffix.
-  final String? unit;
+  final String? unit,
 
   /// Colour for a value outside limits.
-  final Color? emphasis;
-}
+  final Color? emphasis,
+
+  /// [label] is a quantity symbol (In, ΔU) and keeps its case.
+  final bool symbol = false,
+});
 
 /// Grid of readings separated by hairlines: 2 columns on phones, 4 on wide cards.
-class UiMetricGrid extends StatelessWidget {
-  const UiMetricGrid({required this.metrics, this.topBorder = true, super.key});
-
+class const UiMetricGrid({
   /// Readings.
-  final List<UiMetric> metrics;
+  required final List<UiMetric> metrics,
 
   /// Hairline above the first row (after a card header).
-  final bool topBorder;
-
+  final bool topBorder = true,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return LayoutBuilder(
       builder: (context, constraints) {
         final columns = constraints.maxWidth >= 560 ? 4 : 2;
@@ -87,14 +79,10 @@ class UiMetricGrid extends StatelessWidget {
   }
 }
 
-class _MetricCell extends StatelessWidget {
-  const _MetricCell({required this.metric});
-
-  final UiMetric metric;
-
+class const _MetricCell({required final UiMetric metric}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(UiSpace.l, UiSpace.m, UiSpace.m, UiSpace.m),
       child: Column(
@@ -122,27 +110,21 @@ class _MetricCell extends StatelessWidget {
 }
 
 /// Range with a marker: where a typical value sits between its bounds.
-class UiRangeBar extends StatelessWidget {
-  const UiRangeBar({
-    required this.position,
-    required this.startLabel,
-    required this.endLabel,
-    super.key,
-  });
-
+class const UiRangeBar({
   /// Marker position, 0…1.
-  final double position;
+  required final double position,
 
   /// Lower bound text.
-  final String startLabel;
+  required final String startLabel,
 
   /// Upper bound text.
-  final String endLabel;
-
+  required final String endLabel,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final style = UiTextStyles.value.copyWith(color: c.textMuted, fontSize: 12);
+    final UiColors c = context.uiColors;
+    final TextStyle style = UiTextStyles.value.copyWith(color: c.textMuted, fontSize: 12);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,

@@ -3,10 +3,10 @@ import 'package:common_ui/src/tokens/ui_icons.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Meaning of a status mark. Colour is never the only signal: tones also differ in icon or text.
-enum UiTone {
+enum UiTone() {
   /// Nothing to report, preliminary.
   neutral,
 
@@ -51,18 +51,17 @@ enum UiTone {
 }
 
 /// Outlined stamp-like badge: square marker and an upper-case mono label.
-class UiBadge extends StatelessWidget {
-  const UiBadge({required this.label, required this.tone, super.key});
-
+class const UiBadge({
   /// Text: what the status means («Норма», «1 ошибка»).
-  final String label;
+  required final String label,
 
   /// Tone.
-  final UiTone tone;
-
+  required final UiTone tone,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final color = tone.color(context.uiColors);
+    final Color color = tone.color(context.uiColors);
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: UiRadius.controlAll,
@@ -92,15 +91,14 @@ class UiBadge extends StatelessWidget {
 }
 
 /// Small square status marker.
-class UiStatusDot extends StatelessWidget {
-  const UiStatusDot({required this.tone, this.size = 7, super.key});
-
+class const UiStatusDot({
   /// Tone.
-  final UiTone tone;
+  required final UiTone tone,
 
   /// Side.
-  final double size;
-
+  final double size = 7,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox.square(
     dimension: size,
@@ -114,21 +112,20 @@ class UiStatusDot extends StatelessWidget {
 }
 
 /// Status icon with a tooltip that names it.
-class UiStatusIcon extends StatelessWidget {
-  const UiStatusIcon({required this.tone, required this.label, this.icon, this.size, super.key});
-
+class const UiStatusIcon({
   /// Tone.
-  final UiTone tone;
+  required final UiTone tone,
 
   /// Status name: tooltip and accessible label.
-  final String label;
+  required final String label,
 
   /// Icon; defaults to the tone icon.
-  final IconData? icon;
+  final IconData? icon,
 
   /// Icon size.
-  final double? size;
-
+  final double? size,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Tooltip(
     message: label,
@@ -142,34 +139,26 @@ class UiStatusIcon extends StatelessWidget {
 }
 
 /// Inline message with a tone icon; [boxed] puts it on a tinted panel with a side stripe.
-class UiNotice extends StatelessWidget {
-  const UiNotice({
-    required this.message,
-    this.tone = UiTone.neutral,
-    this.title,
-    this.action,
-    this.boxed = false,
-    super.key,
-  });
-
+class const UiNotice({
   /// Text.
-  final String message;
-
-  /// Bold first line.
-  final String? title;
+  required final String message,
 
   /// Tone.
-  final UiTone tone;
+  final UiTone tone = UiTone.neutral,
+
+  /// Bold first line.
+  final String? title,
 
   /// Action under the text: a ghost button.
-  final Widget? action;
+  final Widget? action,
 
   /// Draw on a tinted panel.
-  final bool boxed;
-
+  final bool boxed = false,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     final content = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

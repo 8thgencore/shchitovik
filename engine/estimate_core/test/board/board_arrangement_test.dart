@@ -56,11 +56,11 @@ void main() {
   });
 
   group('arrangeSwitchboard', () {
-    final items = [_item('a'), _item('b', 2), _item('c'), _item('d')];
+    final List<BoardItem> items = [_item('a'), _item('b', 2), _item('c'), _item('d')];
 
     test('automatic arrangement equals layoutSwitchboard', () {
-      final auto = layoutSwitchboard(items);
-      final arranged = arrangeSwitchboard(items, const BoardArrangement());
+      final SwitchboardLayout auto = layoutSwitchboard(items);
+      final SwitchboardLayout arranged = arrangeSwitchboard(items, const BoardArrangement());
       expect(_ids(arranged), _ids(auto));
       expect(arranged.modulesPerRail, auto.modulesPerRail);
     });
@@ -116,15 +116,18 @@ void main() {
     };
     for (final MapEntry(key: name, value: (arrangement, rails, enclosure)) in cases.entries) {
       test(name, () {
-        final layout = arrangeSwitchboard(items, arrangement);
+        final SwitchboardLayout layout = arrangeSwitchboard(items, arrangement);
         expect(_ids(layout), rails);
         expect((layout.enclosureRails, layout.modulesPerRail), enclosure);
       });
     }
 
     test('items that do not fit the enclosure go to an extra rail', () {
-      final wide = [for (var i = 0; i < 14; i++) _item('w$i')];
-      final layout = arrangeSwitchboard(wide, const BoardArrangement(enclosure: (1, 12)));
+      final List<BoardItem> wide = [for (var i = 0; i < 14; i++) _item('w$i')];
+      final SwitchboardLayout layout = arrangeSwitchboard(
+        wide,
+        const BoardArrangement(enclosure: (1, 12)),
+      );
       expect(layout.rails, hasLength(2));
       expect(layout.enclosureRails, 1);
       expect(layout.warnings.whereType<BoardEnclosureTooSmall>(), hasLength(1));
@@ -178,8 +181,15 @@ void main() {
   });
 
   group('moveBoardItem', () {
-    final items = [_item('a'), _item('b', 2), _item('c'), _item('d'), _item('e', 3), _item('f')];
-    final layout = arrangeSwitchboard(
+    final List<BoardItem> items = [
+      _item('a'),
+      _item('b', 2),
+      _item('c'),
+      _item('d'),
+      _item('e', 3),
+      _item('f'),
+    ];
+    final SwitchboardLayout layout = arrangeSwitchboard(
       items,
       const BoardArrangement(
         enclosure: (2, 12),
@@ -249,7 +259,7 @@ void main() {
     for (final (id, move, expected) in cases) {
       test('$id ${move.name}', () {
         const start = BoardArrangement(enclosure: (2, 12));
-        final moved = moveBoardItem(start, layout, id, move);
+        final BoardArrangement moved = moveBoardItem(start, layout, id, move);
         if (expected == null) {
           expect(identical(moved, start), isTrue);
         } else {
@@ -261,7 +271,7 @@ void main() {
   });
 
   group('placeBoardItem', () {
-    final layout = arrangeSwitchboard(
+    final SwitchboardLayout layout = arrangeSwitchboard(
       [_item('a'), _item('b'), _item('c'), _item('d')],
       const BoardArrangement(
         enclosure: (2, 12),
@@ -313,7 +323,13 @@ void main() {
     ];
     for (final (id, rail, index, expected) in cases) {
       test('$id → rail $rail at $index', () {
-        final placed = placeBoardItem(const BoardArrangement(), layout, id, rail, index);
+        final BoardArrangement placed = placeBoardItem(
+          const BoardArrangement(),
+          layout,
+          id,
+          rail,
+          index,
+        );
         expect(placed.rails, expected);
       });
     }

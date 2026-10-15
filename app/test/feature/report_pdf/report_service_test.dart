@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
@@ -7,7 +9,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('builds a PDF with fonts from the asset bundle', () async {
-    final bytes = await ReportService(appVersion: '0.1.0+1').build(
+    final Uint8List bytes = await ReportService(appVersion: '0.1.0+1').build(
       ProjectDocument(
         id: 'id',
         name: 'Демо',

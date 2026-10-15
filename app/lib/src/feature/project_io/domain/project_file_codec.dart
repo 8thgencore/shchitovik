@@ -10,7 +10,7 @@ import 'package:shchitovik/src/feature/projects/public/domain/project_document_c
 /// {"format": "shchitovik-project", "format_version": 1, "app_version": "…",
 ///  "algorithm_version": "…", "exported_at": "…", "document": {…}}
 /// ```
-abstract final class ProjectFileCodec {
+abstract final class ProjectFileCodec() {
   /// File extension without the dot.
   static const extension = 'shchitovik';
 
@@ -48,13 +48,13 @@ abstract final class ProjectFileCodec {
     if (json is! Map<String, Object?> || json['format'] != format) {
       throw const ProjectFormatException('Файл не является проектом «Щитовика»');
     }
-    final version = json['format_version'];
+    final Object? version = json['format_version'];
     if (version is! int || version > formatVersion) {
       throw const ProjectFormatException(
         'Файл создан более новой версией приложения. Обновите приложение.',
       );
     }
-    final document = json['document'];
+    final Object? document = json['document'];
     if (document is! Map<String, Object?>) {
       throw const ProjectFormatException('В файле нет данных проекта');
     }
@@ -63,7 +63,7 @@ abstract final class ProjectFileCodec {
 
   /// Safe file name for [projectName].
   static String fileName(String projectName) {
-    final base = projectName.trim().replaceAll(RegExp(r'[\\/:*?"<>|\s]+'), '_');
+    final String base = projectName.trim().replaceAll(RegExp(r'[\\/:*?"<>|\s]+'), '_');
     return '${base.isEmpty ? 'project' : base}.$extension';
   }
 }

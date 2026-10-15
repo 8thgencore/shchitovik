@@ -3,27 +3,27 @@ import 'package:meta/meta.dart';
 /// Price range in kopecks: an estimate is always a range, not a single figure.
 @immutable
 final class PriceRange {
-  const PriceRange({
+  const new({
     required this.minKopecks,
     required this.typicalKopecks,
     required this.maxKopecks,
   });
 
   /// Same value for all three bounds (user-entered price).
-  const PriceRange.exact(int kopecks)
+  const new exact(int kopecks)
     : minKopecks = kopecks,
       typicalKopecks = kopecks,
       maxKopecks = kopecks;
 
   /// Parses a catalog price object given in rubles.
-  factory PriceRange.fromRublesJson(Map<String, Object?> json) => PriceRange(
+  factory fromRublesJson(Map<String, Object?> json) => PriceRange(
     minKopecks: _kopecks(json['min']),
     typicalKopecks: _kopecks(json['typical']),
     maxKopecks: _kopecks(json['max']),
   );
 
   /// Parses JSON produced by [toJson].
-  factory PriceRange.fromJson(Map<String, Object?> json) => PriceRange(
+  factory fromJson(Map<String, Object?> json) => PriceRange(
     minKopecks: json['min_kopecks']! as int,
     typicalKopecks: json['typical_kopecks']! as int,
     maxKopecks: json['max_kopecks']! as int,

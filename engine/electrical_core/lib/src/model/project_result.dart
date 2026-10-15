@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:norms_data/norms_data.dart';
 
 /// Code of a circuit or incomer check.
-enum CheckCode {
+enum CheckCode() {
   /// IB ≤ In (ГОСТ Р 50571.4.43, 433.1).
   loadVsBreaker,
 
@@ -47,34 +47,25 @@ enum CheckCode {
 
 /// Result of one check.
 @immutable
-final class Check {
-  const Check({
-    required this.code,
-    required this.status,
-    required this.message,
-    this.value,
-    this.limit,
-    this.reference,
-  });
-
+final class const Check({
   /// Check code.
-  final CheckCode code;
+  required final CheckCode code,
 
   /// Outcome.
-  final CheckStatus status;
+  required final CheckStatus status,
 
   /// Russian explanation for the user and the report.
-  final String message;
+  required final String message,
 
   /// Checked value (current, %, A …), if numeric.
-  final double? value;
+  final double? value,
 
   /// Limit the value is compared against.
-  final double? limit;
+  final double? limit,
 
   /// Clause of the norm.
-  final String? reference;
-
+  final String? reference,
+}) {
   /// Serializes to JSON.
   Json toJson() => compact({
     'code': code.name,
@@ -88,30 +79,22 @@ final class Check {
 
 /// Issue that is not tied to a single check.
 @immutable
-final class Issue {
-  const Issue({
-    required this.severity,
-    required this.code,
-    required this.message,
-    this.circuitId,
-    this.deviceId,
-  });
-
+final class const Issue({
   /// Severity.
-  final IssueSeverity severity;
+  required final IssueSeverity severity,
 
   /// Stable code for tests and UI.
-  final String code;
+  required final String code,
 
   /// Russian message.
-  final String message;
+  required final String message,
 
   /// Related circuit.
-  final String? circuitId;
+  final String? circuitId,
 
   /// Related device.
-  final String? deviceId;
-
+  final String? deviceId,
+}) {
   /// Serializes to JSON.
   Json toJson() => compact({
     'severity': severity.name,
@@ -124,45 +107,35 @@ final class Issue {
 
 /// Assumption the calculation relied on; listed in the report.
 @immutable
-final class Assumption {
-  const Assumption({required this.code, required this.message});
-
+final class const Assumption({
   /// Stable code.
-  final String code;
+  required final String code,
 
   /// Russian text.
-  final String message;
-
+  required final String message,
+}) {
   /// Serializes to JSON.
   Json toJson() => {'code': code, 'message': message};
 }
 
 /// Residual current protection of a circuit.
 @immutable
-final class RcdResult {
-  const RcdResult({
-    required this.residualMa,
-    required this.type,
-    required this.reasons,
-    this.ratedA,
-    this.groupId,
-  });
-
+final class const RcdResult({
   /// Rated residual operating current IΔn, mA.
-  final double residualMa;
+  required final double residualMa,
 
   /// RCD type (`A`).
-  final String type;
+  required final String type,
 
   /// Why the RCD is required (Russian, with references).
-  final List<String> reasons;
+  required final List<String> reasons,
 
   /// Rated current of a separate RCD, A; `null` for RCBO or grouped RCD.
-  final double? ratedA;
+  final double? ratedA,
 
   /// Id of the shared RCD for the grouped strategy.
-  final String? groupId;
-
+  final String? groupId,
+}) {
   /// Serializes to JSON.
   Json toJson() => compact({
     'residual_ma': residualMa,
@@ -175,34 +148,25 @@ final class RcdResult {
 
 /// Protection of a circuit.
 @immutable
-final class ProtectionResult {
-  const ProtectionResult({
-    required this.device,
-    required this.breakerA,
-    required this.curve,
-    required this.poles,
-    required this.breakerSource,
-    this.rcd,
-  });
-
+final class const ProtectionResult({
   /// Device type.
-  final ProtectionDevice device;
+  required final ProtectionDevice device,
 
   /// Rated current In, A.
-  final double breakerA;
+  required final double breakerA,
 
   /// Tripping curve.
-  final BreakerCurve curve;
+  required final BreakerCurve curve,
 
   /// Number of protected poles (1 or 3; RCBO 1P+N counts as 1).
-  final int poles;
+  required final int poles,
 
   /// Whether rating/curve were set manually.
-  final ValueSource breakerSource;
+  required final ValueSource breakerSource,
 
   /// Residual current protection, if any.
-  final RcdResult? rcd;
-
+  final RcdResult? rcd,
+}) {
   /// Short label like `C16`.
   String get label => '${curve.name.toUpperCase()}${_trim(breakerA)}';
 
@@ -219,90 +183,67 @@ final class ProtectionResult {
 
 /// Cable of a circuit (or of the incomer).
 @immutable
-final class CableResult {
-  const CableResult({
-    required this.material,
-    required this.insulation,
-    required this.installationMethodId,
-    required this.referenceMethod,
-    required this.cores,
-    required this.sectionMm2,
-    required this.peSectionMm2,
-    required this.sectionSource,
-    required this.voltageDropLimitPercent,
-    required this.checks,
-    this.lengthM,
-    this.tabulatedA,
-    this.temperatureFactor,
-    this.groupingFactor,
-    this.soilFactor,
-    this.ampacityA,
-    this.voltageDropPercent,
-    this.loopImpedanceOhm,
-    this.faultCurrentMinA,
-    this.instantaneousTripA,
-  });
-
+final class const CableResult({
   /// Conductor material.
-  final ConductorMaterial material;
+  required final ConductorMaterial material,
 
   /// Insulation.
-  final Insulation insulation;
+  required final Insulation insulation,
 
   /// Installation method id.
-  final String installationMethodId;
+  required final String installationMethodId,
 
   /// Reference method of ГОСТ Р 50571.5.52.
-  final ReferenceMethod referenceMethod;
+  required final ReferenceMethod referenceMethod,
 
   /// Number of cores (3 or 5).
-  final int cores;
+  required final int cores,
 
   /// Line conductor section, mm².
-  final double sectionMm2;
+  required final double sectionMm2,
 
   /// Protective conductor section, mm².
-  final double peSectionMm2;
+  required final double peSectionMm2,
 
   /// Automatic or manual section.
-  final ValueSource sectionSource;
-
-  /// Length, m.
-  final double? lengthM;
-
-  /// Tabulated current Iтабл, A.
-  final double? tabulatedA;
-
-  /// Ambient temperature factor.
-  final double? temperatureFactor;
-
-  /// Grouping factor.
-  final double? groupingFactor;
-
-  /// Soil resistivity factor (cables in the ground).
-  final double? soilFactor;
-
-  /// Corrected current-carrying capacity Iz, A.
-  final double? ampacityA;
-
-  /// Voltage drop including the incomer cable, %.
-  final double? voltageDropPercent;
+  required final ValueSource sectionSource,
 
   /// Voltage drop limit, %.
-  final double voltageDropLimitPercent;
-
-  /// Phase–PE loop impedance at the end of the line, Ом.
-  final double? loopImpedanceOhm;
-
-  /// Minimum prospective fault current at the end of the line, A.
-  final double? faultCurrentMinA;
-
-  /// Current guaranteeing instantaneous tripping of the breaker, A.
-  final double? instantaneousTripA;
+  required final double voltageDropLimitPercent,
 
   /// Checks.
-  final List<Check> checks;
+  required final List<Check> checks,
 
+  /// Length, m.
+  final double? lengthM,
+
+  /// Tabulated current Iтабл, A.
+  final double? tabulatedA,
+
+  /// Ambient temperature factor.
+  final double? temperatureFactor,
+
+  /// Grouping factor.
+  final double? groupingFactor,
+
+  /// Soil resistivity factor (cables in the ground).
+  final double? soilFactor,
+
+  /// Corrected current-carrying capacity Iz, A.
+  final double? ampacityA,
+
+  /// Voltage drop including the incomer cable, %.
+  final double? voltageDropPercent,
+
+  /// Phase–PE loop impedance at the end of the line, Ом.
+  final double? loopImpedanceOhm,
+
+  /// Minimum prospective fault current at the end of the line, A.
+  final double? faultCurrentMinA,
+
+  /// Current guaranteeing instantaneous tripping of the breaker, A.
+  final double? instantaneousTripA,
+}) {
   /// Label like `3×2,5`.
   String get label => '$cores×${_trimComma(sectionMm2)}';
 
@@ -333,82 +274,61 @@ final class CableResult {
 
 /// Calculated circuit.
 @immutable
-final class CircuitResult {
-  const CircuitResult({
-    required this.id,
-    required this.number,
-    required this.name,
-    required this.purpose,
-    required this.roomIds,
-    required this.deviceIds,
-    required this.phases,
-    required this.phase,
-    required this.phaseSource,
-    required this.installedPowerW,
-    required this.designCurrentA,
-    required this.demandCurrentA,
-    required this.cosPhi,
-    required this.startingCurrentA,
-    required this.protection,
-    required this.cable,
-    required this.checks,
-    required this.status,
-  });
-
+final class const CircuitResult({
   /// Stable id (key of `CircuitSettings`).
-  final String id;
+  required final String id,
 
   /// Number in the panel, from 1.
-  final int number;
+  required final int number,
 
   /// Name for the user.
-  final String name;
+  required final String name,
 
   /// Purpose.
-  final CircuitPurpose purpose;
+  required final CircuitPurpose purpose,
 
   /// Rooms served.
-  final List<String> roomIds;
+  required final List<String> roomIds,
 
   /// Devices served.
-  final List<String> deviceIds;
+  required final List<String> deviceIds,
 
   /// 1 or 3.
-  final int phases;
+  required final int phases,
 
   /// Phase of a single-phase circuit; `null` for three-phase circuits.
-  final Phase? phase;
+  required final Phase? phase,
 
   /// Automatic or manual phase.
-  final ValueSource phaseSource;
+  required final ValueSource phaseSource,
 
   /// Sum of rated powers, Вт.
-  final double installedPowerW;
+  required final double installedPowerW,
 
   /// Design current IB with Kс = 1 (СП 256, 7.2.2), A.
-  final double designCurrentA;
+  required final double designCurrentA,
 
   /// Expected current with usage factors, A (phase balancing, input estimate).
-  final double demandCurrentA;
+  required final double demandCurrentA,
 
   /// Resulting power factor.
-  final double cosPhi;
+  required final double cosPhi,
 
   /// Peak starting current of the circuit, A.
-  final double startingCurrentA;
+  required final double startingCurrentA,
 
   /// Protection.
-  final ProtectionResult protection;
+  required final ProtectionResult protection,
 
   /// Cable.
-  final CableResult cable;
+  required final CableResult cable,
 
   /// Circuit-level checks (protection); cable checks are in [cable].
-  final List<Check> checks;
+  required final List<Check> checks,
 
   /// Overall status.
-  final CalculationStatus status;
-
+  required final CalculationStatus status,
+}) {
   /// All checks of the circuit.
   Iterable<Check> get allChecks => [...checks, ...cable.checks];
 
@@ -437,42 +357,31 @@ final class CircuitResult {
 
 /// Shared RCD (grouped strategy) or fire-protection RCD.
 @immutable
-final class SharedRcdResult {
-  const SharedRcdResult({
-    required this.id,
-    required this.ratedA,
-    required this.residualMa,
-    required this.type,
-    required this.poles,
-    required this.circuitIds,
-    required this.leakageMa,
-    this.selective = false,
-  });
-
+final class const SharedRcdResult({
   /// Id.
-  final String id;
+  required final String id,
 
   /// Rated current, A.
-  final double ratedA;
+  required final double ratedA,
 
   /// IΔn, mA.
-  final double residualMa;
+  required final double residualMa,
 
   /// Type (`A`).
-  final String type;
+  required final String type,
 
   /// 2 or 4.
-  final int poles;
+  required final int poles,
 
   /// Circuits behind the RCD (empty for the incomer RCD: all circuits).
-  final List<String> circuitIds;
+  required final List<String> circuitIds,
 
   /// Estimated leakage current, mA (СП 256 А.1.2).
-  final double leakageMa;
+  required final double leakageMa,
 
   /// Time-delayed (S) for selectivity.
-  final bool selective;
-
+  final bool selective = false,
+}) {
   /// Serializes to JSON.
   Json toJson() => {
     'id': id,
@@ -488,22 +397,16 @@ final class SharedRcdResult {
 
 /// Phase loads after balancing.
 @immutable
-final class PhaseBalanceResult {
-  const PhaseBalanceResult({
-    required this.loadsA,
-    required this.imbalancePercent,
-    required this.limitPercent,
-  });
-
+final class const PhaseBalanceResult({
   /// Demand current per phase, A.
-  final Map<Phase, double> loadsA;
+  required final Map<Phase, double> loadsA,
 
   /// (max − min) / max · 100.
-  final double imbalancePercent;
+  required final double imbalancePercent,
 
   /// Limit used for the warning, % (СП 256 п. 10.5).
-  final double limitPercent;
-
+  required final double limitPercent,
+}) {
   /// Serializes to JSON.
   Json toJson() => {
     'loads_a': {for (final e in loadsA.entries) e.key.name: e.value},
@@ -514,50 +417,37 @@ final class PhaseBalanceResult {
 
 /// Input (incomer) calculation.
 @immutable
-final class IncomerResult {
-  const IncomerResult({
-    required this.installedPowerW,
-    required this.demandByDevicesW,
-    required this.demandNormativeW,
-    required this.normativeMethod,
-    required this.cosPhi,
-    required this.designCurrentA,
-    required this.breakerA,
-    required this.breakerSource,
-    required this.checks,
-    this.cable,
-  });
-
+final class const IncomerResult({
   /// Sum of rated powers, Вт.
-  final double installedPowerW;
+  required final double installedPowerW,
 
   /// Σ P·ku, Вт (upper estimate).
-  final double demandByDevicesW;
+  required final double demandByDevicesW,
 
   /// Design load by СП 256, Вт; used to select the incomer.
-  final double demandNormativeW;
+  required final double demandNormativeW,
 
   /// How [demandNormativeW] was obtained (Russian, with references).
-  final String normativeMethod;
+  required final String normativeMethod,
 
   /// Power factor of the input.
-  final double cosPhi;
+  required final double cosPhi,
 
   /// Design current of the most loaded phase, A.
-  final double designCurrentA;
+  required final double designCurrentA,
 
   /// Incomer breaker rating, A.
-  final double? breakerA;
+  required final double? breakerA,
 
   /// Existing (manual) or selected.
-  final ValueSource breakerSource;
-
-  /// Incomer cable, if requested.
-  final CableResult? cable;
+  required final ValueSource breakerSource,
 
   /// Checks.
-  final List<Check> checks;
+  required final List<Check> checks,
 
+  /// Incomer cable, if requested.
+  final CableResult? cable,
+}) {
   /// Serializes to JSON.
   Json toJson() => compact({
     'installed_power_w': installedPowerW,
@@ -575,58 +465,43 @@ final class IncomerResult {
 
 /// Complete calculation result; never persisted, always recomputed from `ProjectInput`.
 @immutable
-final class ProjectResult {
-  const ProjectResult({
-    required this.algorithmVersion,
-    required this.datasetVersions,
-    required this.phaseVoltageV,
-    required this.lineVoltageV,
-    required this.circuits,
-    required this.sharedRcds,
-    required this.incomer,
-    required this.issues,
-    required this.assumptions,
-    required this.status,
-    this.fireRcd,
-    this.phaseBalance,
-  });
-
+final class const ProjectResult({
   /// Algorithm version.
-  final String algorithmVersion;
+  required final String algorithmVersion,
 
   /// Versions of the normative datasets.
-  final Map<String, String> datasetVersions;
+  required final Map<String, String> datasetVersions,
 
   /// U0, В.
-  final double phaseVoltageV;
+  required final double phaseVoltageV,
 
   /// Line voltage, В.
-  final double lineVoltageV;
+  required final double lineVoltageV,
 
   /// Circuits ordered by number.
-  final List<CircuitResult> circuits;
+  required final List<CircuitResult> circuits,
 
   /// Shared RCDs of the grouped strategy.
-  final List<SharedRcdResult> sharedRcds;
-
-  /// Fire-protection RCD at the input.
-  final SharedRcdResult? fireRcd;
-
-  /// Phase balance (three-phase supply).
-  final PhaseBalanceResult? phaseBalance;
+  required final List<SharedRcdResult> sharedRcds,
 
   /// Input.
-  final IncomerResult incomer;
+  required final IncomerResult incomer,
 
   /// Issues.
-  final List<Issue> issues;
+  required final List<Issue> issues,
 
   /// Assumptions.
-  final List<Assumption> assumptions;
+  required final List<Assumption> assumptions,
 
   /// Overall status (worst of all circuits and the incomer).
-  final CalculationStatus status;
+  required final CalculationStatus status,
 
+  /// Fire-protection RCD at the input.
+  final SharedRcdResult? fireRcd,
+
+  /// Phase balance (three-phase supply).
+  final PhaseBalanceResult? phaseBalance,
+}) {
   /// Serializes to JSON.
   Json toJson() => compact({
     'algorithm_version': algorithmVersion,

@@ -1,21 +1,30 @@
 import 'package:norms_data/src/json_reading.dart';
 
 /// Tripping characteristic of a circuit-breaker (ГОСТ IEC 60898-1).
-enum BreakerCurve { b, c, d }
+enum BreakerCurve() {
+  b,
+  c,
+  d,
+}
 
 /// Circuit-breaker and RCD reference data.
-final class BreakerData {
-  BreakerData._({
-    required this.ratedCurrents,
-    required this._instantaneous,
-    required this.conventionalTrippingMultiple,
-    required this.rcdRatedResidualMa,
-    required this.rcdRatedCurrents,
-  });
+final class BreakerData._({
+  /// Rated currents of modular breakers, A, ascending.
+  required final List<double> ratedCurrents,
+  required final Map<BreakerCurve, ({double min, double max})> _instantaneous,
 
+  /// Conventional tripping current multiple I2 / In.
+  required final double conventionalTrippingMultiple,
+
+  /// Rated residual operating currents of RCDs, mA.
+  required final List<double> rcdRatedResidualMa,
+
+  /// Rated currents of RCDs, A.
+  required final List<double> rcdRatedCurrents,
+}) {
   /// Parses the `breakers` dataset.
-  factory BreakerData.fromJson(JsonMap json) {
-    final inst = object(json['instantaneous_trip_multiple']);
+  factory fromJson(JsonMap json) {
+    final JsonMap inst = object(json['instantaneous_trip_multiple']);
     return BreakerData._(
       ratedCurrents: doubles(json['rated_currents_a']),
       instantaneous: {
@@ -31,20 +40,6 @@ final class BreakerData {
     );
   }
 
-  /// Rated currents of modular breakers, A, ascending.
-  final List<double> ratedCurrents;
-
-  /// Conventional tripping current multiple I2 / In.
-  final double conventionalTrippingMultiple;
-
-  /// Rated residual operating currents of RCDs, mA.
-  final List<double> rcdRatedResidualMa;
-
-  /// Rated currents of RCDs, A.
-  final List<double> rcdRatedCurrents;
-
-  final Map<BreakerCurve, ({double min, double max})> _instantaneous;
-
   /// Range of the instantaneous tripping current as a multiple of In.
   ({double min, double max}) instantaneousTripMultiple(BreakerCurve curve) =>
       _instantaneous[curve]!;
@@ -55,7 +50,7 @@ final class BreakerData {
 
   /// Smallest rated current not less than [currentA], or `null` above the range.
   double? ratedCurrentAtOrAbove(double currentA) {
-    for (final r in ratedCurrents) {
+    for (final double r in ratedCurrents) {
       if (r >= currentA) return r;
     }
     return null;
@@ -63,18 +58,23 @@ final class BreakerData {
 }
 
 /// Maximum disconnection times in a TN system (ГОСТ Р 50571.4.41-2022 табл. 41.1, ПУЭ 1.7.79).
-final class DisconnectionTimes {
-  DisconnectionTimes._({
-    required this.finalCircuitS,
-    required this.distributionCircuitS,
-    required this.finalWithSocketsLimitA,
-    required this.finalFixedOnlyLimitA,
-  });
+final class DisconnectionTimes._({
+  /// Final circuits within the limits, U0 = 230 В, с.
+  required final double finalCircuitS,
 
+  /// Distribution circuits and final circuits above the limits, с.
+  required final double distributionCircuitS,
+
+  /// Final circuits with socket-outlets up to this rated current get [finalCircuitS].
+  required final double finalWithSocketsLimitA,
+
+  /// Final circuits with fixed equipment only up to this rated current get [finalCircuitS].
+  required final double finalFixedOnlyLimitA,
+}) {
   /// Parses the `disconnection_times` dataset.
-  factory DisconnectionTimes.fromJson(JsonMap json) {
-    final tn = object(object(json['tn'])['u0_120_to_230_v']);
-    final limits = object(json['final_circuit_limits_a']);
+  factory fromJson(JsonMap json) {
+    final JsonMap tn = object(object(json['tn'])['u0_120_to_230_v']);
+    final JsonMap limits = object(json['final_circuit_limits_a']);
     return DisconnectionTimes._(
       finalCircuitS: toDouble(tn['final_circuit_s']),
       distributionCircuitS: toDouble(tn['distribution_circuit_s']),
@@ -83,18 +83,6 @@ final class DisconnectionTimes {
     );
   }
 
-  /// Final circuits within the limits, U0 = 230 В, с.
-  final double finalCircuitS;
-
-  /// Distribution circuits and final circuits above the limits, с.
-  final double distributionCircuitS;
-
-  /// Final circuits with socket-outlets up to this rated current get [finalCircuitS].
-  final double finalWithSocketsLimitA;
-
-  /// Final circuits with fixed equipment only up to this rated current get [finalCircuitS].
-  final double finalFixedOnlyLimitA;
-
   /// Maximum disconnection time for a circuit, с.
   double maxTimeS({
     required bool isFinalCircuit,
@@ -102,7 +90,7 @@ final class DisconnectionTimes {
     required double ratedCurrentA,
   }) {
     if (!isFinalCircuit) return distributionCircuitS;
-    final limit = hasSockets ? finalWithSocketsLimitA : finalFixedOnlyLimitA;
+    final double limit = hasSockets ? finalWithSocketsLimitA : finalFixedOnlyLimitA;
     return ratedCurrentA <= limit ? finalCircuitS : distributionCircuitS;
   }
 }

@@ -4,8 +4,8 @@ import 'package:common_database/common_database.dart';
 import 'package:common_logger/common_logger.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:drift/native.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -13,6 +13,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 import 'package:shchitovik/src/feature/catalog_sync/injection.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/switchboard_view.dart';
 import 'package:shchitovik/src/feature/projects/injection.dart';
+import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/settings/injection.dart';
 import 'package:shchitovik/src/logic/composition_root.dart';
 import 'package:shchitovik/src/model/app_config.dart';
@@ -43,12 +44,21 @@ void main() {
     );
   }
 
+  /// Finds a `material_ui` [Tooltip] by its message.
+  ///
+  /// `find.byTooltip` matches only the `flutter/material` tooltip.
+  Finder byTooltip(String message) =>
+      find.byWidgetPredicate((widget) => widget is Tooltip && widget.message == message);
+
   /// Lets database streams and the calculation isolate deliver, then rebuilds.
+  ///
+  /// The final pump advances the fake clock past a Material route transition.
   Future<void> settle(WidgetTester tester) async {
     for (var i = 0; i < 5; i++) {
       await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 100)));
       await tester.pump();
     }
+    await tester.pump(const Duration(milliseconds: 500));
   }
 
   /// Closes the database from the fake zone, pumping until it is done.
@@ -70,7 +80,7 @@ void main() {
     tester.view.devicePixelRatio = 2.5;
     addTearDown(tester.view.reset);
 
-    final deps = await tester.runAsync(dependencies);
+    final DependenciesContainer? deps = await tester.runAsync(dependencies);
     await tester.pumpWidget(
       RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
     );
@@ -91,7 +101,7 @@ void main() {
     await tester.tap(find.textContaining('Освещение').first);
     await settle(tester);
     expect(find.text('Приборы'), findsOneWidget);
-    final page = find
+    final Finder page = find
         .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
         .first;
     await tester.scrollUntilVisible(find.text('Проверки'), 300, scrollable: page);
@@ -99,7 +109,7 @@ void main() {
     await tester.scrollUntilVisible(find.text('Параметры линии'), 300, scrollable: page);
     expect(find.text('Длина, м'), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Назад'));
+    await tester.tap(byTooltip('Назад'));
     await settle(tester);
     // The «Список» choice is remembered in the settings.
     expect(find.byType(UiListRow), findsWidgets);
@@ -123,7 +133,7 @@ void main() {
     tester.view.devicePixelRatio = 2.5;
     addTearDown(tester.view.reset);
 
-    final deps = await tester.runAsync(dependencies);
+    final DependenciesContainer? deps = await tester.runAsync(dependencies);
     await tester.pumpWidget(
       RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
     );
@@ -167,7 +177,7 @@ void main() {
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
 
-    final deps = await tester.runAsync(dependencies);
+    final DependenciesContainer? deps = await tester.runAsync(dependencies);
     await tester.pumpWidget(
       RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
     );
@@ -175,7 +185,7 @@ void main() {
 
     await tester.tap(find.text('Частный дом'));
     await settle(tester);
-    final title = find.descendant(of: find.byType(UiTopBar), matching: find.text('Щит'));
+    final Finder title = find.descendant(of: find.byType(UiTopBar), matching: find.text('Щит'));
     expect(find.byType(UiSidebar), findsOneWidget);
     expect(find.text('Демо: частный дом'), findsOneWidget);
     expect(title, findsOneWidget);
@@ -206,7 +216,7 @@ void main() {
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
 
-    final deps = await tester.runAsync(dependencies);
+    final DependenciesContainer? deps = await tester.runAsync(dependencies);
     await tester.pumpWidget(
       RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
     );
@@ -217,17 +227,17 @@ void main() {
     expect(find.text('Раскладка вручную'), findsNothing);
     await tester.tap(find.text('Переставить'));
     await tester.pump();
-    final incomer = find.descendant(
+    final Finder incomer = find.descendant(
       of: find.byType(SwitchboardView),
       matching: find.text('Ввод'),
     );
     await tester.tap(incomer);
     await tester.pump();
-    await tester.tap(find.byTooltip('Сдвинуть вправо'));
+    await tester.tap(byTooltip('Сдвинуть вправо'));
     await settle(tester);
     // The arrangement comes back from the database through the project stream.
     expect(find.text('Раскладка вручную'), findsOneWidget);
-    final board = tester.widget<SwitchboardView>(find.byType(SwitchboardView)).state;
+    final ProjectReady board = tester.widget<SwitchboardView>(find.byType(SwitchboardView)).state;
     expect(board.document.estimate.board.rails!.first.take(2), [
       isNot('incomer/mcb'),
       'incomer/mcb',

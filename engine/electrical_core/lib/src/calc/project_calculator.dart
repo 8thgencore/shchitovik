@@ -18,7 +18,7 @@ import 'package:norms_data/norms_data.dart';
 /// Engineering assumption (typical maximum external loop impedance of urban TN-C-S and of
 /// rural/overhead supplies); the result is marked «requires review» until a measured or
 /// network-operator value is entered.
-const assumedExternalLoopImpedanceOhm = {
+const Map<ObjectType, double> assumedExternalLoopImpedanceOhm = {
   ObjectType.apartment: 0.5,
   ObjectType.commercial: 0.5,
   ObjectType.house: 0.8,
@@ -40,10 +40,7 @@ double leakageMa({required double designCurrentA, required double? lengthM}) =>
 ProjectResult calculateProject(ProjectInput input, {NormsData? norms}) =>
     _ProjectCalculation(input, norms ?? NormsData.embedded).run();
 
-final class _CircuitState {
-  _CircuitState(this.draft);
-
-  final CircuitDraft draft;
+final class _CircuitState(final CircuitDraft draft) {
   late double designA;
   late double demandA;
   late double cosPhi;
@@ -60,12 +57,8 @@ final class _CircuitState {
   final checks = <Check>[];
 }
 
-final class _ProjectCalculation {
-  _ProjectCalculation(this.input, this.norms) : cables = CableCalculator(norms);
-
-  final ProjectInput input;
-  final NormsData norms;
-  final CableCalculator cables;
+final class _ProjectCalculation(final ProjectInput input, final NormsData norms) {
+  final CableCalculator cables = CableCalculator(norms);
   final issues = <Issue>[];
   final assumptions = <Assumption>[];
   late double u0;
@@ -73,29 +66,29 @@ final class _ProjectCalculation {
 
   ProjectResult run() {
     _resolveVoltage();
-    final devices = _validDevices();
-    final drafts = buildCircuits(
+    final List<DeviceInput> devices = _validDevices();
+    final List<CircuitDraft> drafts = buildCircuits(
       devices: devices,
       rooms: input.rooms,
       phaseVoltageV: u0,
       lineVoltageV: ul,
     );
-    final states = [for (final d in drafts) _currents(_CircuitState(d))];
+    final List<_CircuitState> states = [for (final d in drafts) _currents(_CircuitState(d))];
 
-    final phaseBalance = _balance(states);
-    final incomer = _incomer(devices, states, phaseBalance);
-    final panel = _panelUpstream(incomer);
+    final PhaseBalanceResult? phaseBalance = _balance(states);
+    final _Incomer incomer = _incomer(devices, states, phaseBalance);
+    final _Panel panel = _panelUpstream(incomer);
 
     for (final s in states) {
       _protectionAndCable(s, panel);
     }
-    final sharedRcds = _groupRcds(states);
-    final fireRcd = _fireRcd(incomer, states);
+    final List<SharedRcdResult> sharedRcds = _groupRcds(states);
+    final SharedRcdResult? fireRcd = _fireRcd(incomer, states);
 
-    final circuits = [
+    final List<CircuitResult> circuits = [
       for (var i = 0; i < states.length; i++) _circuitResult(states[i], i + 1, panel.assumedZext),
     ];
-    final incomerResult = incomer.result(panel);
+    final IncomerResult incomerResult = incomer.result(panel);
 
     return ProjectResult(
       algorithmVersion: algorithmVersion,
@@ -114,7 +107,7 @@ final class _ProjectCalculation {
   }
 
   void _resolveVoltage() {
-    var voltage = norms.constants.voltageOptions
+    NominalVoltage? voltage = norms.constants.voltageOptions
         .where((v) => v.id == input.nominalVoltageId)
         .firstOrNull;
     if (voltage == null) {
@@ -138,7 +131,7 @@ final class _ProjectCalculation {
   }
 
   List<DeviceInput> _validDevices() {
-    final roomIds = {for (final r in input.rooms) r.id};
+    final Set<String> roomIds = {for (final r in input.rooms) r.id};
     final seen = <String>{};
     final valid = <DeviceInput>[];
     void reject(DeviceInput d, String code, String message) => issues.add(
@@ -149,7 +142,7 @@ final class _ProjectCalculation {
         deviceId: d.id,
       ),
     );
-    for (final d in input.devices) {
+    for (final DeviceInput d in input.devices) {
       if (!seen.add(d.id)) {
         reject(d, 'duplicate_device_id', 'повторяющийся идентификатор прибора');
       } else if (!roomIds.contains(d.roomId)) {
@@ -182,11 +175,11 @@ final class _ProjectCalculation {
   }
 
   _CircuitState _currents(_CircuitState s) {
-    var design = CurrentVector.zero;
-    var demand = CurrentVector.zero;
+    CurrentVector design = CurrentVector.zero;
+    CurrentVector demand = CurrentVector.zero;
     var extraStart = 0.0;
-    for (final d in s.draft.devices) {
-      final i = deviceCurrent(d, phaseVoltageV: u0, lineVoltageV: ul);
+    for (final DeviceInput d in s.draft.devices) {
+      final CurrentVector i = deviceCurrent(d, phaseVoltageV: u0, lineVoltageV: ul);
       design += i;
       demand += deviceCurrent(d, phaseVoltageV: u0, lineVoltageV: ul, demand: true);
       extraStart = math.max(extraStart, (d.inrushMultiple - 1) * i.magnitudeA);
@@ -221,23 +214,23 @@ final class _ProjectCalculation {
     final loads = <PhaseLoad>[];
     for (final s in states) {
       if (s.draft.phases == 3) {
-        for (final p in Phase.values) {
+        for (final Phase p in Phase.values) {
           base[p] = base[p]! + s.demandA;
         }
       } else {
-        final manual = input.circuitSettings[s.draft.id]?.phase;
+        final Phase? manual = input.circuitSettings[s.draft.id]?.phase;
         loads.add(PhaseLoad(id: s.draft.id, currentA: s.demandA, fixedPhase: manual));
         if (manual != null) s.phaseSource = ValueSource.manual;
       }
     }
-    final assignment = balancePhases(loads, base: base);
-    final totals = {...base};
-    for (final s in states.where((s) => s.draft.phases == 1)) {
+    final Map<String, Phase> assignment = balancePhases(loads, base: base);
+    final Map<Phase, double> totals = {...base};
+    for (final _CircuitState s in states.where((s) => s.draft.phases == 1)) {
       s.phase = assignment[s.draft.id];
       totals[s.phase!] = totals[s.phase!]! + s.demandA;
     }
     const limit = 30.0;
-    final imbalance = imbalancePercent(totals);
+    final double imbalance = imbalancePercent(totals);
     if (imbalance > limit + epsilon) {
       issues.add(
         Issue(
@@ -255,10 +248,10 @@ final class _ProjectCalculation {
     List<_CircuitState> states,
     PhaseBalanceResult? balance,
   ) {
-    final installed = devices.fold<double>(0, (s, d) => s + d.totalPowerW);
-    final byDevices = devices.fold<double>(0, (s, d) => s + d.totalPowerW * d.usageFactor);
-    final normative = normativeDemand(input, devices, norms);
-    final residential =
+    final double installed = devices.fold<double>(0, (s, d) => s + d.totalPowerW);
+    final double byDevices = devices.fold<double>(0, (s, d) => s + d.totalPowerW * d.usageFactor);
+    final NormativeDemand normative = normativeDemand(input, devices, norms);
+    final bool residential =
         input.objectType == ObjectType.apartment || input.objectType == ObjectType.house;
     if (residential && input.supply.allowedPowerKw == null) {
       assumptions.add(
@@ -272,12 +265,12 @@ final class _ProjectCalculation {
     }
     final three = input.supplyPhases == SupplyPhases.three;
 
-    var design = three
+    double design = three
         ? normative.powerW / (math.sqrt(3) * ul * normative.cosPhi)
         : normative.powerW / (u0 * normative.cosPhi);
     if (three && balance != null) {
-      final loads = balance.loadsA.values;
-      final average = loads.fold<double>(0, (s, v) => s + v) / 3;
+      final Iterable<double> loads = balance.loadsA.values;
+      final double average = loads.fold<double>(0, (s, v) => s + v) / 3;
       if (average > epsilon) {
         // Design current of the most loaded phase: the normative load is distributed in
         // proportion to the expected phase loads (СП 256 табл. 7.1 assumes ≤ 15 % imbalance).
@@ -286,12 +279,14 @@ final class _ProjectCalculation {
     }
 
     // The incomer must carry the largest single circuit (cf. СП 256 табл. 7.8, примечание 1).
-    final largestCircuit = states.isEmpty ? 0.0 : states.map((s) => s.designA).reduce(math.max);
+    final double largestCircuit = states.isEmpty
+        ? 0.0
+        : states.map((s) => s.designA).reduce(math.max);
     if (largestCircuit > design) design = largestCircuit;
 
     final checks = <Check>[];
-    final existing = input.supply.incomerBreakerA;
-    final breaker = existing ?? norms.breakers.ratedCurrentAtOrAbove(design);
+    final double? existing = input.supply.incomerBreakerA;
+    final double? breaker = existing ?? norms.breakers.ratedCurrentAtOrAbove(design);
     if (breaker == null) {
       issues.add(
         Issue(
@@ -303,7 +298,7 @@ final class _ProjectCalculation {
         ),
       );
     } else {
-      final ok = lessOrEqual(design, breaker);
+      final bool ok = lessOrEqual(design, breaker);
       checks.add(
         Check(
           code: CheckCode.loadVsBreaker,
@@ -327,9 +322,9 @@ final class _ProjectCalculation {
       }
     }
 
-    final allowed = input.supply.allowedPowerKw;
+    final double? allowed = input.supply.allowedPowerKw;
     if (allowed != null) {
-      final ok = lessOrEqual(normative.powerW, allowed * 1000);
+      final bool ok = lessOrEqual(normative.powerW, allowed * 1000);
       checks.add(
         Check(
           code: CheckCode.allowedPower,
@@ -367,8 +362,8 @@ final class _ProjectCalculation {
   }
 
   _Panel _panelUpstream(_Incomer incomer) {
-    final measured = input.supply.externalLoopImpedanceOhm;
-    final zExt = measured ?? assumedExternalLoopImpedanceOhm[input.objectType]!;
+    final double? measured = input.supply.externalLoopImpedanceOhm;
+    final double zExt = measured ?? assumedExternalLoopImpedanceOhm[input.objectType]!;
     if (measured == null) {
       assumptions.add(
         Assumption(
@@ -379,13 +374,13 @@ final class _ProjectCalculation {
         ),
       );
     }
-    final cableSettings = input.supply.incomerCable;
+    final CircuitSettings? cableSettings = input.supply.incomerCable;
     if (cableSettings == null || incomer.breakerA == null) {
       return _Panel(loopImpedanceOhm: zExt, voltageDropPercent: 0, assumedZext: measured == null);
     }
-    final defaults = input.cableDefaults;
-    final material = cableSettings.material ?? defaults.material;
-    final method = _method(
+    final CableDefaults defaults = input.cableDefaults;
+    final ConductorMaterial material = cableSettings.material ?? defaults.material;
+    final InstallationMethod method = _method(
       cableSettings.installationMethodId ?? defaults.installationMethodId,
       null,
     );
@@ -411,7 +406,7 @@ final class _ProjectCalculation {
       lengthM: cableSettings.lengthM,
       isGroupNetwork: false,
     );
-    final evaluation = cableSettings.sectionMm2 != null
+    final CableEvaluation evaluation = cableSettings.sectionMm2 != null
         ? cables.evaluate(
             spec,
             sectionMm2: cableSettings.sectionMm2!,
@@ -420,7 +415,7 @@ final class _ProjectCalculation {
           )
         : cables.select(spec, const [BreakerCurve.c]).evaluation;
     incomer.cable = evaluation.result;
-    final length = cableSettings.lengthM;
+    final double? length = cableSettings.lengthM;
     return _Panel(
       loopImpedanceOhm: length == null
           ? zExt
@@ -440,7 +435,9 @@ final class _ProjectCalculation {
   }
 
   InstallationMethod _method(String id, String? circuitId) {
-    final method = norms.installationMethods.where((m) => m.id == id).firstOrNull;
+    final InstallationMethod? method = norms.installationMethods
+        .where((m) => m.id == id)
+        .firstOrNull;
     if (method != null) return method;
     issues.add(
       Issue(
@@ -454,10 +451,10 @@ final class _ProjectCalculation {
   }
 
   void _protectionAndCable(_CircuitState s, _Panel panel) {
-    final draft = s.draft;
-    final settings = input.circuitSettings[draft.id] ?? const CircuitSettings();
-    final defaults = input.cableDefaults;
-    final socketCircuit = draft.devices.any((d) => d.connection == DeviceConnection.socket);
+    final CircuitDraft draft = s.draft;
+    final CircuitSettings settings = input.circuitSettings[draft.id] ?? const CircuitSettings();
+    final CableDefaults defaults = input.cableDefaults;
+    final bool socketCircuit = draft.devices.any((d) => d.connection == DeviceConnection.socket);
 
     s.breaker = selectBreaker(
       norms: norms,
@@ -471,7 +468,7 @@ final class _ProjectCalculation {
     s.checks.addAll(s.breaker.checks);
 
     s.rcdReasons = rcdReasons(devices: draft.devices, rooms: draft.rooms);
-    final automaticDevice = s.rcdReasons.isEmpty
+    final ProtectionDevice automaticDevice = s.rcdReasons.isEmpty
         ? ProtectionDevice.mcb
         : switch (input.rcdStrategy) {
             RcdStrategy.rcboPerCircuit => ProtectionDevice.rcbo,
@@ -490,7 +487,7 @@ final class _ProjectCalculation {
       );
     }
 
-    final material = settings.material ?? defaults.material;
+    final ConductorMaterial material = settings.material ?? defaults.material;
     final spec = CableLineSpec(
       phases: draft.phases,
       lighting: draft.purpose == CircuitPurpose.lighting,
@@ -520,16 +517,19 @@ final class _ProjectCalculation {
           sectionSource: ValueSource.manual,
         );
     } else {
-      final selected = cables.select(spec, s.breaker.curves);
+      final ({BreakerCurve curve, CableEvaluation evaluation}) selected = cables.select(
+        spec,
+        s.breaker.curves,
+      );
       s
         ..curve = selected.curve
         ..cable = selected.evaluation;
     }
 
     if (s.device != ProtectionDevice.mcb) {
-      final leak = leakageMa(designCurrentA: s.designA, lengthM: spec.lengthM);
-      const limit = additionalProtectionResidualMa / 3;
-      final ok = lessOrEqual(leak, limit);
+      final double leak = leakageMa(designCurrentA: s.designA, lengthM: spec.lengthM);
+      const double limit = additionalProtectionResidualMa / 3;
+      final bool ok = lessOrEqual(leak, limit);
       s.checks.add(
         Check(
           code: CheckCode.rcdLeakage,
@@ -546,7 +546,7 @@ final class _ProjectCalculation {
   }
 
   double _minSection(CircuitDraft draft, bool socketCircuit, ConductorMaterial material) {
-    final m = norms.minCrossSections;
+    final MinCrossSections m = norms.minCrossSections;
     final aluminium = material == ConductorMaterial.aluminium;
     if (draft.devices.any((d) => electricCookingKinds.contains(d.kind))) {
       return aluminium ? m.electricStoveAluminiumAlloy : m.electricStoveCopper;
@@ -565,9 +565,11 @@ final class _ProjectCalculation {
   }
 
   List<SharedRcdResult> _groupRcds(List<_CircuitState> states) {
-    final grouped = states.where((s) => s.device == ProtectionDevice.mcbUnderGroupRcd).toList();
+    final List<_CircuitState> grouped = states
+        .where((s) => s.device == ProtectionDevice.mcbUnderGroupRcd)
+        .toList();
     if (grouped.isEmpty) return const [];
-    const limitMa = additionalProtectionResidualMa / 3;
+    const double limitMa = additionalProtectionResidualMa / 3;
     const maxRatedA = 63.0;
     final buckets = <String, List<_CircuitState>>{};
     for (final s in grouped) {
@@ -575,16 +577,16 @@ final class _ProjectCalculation {
       buckets.putIfAbsent(key, () => []).add(s);
     }
     final result = <SharedRcdResult>[];
-    for (final key in buckets.keys.toList()..sort()) {
+    for (final String key in buckets.keys.toList()..sort()) {
       final bins = <List<_CircuitState>>[];
-      for (final s in buckets[key]!) {
-        final leak = leakageMa(designCurrentA: s.designA, lengthM: s.cable.result.lengthM);
-        final index = bins.indexWhere((b) {
-          final sumLeak = b.fold<double>(
+      for (final _CircuitState s in buckets[key]!) {
+        final double leak = leakageMa(designCurrentA: s.designA, lengthM: s.cable.result.lengthM);
+        final int index = bins.indexWhere((b) {
+          final double sumLeak = b.fold<double>(
             0,
             (t, x) => t + leakageMa(designCurrentA: x.designA, lengthM: x.cable.result.lengthM),
           );
-          final sumA = b.fold<double>(0, (t, x) => t + x.designA);
+          final double sumA = b.fold<double>(0, (t, x) => t + x.designA);
           return lessOrEqual(sumLeak + leak, limitMa) && lessOrEqual(sumA + s.designA, maxRatedA);
         });
         if (index >= 0) {
@@ -595,9 +597,9 @@ final class _ProjectCalculation {
       }
       for (final bin in bins) {
         final id = 'rcd-${result.length + 1}';
-        final sumA = bin.fold<double>(0, (t, x) => t + x.designA);
-        final maxIn = bin.map((x) => x.breaker.ratedA).reduce(math.max);
-        final rated = norms.breakers.rcdRatedCurrents.firstWhere(
+        final double sumA = bin.fold<double>(0, (t, x) => t + x.designA);
+        final double maxIn = bin.map((x) => x.breaker.ratedA).reduce(math.max);
+        final double rated = norms.breakers.rcdRatedCurrents.firstWhere(
           (r) => r + epsilon >= math.max(sumA, maxIn),
           orElse: () => norms.breakers.rcdRatedCurrents.last,
         );
@@ -624,11 +626,11 @@ final class _ProjectCalculation {
   }
 
   SharedRcdResult? _fireRcd(_Incomer incomer, List<_CircuitState> states) {
-    final enabled =
+    final bool enabled =
         input.fireRcdAtInput ??
         (input.objectType == ObjectType.house || input.objectType == ObjectType.garageWorkshop);
     if (!enabled || incomer.breakerA == null) return null;
-    final rated = norms.breakers.rcdRatedCurrents.firstWhere(
+    final double rated = norms.breakers.rcdRatedCurrents.firstWhere(
       (r) => r + epsilon >= incomer.breakerA!,
       orElse: () => norms.breakers.rcdRatedCurrents.last,
     );
@@ -648,9 +650,9 @@ final class _ProjectCalculation {
   }
 
   CircuitResult _circuitResult(_CircuitState s, int number, bool assumedZext) {
-    final draft = s.draft;
-    final settings = input.circuitSettings[draft.id];
-    final rcd = s.device == ProtectionDevice.mcb
+    final CircuitDraft draft = s.draft;
+    final CircuitSettings? settings = input.circuitSettings[draft.id];
+    final RcdResult? rcd = s.device == ProtectionDevice.mcb
         ? null
         : RcdResult(
             residualMa: additionalProtectionResidualMa,
@@ -664,7 +666,7 @@ final class _ProjectCalculation {
                 : null,
             groupId: s.rcdGroupId,
           );
-    final all = [...s.checks, ...s.cable.result.checks];
+    final List<Check> all = [...s.checks, ...s.cable.result.checks];
     return CircuitResult(
       id: draft.id,
       number: number,
@@ -697,7 +699,7 @@ final class _ProjectCalculation {
   }
 
   CalculationStatus _projectStatus(List<CircuitResult> circuits, IncomerResult incomer) {
-    final statuses = [
+    final List<CalculationStatus> statuses = [
       ...circuits.map((c) => c.status),
       statusOf([...incomer.checks, ...?incomer.cable?.checks], assumedZext: false),
       if (issues.any((i) => i.severity == IssueSeverity.error)) CalculationStatus.failed,
@@ -713,7 +715,7 @@ final class _ProjectCalculation {
 /// assumed upstream impedance → requires review; any warning → warning; otherwise passed.
 CalculationStatus statusOf(Iterable<Check> checks, {required bool assumedZext}) {
   if (checks.any((c) => c.status == CheckStatus.failed)) return CalculationStatus.failed;
-  final lengthMissing = checks.any(
+  final bool lengthMissing = checks.any(
     (c) =>
         (c.code == CheckCode.voltageDrop || c.code == CheckCode.faultDisconnection) &&
         c.status == CheckStatus.notEvaluated,
@@ -730,7 +732,7 @@ CalculationStatus statusOf(Iterable<Check> checks, {required bool assumedZext}) 
 CalculationStatus worst(CalculationStatus a, CalculationStatus b) =>
     _severity.indexOf(a) >= _severity.indexOf(b) ? a : b;
 
-const _severity = [
+const List<CalculationStatus> _severity = [
   CalculationStatus.passed,
   CalculationStatus.warning,
   CalculationStatus.requiresReview,
@@ -738,36 +740,21 @@ const _severity = [
   CalculationStatus.failed,
 ];
 
-final class _Panel {
-  const _Panel({
-    required this.loopImpedanceOhm,
-    required this.voltageDropPercent,
-    required this.assumedZext,
-  });
+final class const _Panel({
+  required final double loopImpedanceOhm,
+  required final double voltageDropPercent,
+  required final bool assumedZext,
+});
 
-  final double loopImpedanceOhm;
-  final double voltageDropPercent;
-  final bool assumedZext;
-}
-
-final class _Incomer {
-  _Incomer({
-    required this.installedW,
-    required this.byDevicesW,
-    required this.normative,
-    required this.designA,
-    required this.breakerA,
-    required this.breakerSource,
-    required this.checks,
-  });
-
-  final double installedW;
-  final double byDevicesW;
-  final NormativeDemand normative;
-  final double designA;
-  final double? breakerA;
-  final ValueSource breakerSource;
-  final List<Check> checks;
+final class _Incomer({
+  required final double installedW,
+  required final double byDevicesW,
+  required final NormativeDemand normative,
+  required final double designA,
+  required final double? breakerA,
+  required final ValueSource breakerSource,
+  required final List<Check> checks,
+}) {
   CableResult? cable;
 
   IncomerResult result(_Panel panel) => IncomerResult(

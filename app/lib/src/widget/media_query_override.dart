@@ -1,10 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-class MediaQueryRootOverride extends StatelessWidget {
-  const MediaQueryRootOverride({required this.child, super.key});
-
-  final Widget child;
-
+class const MediaQueryRootOverride({required final Widget child, super.key})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MediaQuery.withClampedTextScaling(

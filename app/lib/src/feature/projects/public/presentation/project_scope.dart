@@ -2,25 +2,25 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
+import 'package:shchitovik/src/model/dependencies_container.dart';
 import 'package:shchitovik/src/widget/dependencies_scope.dart';
 
 /// Provides [ProjectBloc] of one project to the project screens.
-class ProjectScope extends StatelessWidget {
-  const ProjectScope({required this.projectId, required this.child, super.key});
-
+class const ProjectScope({
   /// Project id.
-  final String projectId;
+  required final String projectId,
 
   /// Subtree.
-  final Widget child;
-
+  required final Widget child,
+  super.key,
+}) extends StatelessWidget {
   /// Sends an edit of the current project.
   static void edit(BuildContext context, ProjectDocument Function(ProjectDocument) transform) =>
       context.read<ProjectBloc>().add(ProjectEdited(transform));
 
   @override
   Widget build(BuildContext context) {
-    final dependencies = DependenciesScope.of(context);
+    final DependenciesContainer dependencies = DependenciesScope.of(context);
     return BlocProvider(
       key: ValueKey(projectId),
       create: (_) => ProjectBloc(

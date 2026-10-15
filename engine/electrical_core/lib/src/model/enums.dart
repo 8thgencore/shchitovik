@@ -1,5 +1,5 @@
 /// Type of the object being designed; selects the load calculation method.
-enum ObjectType {
+enum ObjectType() {
   /// Apartment in a multi-apartment building (СП 256, 7.1).
   apartment,
 
@@ -14,16 +14,27 @@ enum ObjectType {
 }
 
 /// Supply system of the object.
-enum SupplyPhases { single, three }
+enum SupplyPhases() {
+  single,
+  three,
+}
 
 /// Phase a single-phase circuit is connected to.
-enum Phase { l1, l2, l3 }
+enum Phase() {
+  l1,
+  l2,
+  l3,
+}
 
 /// Fuel of kitchen cooking appliances (СП 256, табл. 7.1).
-enum CookingFuel { naturalGas, liquefiedGasOrSolidFuel, electric }
+enum CookingFuel() {
+  naturalGas,
+  liquefiedGasOrSolidFuel,
+  electric,
+}
 
 /// How residual current protection is arranged.
-enum RcdStrategy {
+enum RcdStrategy() {
   /// RCBO (дифавтомат) on every circuit that needs an RCD. Default.
   rcboPerCircuit,
 
@@ -35,7 +46,7 @@ enum RcdStrategy {
 }
 
 /// Purpose of a circuit.
-enum CircuitPurpose {
+enum CircuitPurpose() {
   /// General lighting.
   lighting,
 
@@ -47,7 +58,7 @@ enum CircuitPurpose {
 }
 
 /// Protection device of a circuit.
-enum ProtectionDevice {
+enum ProtectionDevice() {
   /// Circuit-breaker only.
   mcb,
 
@@ -62,10 +73,15 @@ enum ProtectionDevice {
 }
 
 /// Status of a single check.
-enum CheckStatus { passed, warning, failed, notEvaluated }
+enum CheckStatus() {
+  passed,
+  warning,
+  failed,
+  notEvaluated,
+}
 
 /// Overall status of a circuit or of the project.
-enum CalculationStatus {
+enum CalculationStatus() {
   /// Everything checked and passed.
   passed,
 
@@ -83,7 +99,14 @@ enum CalculationStatus {
 }
 
 /// Severity of an issue.
-enum IssueSeverity { info, warning, error }
+enum IssueSeverity() {
+  info,
+  warning,
+  error,
+}
 
 /// Origin of a circuit parameter.
-enum ValueSource { automatic, manual }
+enum ValueSource() {
+  automatic,
+  manual,
+}
