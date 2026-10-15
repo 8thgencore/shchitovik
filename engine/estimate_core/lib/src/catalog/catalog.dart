@@ -5,77 +5,81 @@ import 'package:estimate_core/src/generated/embedded_catalogs.dart';
 import 'package:meta/meta.dart';
 
 /// Kind of a modular protective device.
-enum ApparatusFunction {
+enum ApparatusFunction(
+  /// Key used in the catalog.
+  final String key,
+) {
   mcb('MCB'),
   rcd('RCD'),
   rcbo('RCBO');
-
-  const ApparatusFunction(this.key);
-
-  /// Key used in the catalog.
-  final String key;
 
   /// Parses a catalog key.
   static ApparatusFunction fromKey(String key) => values.firstWhere((f) => f.key == key);
 }
 
 /// RCD type; a higher index detects more kinds of residual current (AC < A < F < B).
-enum RcdType {
+enum RcdType(
+  /// Key used in the catalog.
+  final String key,
+) {
   ac('AC'),
   a('A'),
   f('F'),
   b('B');
-
-  const RcdType(this.key);
-
-  /// Key used in the catalog.
-  final String key;
 
   /// Parses a catalog key.
   static RcdType fromKey(String key) => values.firstWhere((t) => t.key == key);
 }
 
 /// Price segment of a manufacturer.
-enum Tier { budget, mid, premium }
+enum Tier() {
+  budget,
+  mid,
+  premium,
+}
 
 /// Manufacturer.
 @immutable
-final class Manufacturer {
-  const Manufacturer({
-    required this.id,
-    required this.name,
-    required this.country,
-    required this.tier,
-  });
-
+final class const Manufacturer({
   /// Id.
-  final String id;
+  required final String id,
 
   /// Brand name.
-  final String name;
+  required final String name,
 
   /// Country code.
-  final String country;
+  required final String country,
 
   /// Price segment.
-  final Tier tier;
-}
+  required final Tier tier,
+});
 
 /// Technical specification of a protective device.
 @immutable
-final class ApparatusSpec {
-  const ApparatusSpec({
-    required this.poles,
-    required this.ratedCurrentA,
-    this.curve,
-    this.breakingCapacityA,
-    this.leakageMa,
-    this.rcdType,
-    this.selective = false,
-  });
+final class const ApparatusSpec({
+  /// Poles; RCD/RCBO count N as a pole (2 = 1P+N, 4 = 3P+N).
+  required final int poles,
 
+  /// Rated current, A.
+  required final double ratedCurrentA,
+
+  /// Tripping curve `B`/`C`/`D` (MCB, RCBO).
+  final String? curve,
+
+  /// Rated short-circuit breaking capacity, A (MCB, RCBO).
+  final double? breakingCapacityA,
+
+  /// Rated residual operating current, mA (RCD, RCBO).
+  final double? leakageMa,
+
+  /// RCD type (RCD, RCBO).
+  final RcdType? rcdType,
+
+  /// Time-delayed (S).
+  final bool selective = false,
+}) {
   /// Parses a catalog `spec` object.
-  factory ApparatusSpec.fromJson(Map<String, Object?> json) => ApparatusSpec(
+  factory fromJson(Map<String, Object?> json) => ApparatusSpec(
     poles: json['poles']! as int,
     ratedCurrentA: (json['rated_current_a']! as num).toDouble(),
     curve: json['curve'] as String?,
@@ -84,27 +88,6 @@ final class ApparatusSpec {
     rcdType: json['rcd_type'] == null ? null : RcdType.fromKey(json['rcd_type']! as String),
     selective: json['selectivity'] == 'S',
   );
-
-  /// Poles; RCD/RCBO count N as a pole (2 = 1P+N, 4 = 3P+N).
-  final int poles;
-
-  /// Rated current, A.
-  final double ratedCurrentA;
-
-  /// Tripping curve `B`/`C`/`D` (MCB, RCBO).
-  final String? curve;
-
-  /// Rated short-circuit breaking capacity, A (MCB, RCBO).
-  final double? breakingCapacityA;
-
-  /// Rated residual operating current, mA (RCD, RCBO).
-  final double? leakageMa;
-
-  /// RCD type (RCD, RCBO).
-  final RcdType? rcdType;
-
-  /// Time-delayed (S).
-  final bool selective;
 
   /// Serializes to the catalog format.
   Map<String, Object?> toJson() => {
@@ -120,22 +103,39 @@ final class ApparatusSpec {
 
 /// Catalog model of a protective device.
 @immutable
-final class ApparatusProduct {
-  const ApparatusProduct({
-    required this.id,
-    required this.manufacturerId,
-    required this.series,
-    required this.function,
-    required this.spec,
-    required this.moduleUnits,
-    required this.price,
-    required this.priceBasis,
-    required this.active,
-    this.article,
-  });
+final class const ApparatusProduct({
+  /// Id.
+  required final String id,
 
+  /// Manufacturer id.
+  required final String manufacturerId,
+
+  /// Series.
+  required final String series,
+
+  /// Function.
+  required final ApparatusFunction function,
+
+  /// Specification.
+  required final ApparatusSpec spec,
+
+  /// Width in DIN modules.
+  required final int moduleUnits,
+
+  /// Price range.
+  required final PriceRange price,
+
+  /// How the price was obtained.
+  required final String priceBasis,
+
+  /// Model is sold (not archived).
+  required final bool active,
+
+  /// Manufacturer's article, if verified.
+  final String? article,
+}) {
   /// Parses a catalog product.
-  factory ApparatusProduct.fromJson(Map<String, Object?> json) {
+  factory fromJson(Map<String, Object?> json) {
     final price = json['price']! as Map<String, Object?>;
     return ApparatusProduct(
       id: json['id']! as String,
@@ -150,36 +150,6 @@ final class ApparatusProduct {
       article: json['article'] as String?,
     );
   }
-
-  /// Id.
-  final String id;
-
-  /// Manufacturer id.
-  final String manufacturerId;
-
-  /// Series.
-  final String series;
-
-  /// Function.
-  final ApparatusFunction function;
-
-  /// Specification.
-  final ApparatusSpec spec;
-
-  /// Width in DIN modules.
-  final int moduleUnits;
-
-  /// Price range.
-  final PriceRange price;
-
-  /// How the price was obtained.
-  final String priceBasis;
-
-  /// Model is sold (not archived).
-  final bool active;
-
-  /// Manufacturer's article, if verified.
-  final String? article;
 
   /// Serializes to the catalog format (used for selection snapshots).
   Map<String, Object?> toJson() => {
@@ -202,157 +172,135 @@ final class ApparatusProduct {
 
 /// Cable mark.
 @immutable
-final class CableMark {
-  const CableMark({
-    required this.id,
-    required this.name,
-    required this.material,
-    required this.note,
-  });
-
+final class const CableMark({
   /// Id.
-  final String id;
+  required final String id,
 
   /// Name like `ВВГнг(А)-LS`.
-  final String name;
+  required final String name,
 
   /// `copper` or `aluminium`.
-  final String material;
+  required final String material,
 
   /// Description.
-  final String note;
-}
+  required final String note,
+});
 
 /// Cable price per metre.
 @immutable
-final class CableItem {
-  const CableItem({
-    required this.id,
-    required this.markId,
-    required this.cores,
-    required this.sectionMm2,
-    required this.pricePerM,
-  });
-
+final class const CableItem({
   /// Id.
-  final String id;
+  required final String id,
 
   /// Mark id.
-  final String markId;
+  required final String markId,
 
   /// Number of cores.
-  final int cores;
+  required final int cores,
 
   /// Section, mm².
-  final double sectionMm2;
+  required final double sectionMm2,
 
   /// Price per metre.
-  final PriceRange pricePerM;
-}
+  required final PriceRange pricePerM,
+});
 
 /// Auxiliary panel device (voltage relay, SPD).
 @immutable
-final class AuxiliaryDevice {
-  const AuxiliaryDevice({
-    required this.id,
-    required this.kind,
-    required this.poles,
-    required this.ratedCurrentA,
-    required this.tier,
-    required this.name,
-    required this.moduleUnits,
-    required this.price,
-  });
-
+final class const AuxiliaryDevice({
   /// Id.
-  final String id;
+  required final String id,
 
   /// `voltage_relay`, `spd`, `spd_type1`.
-  final String kind;
+  required final String kind,
 
   /// Poles.
-  final int poles;
+  required final int poles,
 
   /// Rated current, A (relays).
-  final double? ratedCurrentA;
+  required final double? ratedCurrentA,
 
   /// Segment.
-  final Tier tier;
+  required final Tier tier,
 
   /// Name.
-  final String name;
+  required final String name,
 
   /// Width in DIN modules.
-  final int moduleUnits;
+  required final int moduleUnits,
 
   /// Price.
-  final PriceRange price;
-}
+  required final PriceRange price,
+});
 
 /// Average price for a function/poles/rating range.
 @immutable
-final class FallbackPrice {
-  const FallbackPrice({
-    required this.function,
-    required this.poles,
-    required this.minRatedA,
-    required this.maxRatedA,
-    required this.tier,
-    required this.selective,
-    required this.moduleUnits,
-    required this.price,
-  });
-
+final class const FallbackPrice({
   /// Function.
-  final ApparatusFunction function;
+  required final ApparatusFunction function,
 
   /// Poles.
-  final int poles;
+  required final int poles,
 
   /// Range of ratings, A.
-  final double minRatedA;
+  required final double minRatedA,
 
   /// Range of ratings, A.
-  final double maxRatedA;
+  required final double maxRatedA,
 
   /// Segment.
-  final Tier tier;
+  required final Tier tier,
 
   /// Only for selective (S) RCDs.
-  final bool selective;
+  required final bool selective,
 
   /// Width in DIN modules.
-  final int moduleUnits;
+  required final int moduleUnits,
 
   /// Price.
-  final PriceRange price;
-}
+  required final PriceRange price,
+});
 
 /// All price catalogs. Built from the embedded data or from a downloaded update.
-final class EstimateCatalog {
-  EstimateCatalog._({
-    required this.catalogVersion,
-    required this.priceAsOf,
-    required this.manufacturers,
-    required this.products,
-    required this.cableMarks,
-    required this.cables,
-    required this.auxiliaryDevices,
-    required this.fallbackPrices,
-    required this.datasetVersions,
-  });
+final class EstimateCatalog._({
+  /// Version of the apparatus catalog; stored with selections.
+  required final String catalogVersion,
 
+  /// When prices were taken (`YYYY-MM`).
+  required final String priceAsOf,
+
+  /// Manufacturers by id.
+  required final Map<String, Manufacturer> manufacturers,
+
+  /// Protective devices.
+  required final List<ApparatusProduct> products,
+
+  /// Cable marks.
+  required final List<CableMark> cableMarks,
+
+  /// Cable prices.
+  required final List<CableItem> cables,
+
+  /// Auxiliary devices.
+  required final List<AuxiliaryDevice> auxiliaryDevices,
+
+  /// Fallback prices.
+  required final List<FallbackPrice> fallbackPrices,
+
+  /// Versions of all datasets.
+  required final Map<String, String> datasetVersions,
+}) {
   /// Parses catalogs given as JSON strings keyed by dataset name.
-  factory EstimateCatalog.fromJsonStrings(Map<String, String> datasets) {
+  factory fromJsonStrings(Map<String, String> datasets) {
     Map<String, Object?> read(String name) => jsonDecode(datasets[name]!) as Map<String, Object?>;
     List<Map<String, Object?>> list(Map<String, Object?> json, String key) => [
       for (final e in json[key]! as List<Object?>) e! as Map<String, Object?>,
     ];
 
-    final apparatus = read('apparatus_catalog');
-    final cables = read('cable_catalog');
-    final auxiliary = read('auxiliary_devices');
-    final fallback = read('fallback_prices');
+    final Map<String, Object?> apparatus = read('apparatus_catalog');
+    final Map<String, Object?> cables = read('cable_catalog');
+    final Map<String, Object?> auxiliary = read('auxiliary_devices');
+    final Map<String, Object?> fallback = read('fallback_prices');
     return EstimateCatalog._(
       catalogVersion: apparatus['catalog_version']! as String,
       priceAsOf: apparatus['price_as_of']! as String,
@@ -420,33 +368,6 @@ final class EstimateCatalog {
 
   /// Catalogs embedded at build time.
   static final EstimateCatalog embedded = EstimateCatalog.fromJsonStrings(embeddedCatalogs);
-
-  /// Version of the apparatus catalog; stored with selections.
-  final String catalogVersion;
-
-  /// When prices were taken (`YYYY-MM`).
-  final String priceAsOf;
-
-  /// Manufacturers by id.
-  final Map<String, Manufacturer> manufacturers;
-
-  /// Protective devices.
-  final List<ApparatusProduct> products;
-
-  /// Cable marks.
-  final List<CableMark> cableMarks;
-
-  /// Cable prices.
-  final List<CableItem> cables;
-
-  /// Auxiliary devices.
-  final List<AuxiliaryDevice> auxiliaryDevices;
-
-  /// Fallback prices.
-  final List<FallbackPrice> fallbackPrices;
-
-  /// Versions of all datasets.
-  final Map<String, String> datasetVersions;
 
   late final Map<String, ApparatusProduct> _byId = {for (final p in products) p.id: p};
 

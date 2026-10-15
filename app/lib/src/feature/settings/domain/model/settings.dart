@@ -7,7 +7,7 @@ part 'settings.g.dart';
 /// Settings for the app.
 @freezed
 abstract class Settings with _$Settings {
-  const factory Settings({@Default(GeneralSettings()) GeneralSettings general}) = _Settings;
+  const factory({@Default(GeneralSettings()) GeneralSettings general}) = _Settings;
 
-  factory Settings.fromJson(Map<String, Object?> json) => _$SettingsFromJson(json);
+  factory fromJson(Map<String, Object?> json) => _$SettingsFromJson(json);
 }

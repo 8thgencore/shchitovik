@@ -1,24 +1,23 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:norms_data/norms_data.dart';
+import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/widget/form_fields.dart';
 
 /// Object and supply parameters; advanced ones are shown in the expert mode.
-class ProjectSetupScreen extends StatelessWidget {
-  const ProjectSetupScreen({super.key});
-
+class const ProjectSetupScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     final state = context.watch<ProjectBloc>().state as ProjectReady;
-    final document = state.document;
-    final input = document.input;
-    final expert = isExpertMode(context);
+    final ProjectDocument document = state.document;
+    final ProjectInput input = document.input;
+    final bool expert = isExpertMode(context);
 
     void editInput(ProjectInput Function(ProjectInput) change) =>
         ProjectScope.edit(context, (d) => d.copyWith(input: change(d.input)));
@@ -27,7 +26,7 @@ class ProjectSetupScreen extends StatelessWidget {
     void editCable(CableDefaults Function(CableDefaults) change) =>
         editInput((i) => i.copyWith(cableDefaults: change(i.cableDefaults)));
 
-    final residential =
+    final bool residential =
         input.objectType == ObjectType.apartment || input.objectType == ObjectType.house;
     return PageBody(
       maxWidth: UiBreakpoints.formMax,

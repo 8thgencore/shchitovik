@@ -7,7 +7,7 @@ import 'package:common_logger/common_logger.dart';
 ///
 /// Implementations should report errors to a service like Sentry/Crashlytics.
 /// {@endtemplate}
-abstract interface class ErrorReporter {
+abstract interface class ErrorReporter() {
   /// Capture an exception to be reported.
   ///
   /// The [throwable] is the exception that was thrown.
@@ -18,12 +18,12 @@ abstract interface class ErrorReporter {
 /// {@template error_reporter_log_observer}
 /// An observer that reports logs to the error reporter if it is active.
 /// {@endtemplate}
-final class ErrorReporterLogObserver with LogObserver {
-  /// {@macro error_reporter_log_observer}
-  const ErrorReporterLogObserver(this._errorReporter);
-
+final class const ErrorReporterLogObserver(
   /// Error reporter used to report errors.
-  final ErrorReporter _errorReporter;
+  final ErrorReporter _errorReporter,
+) with LogObserver {
+  /// {@macro error_reporter_log_observer}
+  this;
 
   @override
   void onLog(LogMessage logMessage) {
@@ -37,12 +37,12 @@ final class ErrorReporterLogObserver with LogObserver {
 }
 
 /// An exception used for error logs without an exception, only a message.
-class ReportedMessageException implements Exception {
-  /// Constructs an instance of [ReportedMessageException].
-  const ReportedMessageException(this.message);
-
+class const ReportedMessageException(
   /// The message that was reported.
-  final String message;
+  final String message,
+) implements Exception {
+  /// Constructs an instance of [ReportedMessageException].
+  this;
 
   @override
   String toString() => message;

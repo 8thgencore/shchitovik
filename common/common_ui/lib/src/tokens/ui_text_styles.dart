@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 
 /// Font families bundled with the package.
-abstract final class UiFonts {
+abstract final class UiFonts() {
   /// Interface text: IBM Plex Sans.
   static const sans = 'IBMPlexSans';
 
@@ -17,7 +17,7 @@ abstract final class UiFonts {
   /// Plex Mono has no Greek: Δ, φ and the like come from Plex Sans.
   ///
   /// [TextStyle] prefixes fallbacks with the package itself, so the bare family name goes here.
-  static const monoFallback = [sans];
+  static const List<String> monoFallback = [sans];
 }
 
 /// Type scale of the «Чертёж» design system.
@@ -25,7 +25,7 @@ abstract final class UiFonts {
 /// Text in Plex Sans, every number with a unit in Plex Mono (digits line up in columns).
 /// Weights 400, 500, 600 only; nothing below 12. Styles carry no colour: widgets take it
 /// from `UiColors` or inherit it from `DefaultTextStyle`.
-abstract final class UiTextStyles {
+abstract final class UiTextStyles() {
   /// Page title on wide screens, the estimate total.
   static const display = TextStyle(
     fontFamily: UiFonts.sans,

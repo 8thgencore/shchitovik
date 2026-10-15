@@ -6,32 +6,51 @@ import 'package:norms_data/norms_data.dart';
 /// Marker for "argument not passed" in `copyWith` methods with nullable fields.
 const Object unset = _Unset();
 
-final class _Unset {
-  const _Unset();
-}
+final class const _Unset();
 
 /// Everything the user entered about a project; the only persisted state besides selections.
 ///
 /// Calculation results are derived from it by `calculateProject`.
 @immutable
-final class ProjectInput {
-  const ProjectInput({
-    required this.objectType,
-    required this.supplyPhases,
-    this.nominalVoltageId = defaultNominalVoltageId,
-    this.cookingFuel,
-    this.rcdStrategy = RcdStrategy.rcboPerCircuit,
-    this.fireRcdAtInput,
-    this.commercialProfile,
-    this.supply = const SupplyInput(),
-    this.cableDefaults = const CableDefaults(),
-    this.rooms = const [],
-    this.devices = const [],
-    this.circuitSettings = const {},
-  });
+final class const ProjectInput({
+  /// Object type.
+  required final ObjectType objectType,
 
+  /// Single- or three-phase supply.
+  required final SupplyPhases supplyPhases,
+
+  /// Nominal voltage option id (`u220_380` or `u230_400`).
+  final String nominalVoltageId = defaultNominalVoltageId,
+
+  /// Fuel of the kitchen stove; `null` — derived from the devices (electric if any stove/cooktop).
+  final CookingFuel? cookingFuel,
+
+  /// How RCDs are arranged.
+  final RcdStrategy rcdStrategy = RcdStrategy.rcboPerCircuit,
+
+  /// Fire-protection RCD at the input; `null` — automatic (houses and garages).
+  final bool? fireRcdAtInput,
+
+  /// Profile of a commercial object; selects СП 256 demand factors.
+  final CommercialProfile? commercialProfile,
+
+  /// Supply data.
+  final SupplyInput supply = const SupplyInput(),
+
+  /// Cable parameters used unless a circuit overrides them.
+  final CableDefaults cableDefaults = const CableDefaults(),
+
+  /// Rooms.
+  final List<RoomInput> rooms = const [],
+
+  /// Electrical receivers.
+  final List<DeviceInput> devices = const [],
+
+  /// Per-circuit settings and expert overrides keyed by stable circuit id.
+  final Map<String, CircuitSettings> circuitSettings = const {},
+}) {
   /// Parses JSON produced by [toJson].
-  factory ProjectInput.fromJson(Json json) => ProjectInput(
+  factory fromJson(Json json) => ProjectInput(
     objectType: enumByName(ObjectType.values, json['object_type']),
     supplyPhases: enumByName(SupplyPhases.values, json['supply_phases']),
     nominalVoltageId: json['nominal_voltage_id'] as String? ?? defaultNominalVoltageId,
@@ -61,42 +80,6 @@ final class ProjectInput {
 
   /// Default nominal voltage: 220/380 В (СП 256, п. 8.23; ГОСТ 32144).
   static const defaultNominalVoltageId = 'u220_380';
-
-  /// Object type.
-  final ObjectType objectType;
-
-  /// Single- or three-phase supply.
-  final SupplyPhases supplyPhases;
-
-  /// Nominal voltage option id (`u220_380` or `u230_400`).
-  final String nominalVoltageId;
-
-  /// Fuel of the kitchen stove; `null` — derived from the devices (electric if any stove/cooktop).
-  final CookingFuel? cookingFuel;
-
-  /// How RCDs are arranged.
-  final RcdStrategy rcdStrategy;
-
-  /// Fire-protection RCD at the input; `null` — automatic (houses and garages).
-  final bool? fireRcdAtInput;
-
-  /// Profile of a commercial object; selects СП 256 demand factors.
-  final CommercialProfile? commercialProfile;
-
-  /// Supply data.
-  final SupplyInput supply;
-
-  /// Cable parameters used unless a circuit overrides them.
-  final CableDefaults cableDefaults;
-
-  /// Rooms.
-  final List<RoomInput> rooms;
-
-  /// Electrical receivers.
-  final List<DeviceInput> devices;
-
-  /// Per-circuit settings and expert overrides keyed by stable circuit id.
-  final Map<String, CircuitSettings> circuitSettings;
 
   /// Serializes to JSON; keys are stable and snake_case.
   Json toJson() => compact({
@@ -150,7 +133,7 @@ final class ProjectInput {
 }
 
 /// Profile of a commercial object (selects rows of СП 256 табл. 7.6–7.8).
-enum CommercialProfile {
+enum CommercialProfile() {
   /// Office, administration (табл. 7.6 поз. 3, 7.7 поз. 1, 7.8 поз. 4).
   office,
 
@@ -169,16 +152,22 @@ enum CommercialProfile {
 
 /// Supply (input) data.
 @immutable
-final class SupplyInput {
-  const SupplyInput({
-    this.allowedPowerKw,
-    this.incomerBreakerA,
-    this.externalLoopImpedanceOhm,
-    this.incomerCable,
-  });
+final class const SupplyInput({
+  /// Allowed (contracted) power from the technical conditions, кВт.
+  final double? allowedPowerKw,
 
+  /// Rated current of an existing incomer breaker, A; `null` — selected by the calculation.
+  final double? incomerBreakerA,
+
+  /// Phase–protective conductor loop impedance upstream of the panel (Zвнеш), Ом;
+  /// `null` — a conservative default is assumed and the result requires review.
+  final double? externalLoopImpedanceOhm,
+
+  /// Incomer cable from the metering point to the panel; `null` — not calculated.
+  final CircuitSettings? incomerCable,
+}) {
   /// Parses JSON produced by [toJson].
-  factory SupplyInput.fromJson(Json json) => SupplyInput(
+  factory fromJson(Json json) => SupplyInput(
     allowedPowerKw: doubleOrNull(json['allowed_power_kw']),
     incomerBreakerA: doubleOrNull(json['incomer_breaker_a']),
     externalLoopImpedanceOhm: doubleOrNull(json['external_loop_impedance_ohm']),
@@ -186,19 +175,6 @@ final class SupplyInput {
         ? null
         : CircuitSettings.fromJson(json['incomer_cable']! as Json),
   );
-
-  /// Allowed (contracted) power from the technical conditions, кВт.
-  final double? allowedPowerKw;
-
-  /// Rated current of an existing incomer breaker, A; `null` — selected by the calculation.
-  final double? incomerBreakerA;
-
-  /// Phase–protective conductor loop impedance upstream of the panel (Zвнеш), Ом;
-  /// `null` — a conservative default is assumed and the result requires review.
-  final double? externalLoopImpedanceOhm;
-
-  /// Incomer cable from the metering point to the panel; `null` — not calculated.
-  final CircuitSettings? incomerCable;
 
   /// Returns a copy with the given fields replaced; pass `null` explicitly to clear an
   /// optional field.
@@ -233,19 +209,30 @@ final class SupplyInput {
 
 /// Cable parameters used by default for all circuits.
 @immutable
-final class CableDefaults {
-  const CableDefaults({
-    this.material = ConductorMaterial.copper,
-    this.insulation = Insulation.pvc,
-    this.installationMethodId = 'plaster_direct',
-    this.ambientTemperatureC = 30,
-    this.groupedCircuits = 1,
-    this.soilResistivityKMPerW = 2.5,
-    this.lengthM,
-  });
+final class const CableDefaults({
+  /// Conductor material.
+  final ConductorMaterial material = ConductorMaterial.copper,
 
+  /// Insulation.
+  final Insulation insulation = Insulation.pvc,
+
+  /// Installation method id (`norms_data` installation_methods).
+  final String installationMethodId = 'plaster_direct',
+
+  /// Ambient temperature, °C (air or ground depending on the method).
+  final double ambientTemperatureC = 30,
+
+  /// Number of circuits laid together (grouping factor).
+  final int groupedCircuits = 1,
+
+  /// Soil thermal resistivity, К·м/Вт (cables in the ground).
+  final double soilResistivityKMPerW = 2.5,
+
+  /// Default circuit length, m; `null` — circuits without a length are preliminary.
+  final double? lengthM,
+}) {
   /// Parses JSON produced by [toJson].
-  factory CableDefaults.fromJson(Json json) => CableDefaults(
+  factory fromJson(Json json) => CableDefaults(
     material:
         enumByNameOrNull(ConductorMaterial.values, json['material']) ?? ConductorMaterial.copper,
     insulation: enumByNameOrNull(Insulation.values, json['insulation']) ?? Insulation.pvc,
@@ -255,27 +242,6 @@ final class CableDefaults {
     soilResistivityKMPerW: doubleOrNull(json['soil_resistivity_k_m_per_w']) ?? 2.5,
     lengthM: doubleOrNull(json['length_m']),
   );
-
-  /// Conductor material.
-  final ConductorMaterial material;
-
-  /// Insulation.
-  final Insulation insulation;
-
-  /// Installation method id (`norms_data` installation_methods).
-  final String installationMethodId;
-
-  /// Ambient temperature, °C (air or ground depending on the method).
-  final double ambientTemperatureC;
-
-  /// Number of circuits laid together (grouping factor).
-  final int groupedCircuits;
-
-  /// Soil thermal resistivity, К·м/Вт (cables in the ground).
-  final double soilResistivityKMPerW;
-
-  /// Default circuit length, m; `null` — circuits without a length are preliminary.
-  final double? lengthM;
 
   /// Returns a copy with the given fields replaced; pass `null` explicitly to clear an
   /// optional field.
@@ -311,24 +277,22 @@ final class CableDefaults {
 
 /// Room.
 @immutable
-final class RoomInput {
-  const RoomInput({required this.id, required this.name, required this.kind});
+final class const RoomInput({
+  /// Stable id (UUID).
+  required final String id,
 
+  /// Name shown to the user.
+  required final String name,
+
+  /// Kind; drives special-location rules.
+  required final RoomKind kind,
+}) {
   /// Parses JSON produced by [toJson].
-  factory RoomInput.fromJson(Json json) => RoomInput(
+  factory fromJson(Json json) => RoomInput(
     id: json['id']! as String,
     name: json['name']! as String,
     kind: enumByName(RoomKind.values, json['kind']),
   );
-
-  /// Stable id (UUID).
-  final String id;
-
-  /// Name shown to the user.
-  final String name;
-
-  /// Kind; drives special-location rules.
-  final RoomKind kind;
 
   /// Returns a copy with the given fields replaced; pass `null` explicitly to clear an
   /// optional field.
@@ -348,24 +312,45 @@ final class RoomInput {
 
 /// Electrical receiver (or several identical ones, see [quantity]).
 @immutable
-final class DeviceInput {
-  const DeviceInput({
-    required this.id,
-    required this.roomId,
-    required this.name,
-    required this.kind,
-    required this.powerW,
-    this.quantity = 1,
-    this.phases = 1,
-    this.cosPhi = 1,
-    this.usageFactor = 1,
-    this.inrushMultiple = 1,
-    this.connection = DeviceConnection.socket,
-    this.dedicatedLine = DedicatedLine.no,
-  });
+final class const DeviceInput({
+  /// Stable id (UUID).
+  required final String id,
 
+  /// Room the device is in.
+  required final String roomId,
+
+  /// Name.
+  required final String name,
+
+  /// Kind from the device catalog (e.g. `lighting`, `water_heater`).
+  required final String kind,
+
+  /// Rated active power of one unit, Вт.
+  required final int powerW,
+
+  /// Number of identical units.
+  final int quantity = 1,
+
+  /// 1 or 3.
+  final int phases = 1,
+
+  /// Power factor.
+  final double cosPhi = 1,
+
+  /// Usage factor ku for the «by devices» input estimate.
+  final double usageFactor = 1,
+
+  /// Starting current multiple.
+  final double inrushMultiple = 1,
+
+  /// Socket or fixed connection.
+  final DeviceConnection connection = DeviceConnection.socket,
+
+  /// Dedicated circuit policy.
+  final DedicatedLine dedicatedLine = DedicatedLine.no,
+}) {
   /// Creates a device from a catalog template.
-  factory DeviceInput.fromTemplate(
+  factory fromTemplate(
     DeviceTemplate t, {
     required String id,
     required String roomId,
@@ -386,7 +371,7 @@ final class DeviceInput {
   );
 
   /// Parses JSON produced by [toJson].
-  factory DeviceInput.fromJson(Json json) => DeviceInput(
+  factory fromJson(Json json) => DeviceInput(
     id: json['id']! as String,
     roomId: json['room_id']! as String,
     name: json['name']! as String,
@@ -402,42 +387,6 @@ final class DeviceInput {
     dedicatedLine:
         enumByNameOrNull(DedicatedLine.values, json['dedicated_line']) ?? DedicatedLine.no,
   );
-
-  /// Stable id (UUID).
-  final String id;
-
-  /// Room the device is in.
-  final String roomId;
-
-  /// Name.
-  final String name;
-
-  /// Kind from the device catalog (e.g. `lighting`, `water_heater`).
-  final String kind;
-
-  /// Rated active power of one unit, Вт.
-  final int powerW;
-
-  /// Number of identical units.
-  final int quantity;
-
-  /// 1 or 3.
-  final int phases;
-
-  /// Power factor.
-  final double cosPhi;
-
-  /// Usage factor ku for the «by devices» input estimate.
-  final double usageFactor;
-
-  /// Starting current multiple.
-  final double inrushMultiple;
-
-  /// Socket or fixed connection.
-  final DeviceConnection connection;
-
-  /// Dedicated circuit policy.
-  final DedicatedLine dedicatedLine;
 
   /// Total rated power of all units, Вт.
   int get totalPowerW => powerW * quantity;
@@ -495,23 +444,42 @@ final class DeviceInput {
 /// and [insulation] describe the installation. [sectionMm2], [breakerA], [curve],
 /// [protection] and [phase] are expert overrides of the calculated values.
 @immutable
-final class CircuitSettings {
-  const CircuitSettings({
-    this.lengthM,
-    this.installationMethodId,
-    this.ambientTemperatureC,
-    this.groupedCircuits,
-    this.material,
-    this.insulation,
-    this.sectionMm2,
-    this.breakerA,
-    this.curve,
-    this.protection,
-    this.phase,
-  });
+final class const CircuitSettings({
+  /// Cable length, m.
+  final double? lengthM,
 
+  /// Installation method id.
+  final String? installationMethodId,
+
+  /// Ambient temperature, °C.
+  final double? ambientTemperatureC,
+
+  /// Number of circuits laid together.
+  final int? groupedCircuits,
+
+  /// Conductor material.
+  final ConductorMaterial? material,
+
+  /// Insulation.
+  final Insulation? insulation,
+
+  /// Manual cross-section, mm².
+  final double? sectionMm2,
+
+  /// Manual breaker rating, A.
+  final double? breakerA,
+
+  /// Manual tripping curve.
+  final BreakerCurve? curve,
+
+  /// Manual protection device type.
+  final ProtectionDevice? protection,
+
+  /// Manual phase (three-phase supply only).
+  final Phase? phase,
+}) {
   /// Parses JSON produced by [toJson].
-  factory CircuitSettings.fromJson(Json json) => CircuitSettings(
+  factory fromJson(Json json) => CircuitSettings(
     lengthM: doubleOrNull(json['length_m']),
     installationMethodId: json['installation_method_id'] as String?,
     ambientTemperatureC: doubleOrNull(json['ambient_temperature_c']),
@@ -524,39 +492,6 @@ final class CircuitSettings {
     protection: enumByNameOrNull(ProtectionDevice.values, json['protection']),
     phase: enumByNameOrNull(Phase.values, json['phase']),
   );
-
-  /// Cable length, m.
-  final double? lengthM;
-
-  /// Installation method id.
-  final String? installationMethodId;
-
-  /// Ambient temperature, °C.
-  final double? ambientTemperatureC;
-
-  /// Number of circuits laid together.
-  final int? groupedCircuits;
-
-  /// Conductor material.
-  final ConductorMaterial? material;
-
-  /// Insulation.
-  final Insulation? insulation;
-
-  /// Manual cross-section, mm².
-  final double? sectionMm2;
-
-  /// Manual breaker rating, A.
-  final double? breakerA;
-
-  /// Manual tripping curve.
-  final BreakerCurve? curve;
-
-  /// Manual protection device type.
-  final ProtectionDevice? protection;
-
-  /// Manual phase (three-phase supply only).
-  final Phase? phase;
 
   /// Whether any calculated value is overridden manually.
   bool get hasManualOverride =>

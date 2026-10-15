@@ -1,13 +1,15 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:printing/printing.dart';
 import 'package:shchitovik/src/feature/project_io/domain/project_file_codec.dart';
 import 'package:shchitovik/src/feature/project_io/presentation/project_files.dart';
+import 'package:shchitovik/src/feature/projects/application/projects_service.dart';
+import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
@@ -18,23 +20,17 @@ import 'package:shchitovik/src/widget/dependencies_scope.dart';
 ///
 /// Expanded layout: sidebar with the sections, the switchboard is the home section.
 /// Compact layout: step-by-step wizard with progress and «Назад / Далее».
-class ProjectShell extends StatelessWidget {
-  const ProjectShell({
-    required this.projectId,
-    required this.location,
-    required this.child,
-    super.key,
-  });
-
+class const ProjectShell({
   /// Project id.
-  final String projectId;
+  required final String projectId,
 
   /// Current path, selects the section.
-  final String location;
+  required final String location,
 
   /// Section content.
-  final Widget child;
-
+  required final Widget child,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final frame = _Frame(projectId: projectId, location: location);
@@ -48,15 +44,15 @@ class ProjectShell extends StatelessWidget {
 }
 
 /// Section of a project.
-enum _Section { setup, rooms, circuits, estimate }
+enum _Section() {
+  setup,
+  rooms,
+  circuits,
+  estimate,
+}
 
 /// Where the frame is: project, section and whether the section root is shown.
-final class _Frame {
-  const _Frame({required this.projectId, required this.location});
-
-  final String projectId;
-  final String location;
-
+final class const _Frame({required final String projectId, required final String location}) {
   String path(_Section section) => switch (section) {
     _Section.setup => AppRoutes.projectSetup(projectId),
     _Section.rooms => AppRoutes.projectRooms(projectId),
@@ -74,11 +70,7 @@ final class _Frame {
   void back(BuildContext context) => context.go(isSectionRoot ? AppRoutes.projects : path(section));
 }
 
-class _ProjectBody extends StatelessWidget {
-  const _ProjectBody({required this.child});
-
-  final Widget child;
-
+class const _ProjectBody({required final Widget child}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => switch (context.watch<ProjectBloc>().state) {
     ProjectLoading() => const UiDeferredProgress(),
@@ -98,11 +90,7 @@ class _ProjectBody extends StatelessWidget {
   };
 }
 
-class _BackButton extends StatelessWidget {
-  const _BackButton({required this.frame});
-
-  final _Frame frame;
-
+class const _BackButton({required final _Frame frame}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => UiIconButton(
     icon: UiIcons.back,
@@ -113,27 +101,28 @@ class _BackButton extends StatelessWidget {
 
 // Expanded layout.
 
-class _ExpandedProjectFrame extends StatelessWidget {
-  const _ExpandedProjectFrame({required this.frame, required this.child});
-
-  final _Frame frame;
-  final Widget child;
-
+class const _ExpandedProjectFrame({required final _Frame frame, required final Widget child})
+    extends StatelessWidget {
   /// The switchboard comes first: it is the home section on a large screen.
-  static const _order = [_Section.circuits, _Section.rooms, _Section.setup, _Section.estimate];
+  static const List<_Section> _order = [
+    _Section.circuits,
+    _Section.rooms,
+    _Section.setup,
+    _Section.estimate,
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final state = context.watch<ProjectBloc>().state;
-    final ready = state is ProjectReady ? state : null;
-    final labels = {
+    final CommonTranslationsLocalizations t = context.translations;
+    final ProjectState state = context.watch<ProjectBloc>().state;
+    final ProjectReady? ready = state is ProjectReady ? state : null;
+    final Map<_Section, String> labels = {
       _Section.circuits: t.tabBoard,
       _Section.rooms: t.tabRooms,
       _Section.setup: t.tabSetup,
       _Section.estimate: t.tabEstimate,
     };
-    final counts = {
+    final Map<_Section, int?> counts = {
       _Section.circuits: ready?.result.circuits.length,
       _Section.rooms: ready?.document.input.rooms.length,
     };
@@ -194,17 +183,15 @@ class _ExpandedProjectFrame extends StatelessWidget {
 }
 
 /// Name and key facts of the project at the top of the sidebar.
-class _ProjectSummary extends StatelessWidget {
-  const _ProjectSummary({required this.state});
-
-  final ProjectReady state;
-
+class const _ProjectSummary({required final ProjectReady state}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
-    final input = state.document.input;
-    final supply = input.supplyPhases == SupplyPhases.single ? t.supplySingle : t.supplyThree;
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final ProjectInput input = state.document.input;
+    final String supply = input.supplyPhases == SupplyPhases.single
+        ? t.supplySingle
+        : t.supplyThree;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -233,17 +220,13 @@ IconData _sectionIcon(_Section section) => switch (section) {
 
 // Compact layout.
 
-class _CompactProjectFrame extends StatelessWidget {
-  const _CompactProjectFrame({required this.frame, required this.child});
-
-  final _Frame frame;
-  final Widget child;
-
+class const _CompactProjectFrame({required final _Frame frame, required final Widget child})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<ProjectBloc>().state;
-    final ready = state is ProjectReady ? state : null;
-    final root = ready != null && frame.isSectionRoot ? ready : null;
+    final ProjectState state = context.watch<ProjectBloc>().state;
+    final ProjectReady? ready = state is ProjectReady ? state : null;
+    final ProjectReady? root = ready != null && frame.isSectionRoot ? ready : null;
     return Scaffold(
       appBar: UiTopBar(
         leading: _BackButton(frame: frame),
@@ -263,12 +246,9 @@ class _CompactProjectFrame extends StatelessWidget {
 }
 
 /// Wizard progress under the top bar.
-class _StepsHeader extends StatelessWidget implements PreferredSizeWidget {
-  const _StepsHeader({required this.frame, required this.state});
-
-  final _Frame frame;
-  final ProjectReady state;
-
+class const _StepsHeader({required final _Frame frame, required final ProjectReady state})
+    extends StatelessWidget
+    implements PreferredSizeWidget {
   @override
   Size get preferredSize => const Size.fromHeight(UiStepBar.height);
 
@@ -292,7 +272,7 @@ class _StepsHeader extends StatelessWidget implements PreferredSizeWidget {
 
 /// Step names in wizard order.
 String _stepName(BuildContext context, _Section section) {
-  final t = context.translations;
+  final CommonTranslationsLocalizations t = context.translations;
   return switch (section) {
     _Section.setup => t.tabSetup,
     _Section.rooms => t.tabRooms,
@@ -310,9 +290,9 @@ bool _stepDone(_Section section, ProjectReady state) => switch (section) {
 };
 
 String _stepSummary(BuildContext context, _Section section, ProjectReady state) {
-  final t = context.translations;
-  final input = state.document.input;
-  final circuits = state.result.circuits;
+  final CommonTranslationsLocalizations t = context.translations;
+  final ProjectInput input = state.document.input;
+  final List<CircuitResult> circuits = state.result.circuits;
   return switch (section) {
     _Section.setup => input.objectType.label,
     _Section.rooms => t.stepRoomsSummary(input.rooms.length, input.devices.length),
@@ -324,18 +304,16 @@ String _stepSummary(BuildContext context, _Section section, ProjectReady state) 
   };
 }
 
-class _StepsNavigation extends StatelessWidget {
-  const _StepsNavigation({required this.frame, required this.state});
-
-  final _Frame frame;
-  final ProjectReady state;
-
+class const _StepsNavigation({required final _Frame frame, required final ProjectReady state})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final section = frame.section;
-    final failed = state.result.circuits.where((c) => c.status == CalculationStatus.failed);
-    final (hint, tone) = switch (section) {
+    final CommonTranslationsLocalizations t = context.translations;
+    final _Section section = frame.section;
+    final Iterable<CircuitResult> failed = state.result.circuits.where(
+      (c) => c.status == CalculationStatus.failed,
+    );
+    final (String? hint, UiTone tone) = switch (section) {
       _Section.rooms when state.document.input.rooms.isEmpty => (t.stepNeedRooms, UiTone.warning),
       _Section.circuits when failed.isNotEmpty => (
         t.stepFailedCircuits(failed.map((c) => '№${c.number}').join(', ')),
@@ -343,8 +321,8 @@ class _StepsNavigation extends StatelessWidget {
       ),
       _ => (null, UiTone.neutral),
     };
-    final previous = section.index > 0 ? _Section.values[section.index - 1] : null;
-    final next = section.index < _Section.values.length - 1
+    final _Section? previous = section.index > 0 ? _Section.values[section.index - 1] : null;
+    final _Section? next = section.index < _Section.values.length - 1
         ? _Section.values[section.index + 1]
         : null;
     return UiActionBar(
@@ -393,14 +371,10 @@ class _StepsNavigation extends StatelessWidget {
 // Actions.
 
 /// Shares the project file.
-class _ExportButton extends StatelessWidget {
-  const _ExportButton({required this.projectId, required this.state});
-
-  final String projectId;
-  final ProjectReady state;
-
+class const _ExportButton({required final String projectId, required final ProjectReady state})
+    extends StatelessWidget {
   Future<void> _export(BuildContext context) async {
-    final service = DependenciesScope.of(context).projectsContainer.projectsService;
+    final ProjectsService service = DependenciesScope.of(context).projectsContainer.projectsService;
     await ProjectFiles.shareProject(
       projectName: state.document.name,
       contents: await service.export(projectId),
@@ -415,30 +389,32 @@ class _ExportButton extends StatelessWidget {
   );
 }
 
-enum _ReportVariant { primary, secondary, icon }
+enum _ReportVariant() {
+  primary,
+  secondary,
+  icon,
+}
 
 /// Builds the PDF report and offers to share it; shows progress on the button meanwhile.
-class _ReportButton extends StatefulWidget {
-  const _ReportButton({required this.state, required this.variant});
-
-  final ProjectReady state;
-  final _ReportVariant variant;
-
+class const _ReportButton({
+  required final ProjectReady state,
+  required final _ReportVariant variant,
+}) extends StatefulWidget {
   @override
   State<_ReportButton> createState() => _ReportButtonState();
 }
 
-class _ReportButtonState extends State<_ReportButton> {
+class _ReportButtonState() extends State<_ReportButton> {
   var _busy = false;
 
   Future<void> _report() async {
     if (_busy) return;
-    final t = context.translations;
-    final toastContext = context;
-    final document = widget.state.document;
+    final CommonTranslationsLocalizations t = context.translations;
+    final BuildContext toastContext = context;
+    final ProjectDocument document = widget.state.document;
     setState(() => _busy = true);
     try {
-      final bytes = await DependenciesScope.of(
+      final Uint8List bytes = await DependenciesScope.of(
         context,
       ).projectsContainer.reportService.build(document, catalog: widget.state.catalog);
       await Printing.sharePdf(
@@ -461,8 +437,8 @@ class _ReportButtonState extends State<_ReportButton> {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final label = _busy ? t.reportInProgress : t.reportPdf;
+    final CommonTranslationsLocalizations t = context.translations;
+    final String label = _busy ? t.reportInProgress : t.reportPdf;
     return switch (widget.variant) {
       _ReportVariant.primary => UiButton(
         label: label,

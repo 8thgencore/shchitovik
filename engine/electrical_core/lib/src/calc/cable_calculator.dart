@@ -9,104 +9,79 @@ import 'package:norms_data/norms_data.dart';
 const double minimumVoltageFactor = 0.95;
 
 /// Everything needed to evaluate a cable line except the cross-section.
-final class CableLineSpec {
-  const CableLineSpec({
-    required this.phases,
-    required this.lighting,
-    required this.socketCircuit,
-    required this.designCurrentA,
-    required this.breakerA,
-    required this.cosPhi,
-    required this.material,
-    required this.insulation,
-    required this.method,
-    required this.ambientTemperatureC,
-    required this.groupedCircuits,
-    required this.soilResistivityKMPerW,
-    required this.minSectionMm2,
-    required this.phaseVoltageV,
-    required this.upstreamLoopImpedanceOhm,
-    required this.upstreamVoltageDropPercent,
-    this.lengthM,
-    this.isGroupNetwork = true,
-  });
-
+final class const CableLineSpec({
   /// 1 or 3.
-  final int phases;
+  required final int phases,
 
   /// Lighting circuit (stricter voltage drop limit).
-  final bool lighting;
+  required final bool lighting,
 
   /// The circuit feeds socket-outlets.
-  final bool socketCircuit;
+  required final bool socketCircuit,
 
   /// IB, A.
-  final double designCurrentA;
+  required final double designCurrentA,
 
   /// In, A.
-  final double breakerA;
+  required final double breakerA,
 
   /// Power factor of the load.
-  final double cosPhi;
+  required final double cosPhi,
 
   /// Conductor material.
-  final ConductorMaterial material;
+  required final ConductorMaterial material,
 
   /// Insulation.
-  final Insulation insulation;
+  required final Insulation insulation,
 
   /// Installation method.
-  final InstallationMethod method;
+  required final InstallationMethod method,
 
   /// Ambient temperature, °C.
-  final double ambientTemperatureC;
+  required final double ambientTemperatureC,
 
   /// Number of grouped circuits.
-  final int groupedCircuits;
+  required final int groupedCircuits,
 
   /// Soil resistivity, К·м/Вт.
-  final double soilResistivityKMPerW;
+  required final double soilResistivityKMPerW,
 
   /// Normative minimum section, mm².
-  final double minSectionMm2;
+  required final double minSectionMm2,
 
   /// U0, В.
-  final double phaseVoltageV;
+  required final double phaseVoltageV,
 
   /// Loop impedance at the start of the line, Ом.
-  final double upstreamLoopImpedanceOhm;
+  required final double upstreamLoopImpedanceOhm,
 
   /// Voltage drop upstream of the line (incomer cable), %.
-  final double upstreamVoltageDropPercent;
+  required final double upstreamVoltageDropPercent,
 
   /// Length, m; `null` — voltage drop and fault loop are not evaluated.
-  final double? lengthM;
+  final double? lengthM,
 
   /// Group network of a building (aluminium restrictions of СП 256 табл. 15.3 apply).
-  final bool isGroupNetwork;
-}
+  final bool isGroupNetwork = true,
+});
 
 /// Cable evaluated for one cross-section and breaker curve.
-final class CableEvaluation {
-  CableEvaluation({required this.result, required this.mandatoryPassed});
-
+final class CableEvaluation({
   /// Result for the report.
-  final CableResult result;
+  required final CableResult result,
 
   /// All mandatory checks passed (not-evaluated counts as passed).
-  final bool mandatoryPassed;
-
+  required final bool mandatoryPassed,
+}) {
   /// Check by code.
   Check check(CheckCode code) => result.checks.firstWhere((c) => c.code == code);
 }
 
 /// Evaluates cable lines against ГОСТ Р 50571.4.43, 4.41, 5.52, 5.54 and СП 256.
-final class CableCalculator {
-  CableCalculator(this.norms);
-
+final class CableCalculator(
   /// Normative data.
-  final NormsData norms;
-
+  final NormsData norms,
+) {
   /// Evaluates [spec] with [sectionMm2] and breaker [curve].
   CableEvaluation evaluate(
     CableLineSpec spec, {
@@ -116,27 +91,27 @@ final class CableCalculator {
   }) {
     final checks = <Check>[];
     final loaded = spec.phases == 3 ? 3 : 2;
-    final method = spec.method.referenceMethod;
+    final ReferenceMethod method = spec.method.referenceMethod;
 
     // Current-carrying capacity: ГОСТ Р 50571.5.52, 523 and приложение B.
-    final tabulated = norms.ampacity.currentA(
+    final double? tabulated = norms.ampacity.currentA(
       insulation: spec.insulation,
       material: spec.material,
       loadedConductors: loaded,
       method: method,
       sectionMm2: sectionMm2,
     );
-    final kt = norms.temperatureFactors.factor(
+    final double? kt = norms.temperatureFactors.factor(
       spec.method.environment,
       spec.insulation,
       spec.ambientTemperatureC,
     );
-    final kg = _groupingFactor(spec);
-    final ks = method.isInGround
+    final double? kg = _groupingFactor(spec);
+    final double? ks = method.isInGround
         ? norms.soilFactors.factor(method, spec.soilResistivityKMPerW)
         : 1.0;
-    final covered = tabulated != null && kt != null && kg != null && ks != null;
-    final iz = covered ? tabulated * kt * kg * ks : null;
+    final bool covered = tabulated != null && kt != null && kg != null && ks != null;
+    final double? iz = covered ? tabulated * kt * kg * ks : null;
 
     checks.add(
       covered
@@ -176,7 +151,7 @@ final class CableCalculator {
             ),
     );
 
-    final minOk = sectionMm2 + epsilon >= spec.minSectionMm2;
+    final bool minOk = sectionMm2 + epsilon >= spec.minSectionMm2;
     checks.add(
       Check(
         code: CheckCode.minimumSection,
@@ -191,8 +166,8 @@ final class CableCalculator {
     );
 
     // Voltage drop: ГОСТ Р 50571.5.52, приложение G; limits СП 256 п. 8.23.
-    final length = spec.lengthM;
-    final vdLimit = norms.voltageDropLimits.limitPercent(
+    final double? length = spec.lengthM;
+    final double vdLimit = norms.voltageDropLimits.limitPercent(
       lighting: spec.lighting,
       lengthM: length ?? 0,
     );
@@ -208,7 +183,7 @@ final class CableCalculator {
       );
     } else {
       vd = spec.upstreamVoltageDropPercent + voltageDropPercent(spec, sectionMm2, length);
-      final ok = lessOrEqual(vd, vdLimit);
+      final bool ok = lessOrEqual(vd, vdLimit);
       checks.add(
         Check(
           code: CheckCode.voltageDrop,
@@ -224,7 +199,7 @@ final class CableCalculator {
     }
 
     // Protective conductor: ГОСТ Р 50571.5.54, табл. 54.2.
-    final pe = _standardAtOrAbove(norms.protectiveConductors.minSectionMm2(sectionMm2));
+    final double pe = _standardAtOrAbove(norms.protectiveConductors.minSectionMm2(sectionMm2));
     checks.add(
       Check(
         code: CheckCode.protectiveConductor,
@@ -236,10 +211,10 @@ final class CableCalculator {
     );
 
     // Automatic disconnection: ГОСТ Р 50571.4.41, 411.4.4: Zs·Ia ≤ U0.
-    final ia = norms.breakers.guaranteedInstantaneousTripA(curve, spec.breakerA);
+    final double ia = norms.breakers.guaranteedInstantaneousTripA(curve, spec.breakerA);
     double? zs;
     double? ik;
-    final lineLoop = length == null ? null : loopImpedanceOhm(spec, sectionMm2, pe, length);
+    final double? lineLoop = length == null ? null : loopImpedanceOhm(spec, sectionMm2, pe, length);
     if (length == null || lineLoop == null) {
       checks.add(
         Check(
@@ -254,7 +229,7 @@ final class CableCalculator {
     } else {
       zs = spec.upstreamLoopImpedanceOhm + lineLoop;
       ik = minimumVoltageFactor * spec.phaseVoltageV / zs;
-      final ok = ik + epsilon >= ia;
+      final bool ok = ik + epsilon >= ia;
       checks.add(
         Check(
           code: CheckCode.faultDisconnection,
@@ -291,7 +266,7 @@ final class CableCalculator {
       );
     }
 
-    final mandatoryPassed = checks.every((c) => c.status != CheckStatus.failed);
+    final bool mandatoryPassed = checks.every((c) => c.status != CheckStatus.failed);
     return CableEvaluation(
       mandatoryPassed: mandatoryPassed,
       result: CableResult(
@@ -327,10 +302,10 @@ final class CableCalculator {
     List<BreakerCurve> curves,
   ) {
     ({CableEvaluation evaluation, BreakerCurve curve})? fallback;
-    for (final section in norms.constants.standardSections) {
+    for (final double section in norms.constants.standardSections) {
       if (section + epsilon < spec.minSectionMm2) continue;
       for (final curve in curves) {
-        final evaluation = evaluate(spec, sectionMm2: section, curve: curve);
+        final CableEvaluation evaluation = evaluate(spec, sectionMm2: section, curve: curve);
         if (evaluation.mandatoryPassed) return (evaluation: evaluation, curve: curve);
         final coverage = evaluation.check(CheckCode.datasetCoverage).status == CheckStatus.passed;
         final ampacityOk =
@@ -341,7 +316,7 @@ final class CableCalculator {
       }
     }
     if (fallback != null) return fallback;
-    final largest = norms.constants.standardSections.lastWhere(
+    final double largest = norms.constants.standardSections.lastWhere(
       (s) =>
           norms.ampacity.currentA(
             insulation: spec.insulation,
@@ -361,12 +336,12 @@ final class CableCalculator {
   /// Voltage drop of the line itself, % of U0 (ГОСТ Р 50571.5.52, прил. G):
   /// u = b·(ρ1·L/S·cos φ + λ·L·sin φ)·IB; b = 2 single-phase, 1 three-phase.
   double voltageDropPercent(CableLineSpec spec, double sectionMm2, double lengthM) {
-    final limits = norms.voltageDropLimits;
+    final VoltageDropLimits limits = norms.voltageDropLimits;
     final b = spec.phases == 3 ? 1.0 : 2.0;
-    final cos = spec.cosPhi;
-    final sin = math.sqrt(math.max(0, 1 - cos * cos));
-    final rho1 = limits.formulaRho1[spec.material]!;
-    final u =
+    final double cos = spec.cosPhi;
+    final double sin = math.sqrt(math.max(0, 1 - cos * cos));
+    final double rho1 = limits.formulaRho1[spec.material]!;
+    final double u =
         b *
         (rho1 * lengthM / sectionMm2 * cos + limits.formulaLambdaOhmPerM * lengthM * sin) *
         spec.designCurrentA;
@@ -380,19 +355,19 @@ final class CableCalculator {
   /// the upstream impedance.
   /// `null` when the conductor resistance is not tabulated for this section.
   double? loopImpedanceOhm(CableLineSpec spec, double sectionMm2, double peMm2, double lengthM) {
-    final c = norms.conductors;
-    final temperature = c.maxOperatingTemperatureC(spec.insulation);
-    final rPhase = c.resistanceOhmPerKm(spec.material, sectionMm2, temperature);
-    final rPe = c.resistanceOhmPerKm(spec.material, peMm2, temperature);
+    final ConductorData c = norms.conductors;
+    final double temperature = c.maxOperatingTemperatureC(spec.insulation);
+    final double? rPhase = c.resistanceOhmPerKm(spec.material, sectionMm2, temperature);
+    final double? rPe = c.resistanceOhmPerKm(spec.material, peMm2, temperature);
     if (rPhase == null || rPe == null) return null;
-    final r = (rPhase + rPe) * lengthM / 1000;
-    final x = 2 * c.reactanceOhmPerKm * lengthM / 1000;
+    final double r = (rPhase + rPe) * lengthM / 1000;
+    final double x = 2 * c.reactanceOhmPerKm * lengthM / 1000;
     return math.sqrt(r * r + x * x);
   }
 
   double? _groupingFactor(CableLineSpec spec) {
-    final n = spec.groupedCircuits;
-    final g = norms.grouping;
+    final int n = spec.groupedCircuits;
+    final GroupingFactors g = norms.grouping;
     return switch (spec.method.groupingKey) {
       'direct_in_ground' => g.directInGround(n, GroundSpacing.touching),
       'in_ducts_multicore' => g.inDucts(n, GroundSpacing.touching),

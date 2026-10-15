@@ -6,18 +6,16 @@ import 'package:electrical_core/src/model/project_input.dart';
 import 'package:norms_data/norms_data.dart';
 
 /// Normative design load of the object.
-final class NormativeDemand {
-  const NormativeDemand({required this.powerW, required this.cosPhi, required this.method});
-
+final class const NormativeDemand({
   /// Design active power, Вт.
-  final double powerW;
+  required final double powerW,
 
   /// Power factor of the input.
-  final double cosPhi;
+  required final double cosPhi,
 
   /// How the value was obtained (Russian, with references).
-  final String method;
-}
+  required final String method,
+});
 
 /// Kinds counted as sanitary, refrigeration and air-conditioning equipment (СП 256 табл. 7.5).
 const _sanitaryKinds = {'refrigeration', 'air_conditioner', 'ventilation', 'pump'};
@@ -49,33 +47,33 @@ const electricCookingKinds = {'electric_stove', 'cooktop'};
 /// the mismatch factor K of табл. 7.11 is taken as 1 (conservative). The result is not less
 /// than the largest receiver (табл. 7.8, примечание 1).
 NormativeDemand normativeDemand(ProjectInput input, List<DeviceInput> devices, NormsData norms) {
-  final installed = devices.fold<double>(0, (s, d) => s + d.totalPowerW);
+  final double installed = devices.fold<double>(0, (s, d) => s + d.totalPowerW);
   switch (input.objectType) {
     case ObjectType.apartment:
     case ObjectType.house:
-      final residential = norms.residentialLoads;
-      final hasElectricCooking = devices.any((d) => electricCookingKinds.contains(d.kind));
-      final fuel =
+      final ResidentialLoads residential = norms.residentialLoads;
+      final bool hasElectricCooking = devices.any((d) => electricCookingKinds.contains(d.kind));
+      final CookingFuel fuel =
           input.cookingFuel ?? (hasElectricCooking ? CookingFuel.electric : CookingFuel.naturalGas);
-      final stove = switch (fuel) {
+      final StoveType stove = switch (fuel) {
         CookingFuel.naturalGas => StoveType.naturalGas,
         CookingFuel.liquefiedGasOrSolidFuel => StoveType.liquefiedGasOrSolidFuel,
         CookingFuel.electric => StoveType.electric,
       };
-      final specific = residential.specificLoadKwPerApartment(stove, 1) * 1000;
-      final allowed = input.supply.allowedPowerKw;
-      final declared = allowed != null ? allowed * 1000 : installed;
-      final kc = residential.comfortDemandFactor(declared / 1000);
-      final comfort = declared * kc;
-      final hasAirConditioners = devices.any((d) => d.kind == 'air_conditioner');
-      final pf =
+      final double specific = residential.specificLoadKwPerApartment(stove, 1) * 1000;
+      final double? allowed = input.supply.allowedPowerKw;
+      final double declared = allowed != null ? allowed * 1000 : installed;
+      final double kc = residential.comfortDemandFactor(declared / 1000);
+      final double comfort = declared * kc;
+      final bool hasAirConditioners = devices.any((d) => d.kind == 'air_conditioner');
+      final double pf =
           residential.powerFactors[switch ((fuel == CookingFuel.electric, hasAirConditioners)) {
             (true, false) => 'apartments_electric_stoves',
             (true, true) => 'apartments_electric_stoves_with_air_conditioners',
             (false, false) => 'apartments_gas_or_solid_fuel_stoves',
             (false, true) => 'apartments_gas_or_solid_fuel_stoves_with_air_conditioners',
           }]!;
-      final useComfort = comfort >= specific;
+      final bool useComfort = comfort >= specific;
       return NormativeDemand(
         powerW: useComfort ? comfort : specific,
         cosPhi: pf,
@@ -96,30 +94,30 @@ NormativeDemand _publicDemand(
   NormsData norms,
   double installed,
 ) {
-  final loads = norms.publicLoads;
-  final profile =
+  final PublicLoads loads = norms.publicLoads;
+  final CommercialProfile profile =
       input.commercialProfile ??
       (input.objectType == ObjectType.garageWorkshop
           ? CommercialProfile.workshop
           : CommercialProfile.office);
-  final lightingRow = switch (profile) {
+  final int lightingRow = switch (profile) {
     CommercialProfile.catering || CommercialProfile.workshop => 2,
     _ => 3,
   };
-  final lighting = devices.where((d) => d.kind == 'lighting').toList();
-  final power = devices.where((d) => d.kind != 'lighting').toList();
-  final lightingInstalled = lighting.fold<double>(0, (s, d) => s + d.totalPowerW);
-  final kcLight = lightingInstalled == 0
+  final List<DeviceInput> lighting = devices.where((d) => d.kind == 'lighting').toList();
+  final List<DeviceInput> power = devices.where((d) => d.kind != 'lighting').toList();
+  final double lightingInstalled = lighting.fold<double>(0, (s, d) => s + d.totalPowerW);
+  final double kcLight = lightingInstalled == 0
       ? 1.0
       : loads.lightingDemandFactor(lightingRow, lightingInstalled / 1000);
   final parts = <String>[
     'освещение ${fmt(lightingInstalled / 1000, 2)} кВт × Kс.о = ${fmt(kcLight, 3)} (табл. 7.6, поз. $lightingRow)',
   ];
-  var total = lightingInstalled * kcLight;
+  double total = lightingInstalled * kcLight;
 
   double powerKc(List<DeviceInput> group, String label) {
-    final count = group.fold<int>(0, (s, d) => s + d.quantity);
-    final groupPower = group.fold<double>(0, (s, d) => s + d.totalPowerW);
+    final int count = group.fold<int>(0, (s, d) => s + d.quantity);
+    final double groupPower = group.fold<double>(0, (s, d) => s + d.totalPowerW);
     if (count == 0) return 0;
     double kc;
     String source;
@@ -133,10 +131,10 @@ NormativeDemand _publicDemand(
       case CommercialProfile.office:
       case CommercialProfile.shop:
       case CommercialProfile.catering:
-        final sanitary = group
+        final double sanitary = group
             .where((d) => _sanitaryKinds.contains(d.kind))
             .fold<double>(0, (s, d) => s + d.totalPowerW);
-        final share = groupPower == 0 ? 0 : sanitary / groupPower * 100;
+        final num share = groupPower == 0 ? 0 : sanitary / groupPower * 100;
         final rowIndex = share >= 85
             ? 0
             : share >= 75
@@ -146,7 +144,7 @@ NormativeDemand _publicDemand(
             : share >= 25
             ? 3
             : 4;
-        final row = loads.sanitaryRows[rowIndex];
+        final ({List<double?> kc, String sharePercent}) row = loads.sanitaryRows[rowIndex];
         kc = count <= 1 ? 1 : interpolateLinear(loads.sanitaryReceivers, row.kc, count);
         source = 'табл. 7.5, строка «${row.sharePercent} %» (по табл. 7.8)';
     }
@@ -155,11 +153,15 @@ NormativeDemand _publicDemand(
   }
 
   if (profile == CommercialProfile.catering) {
-    final thermal = power.where((d) => _cateringThermalKinds.contains(d.kind)).toList();
-    final other = power.where((d) => !_cateringThermalKinds.contains(d.kind)).toList();
-    final thermalCount = thermal.fold<int>(0, (s, d) => s + d.quantity);
-    final thermalPower = thermal.fold<double>(0, (s, d) => s + d.totalPowerW);
-    final kcThermal = loads.cateringDemandFactor(thermalCount);
+    final List<DeviceInput> thermal = power
+        .where((d) => _cateringThermalKinds.contains(d.kind))
+        .toList();
+    final List<DeviceInput> other = power
+        .where((d) => !_cateringThermalKinds.contains(d.kind))
+        .toList();
+    final int thermalCount = thermal.fold<int>(0, (s, d) => s + d.quantity);
+    final double thermalPower = thermal.fold<double>(0, (s, d) => s + d.totalPowerW);
+    final double kcThermal = loads.cateringDemandFactor(thermalCount);
     parts.add(
       'тепловое оборудование ${fmt(thermalPower / 1000, 2)} кВт × Kс = ${fmt(kcThermal, 3)} (табл. 7.9)',
     );
@@ -168,13 +170,13 @@ NormativeDemand _publicDemand(
     total += powerKc(power, 'силовые приёмники');
   }
 
-  final largest = devices.fold<double>(0, (m, d) => d.powerW > m ? d.powerW.toDouble() : m);
+  final double largest = devices.fold<double>(0, (m, d) => d.powerW > m ? d.powerW.toDouble() : m);
   if (total < largest) {
     total = largest;
     parts.add('не менее мощности наибольшего приёмника (табл. 7.8, прим. 1)');
   }
 
-  final cos = _weightedCosPhi(devices);
+  final double cos = _weightedCosPhi(devices);
   return NormativeDemand(
     powerW: total,
     cosPhi: cos,
@@ -187,7 +189,7 @@ double _weightedCosPhi(List<DeviceInput> devices) {
   var p = 0.0;
   var q = 0.0;
   for (final d in devices) {
-    final power = d.totalPowerW * d.usageFactor;
+    final double power = d.totalPowerW * d.usageFactor;
     p += power;
     q += d.cosPhi >= 1 ? 0 : power * math.sqrt(1 - d.cosPhi * d.cosPhi) / d.cosPhi;
   }

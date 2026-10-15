@@ -1,28 +1,32 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shchitovik/src/feature/settings/application/settings_service.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/settings.dart';
 import 'package:shchitovik/src/widget/dependencies_scope.dart';
 
 /// A scope that provides [Settings] to the application.
-class SettingsScope extends StatelessWidget {
-  const SettingsScope({required this.child, super.key});
-
+class const SettingsScope({
   /// The widget below this widget in the tree.
-  final Widget child;
-
+  required final Widget child,
+  super.key,
+}) extends StatelessWidget {
   /// Returns the [Settings] of the nearest [SettingsScope] ancestor.
   static Settings of(BuildContext context, {bool listen = true}) =>
       context.inhOf<_SettingsInherited>(listen: listen).settings;
 
   /// Update the [Settings] of the nearest [SettingsScope] ancestor.
   static Future<void> update(BuildContext context, Settings Function(Settings) transform) async {
-    final settingsService = DependenciesScope.of(context).settingsContainer.settingsService;
+    final SettingsService settingsService = DependenciesScope.of(context)
+        .settingsContainer
+        .settingsService;
     await settingsService.update(transform);
   }
 
   @override
   Widget build(BuildContext context) {
-    final settingsService = DependenciesScope.of(context).settingsContainer.settingsService;
+    final SettingsService settingsService = DependenciesScope.of(context)
+        .settingsContainer
+        .settingsService;
 
     return StreamBuilder<Settings>(
       stream: settingsService.stream,
@@ -34,11 +38,8 @@ class SettingsScope extends StatelessWidget {
   }
 }
 
-class _SettingsInherited extends InheritedWidget {
-  const _SettingsInherited({required super.child, required this.settings});
-
-  final Settings settings;
-
+class const _SettingsInherited({required super.child, required final Settings settings})
+    extends InheritedWidget {
   @override
   bool updateShouldNotify(covariant _SettingsInherited oldWidget) {
     return settings != oldWidget.settings;

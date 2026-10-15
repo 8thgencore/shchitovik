@@ -3,9 +3,9 @@ import 'package:estimate_core/estimate_core.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final catalog = EstimateCatalog.embedded;
-  final apartment = DemoProjects.oneRoomApartment();
-  final apartmentResult = calculateProject(apartment);
+  final EstimateCatalog catalog = EstimateCatalog.embedded;
+  final ProjectInput apartment = DemoProjects.oneRoomApartment();
+  final ProjectResult apartmentResult = calculateProject(apartment);
 
   test('price range arithmetic', () {
     const a = PriceRange(minKopecks: 100, typicalKopecks: 200, maxKopecks: 300);
@@ -17,7 +17,7 @@ void main() {
     test(
       'one slot per circuit with the default RCBO strategy, incomer first (2P on single phase)',
       () {
-        final slots = slotsFor(apartment, apartmentResult);
+        final List<ApparatusSlot> slots = slotsFor(apartment, apartmentResult);
         expect(slots.first.id, 'incomer/mcb');
         expect(slots.first.requirement.poles, 2);
         expect(slots.length, apartmentResult.circuits.length + 1);
@@ -25,22 +25,22 @@ void main() {
     );
 
     test('MCB + RCD strategy adds RCD slots rated not below the breaker', () {
-      final input = apartment.copyWith(rcdStrategy: RcdStrategy.rcdPerCircuit);
-      final result = calculateProject(input);
-      final slots = slotsFor(input, result);
-      final rcd = slots.where((s) => s.id.endsWith('/rcd'));
+      final ProjectInput input = apartment.copyWith(rcdStrategy: RcdStrategy.rcdPerCircuit);
+      final ProjectResult result = calculateProject(input);
+      final List<ApparatusSlot> slots = slotsFor(input, result);
+      final Iterable<ApparatusSlot> rcd = slots.where((s) => s.id.endsWith('/rcd'));
       expect(rcd.length, result.circuits.where((c) => c.protection.rcd != null).length);
       for (final s in rcd) {
-        final circuit = result.circuits.firstWhere((c) => c.id == s.circuitId);
+        final CircuitResult circuit = result.circuits.firstWhere((c) => c.id == s.circuitId);
         expect(s.requirement.ratedCurrentA, greaterThanOrEqualTo(circuit.protection.breakerA));
       }
     });
 
     test('house: three-phase incomer 3P and selective fire RCD 4P', () {
-      final house = DemoProjects.house();
-      final slots = slotsFor(house, calculateProject(house));
+      final ProjectInput house = DemoProjects.house();
+      final List<ApparatusSlot> slots = slotsFor(house, calculateProject(house));
       expect(slots.first.requirement.poles, 3);
-      final fire = slots.firstWhere((s) => s.id == 'incomer/rcd').requirement;
+      final ApparatusRequirement fire = slots.firstWhere((s) => s.id == 'incomer/rcd').requirement;
       expect(fire.selective, isTrue);
       expect(fire.leakageMa, 300);
       expect(fire.poles, 4);
@@ -48,10 +48,14 @@ void main() {
   });
 
   group('estimate', () {
-    final standard = calculateEstimate(apartment, apartmentResult, const EstimateInput());
+    final EstimateResult standard = calculateEstimate(
+      apartment,
+      apartmentResult,
+      const EstimateInput(),
+    );
 
     test('totals are the sums of the lines and min ≤ typical ≤ max', () {
-      final sum = standard.lines.fold(PriceRange.zero, (s, l) => s + l.total);
+      final PriceRange sum = standard.lines.fold(PriceRange.zero, (s, l) => s + l.total);
       expect(standard.total, sum);
       expect(standard.total.minKopecks, lessThanOrEqualTo(standard.total.typicalKopecks));
       expect(standard.total.typicalKopecks, lessThanOrEqualTo(standard.total.maxKopecks));
@@ -59,7 +63,11 @@ void main() {
 
     test('scenario picks the manufacturer segment', () {
       Set<Tier> tiers(EstimateScenario scenario) {
-        final e = calculateEstimate(apartment, apartmentResult, EstimateInput(scenario: scenario));
+        final EstimateResult e = calculateEstimate(
+          apartment,
+          apartmentResult,
+          EstimateInput(scenario: scenario),
+        );
         return {
           for (final l in e.lines.where((l) => l.productId != null))
             catalog.manufacturers[catalog.product(l.productId!)!.manufacturerId]!.tier,
@@ -82,9 +90,9 @@ void main() {
     });
 
     test('cable: price per metre × length × reserve', () {
-      final circuit = apartmentResult.circuits.first;
-      final line = standard.lines.firstWhere((l) => l.id == 'cable/${circuit.id}');
-      final item = catalog.cables.firstWhere(
+      final CircuitResult circuit = apartmentResult.circuits.first;
+      final EstimateLine line = standard.lines.firstWhere((l) => l.id == 'cable/${circuit.id}');
+      final CableItem item = catalog.cables.firstWhere(
         (i) => i.markId == 'vvgng_a_ls' && i.cores == 3 && i.sectionMm2 == circuit.cable.sectionMm2,
       );
       expect(line.quantity, closeTo(circuit.cable.lengthM! * 1.1, 1e-9));
@@ -94,8 +102,8 @@ void main() {
     test('voltage relay included by default, SPD only for houses', () {
       expect(standard.lines.map((l) => l.id), contains('aux/voltage_relay'));
       expect(standard.lines.map((l) => l.id), isNot(contains('aux/spd')));
-      final house = DemoProjects.house();
-      final houseEstimate = calculateEstimate(
+      final ProjectInput house = DemoProjects.house();
+      final EstimateResult houseEstimate = calculateEstimate(
         house,
         calculateProject(house),
         const EstimateInput(),
@@ -104,9 +112,13 @@ void main() {
     });
 
     test('three-phase RCBO is not in the catalog: fallback price with a warning', () {
-      final house = DemoProjects.house();
-      final e = calculateEstimate(house, calculateProject(house), const EstimateInput());
-      final sauna = e.lines.firstWhere(
+      final ProjectInput house = DemoProjects.house();
+      final EstimateResult e = calculateEstimate(
+        house,
+        calculateProject(house),
+        const EstimateInput(),
+      );
+      final EstimateLine sauna = e.lines.firstWhere(
         (l) => l.requirement?.function == ApparatusFunction.rcbo && l.requirement!.poles == 4,
       );
       expect(sauna.source, PriceSource.fallback);
@@ -115,9 +127,15 @@ void main() {
     });
 
     test('missing length excludes the cable line from the total', () {
-      final input = apartment.copyWith(cableDefaults: const CableDefaults());
-      final e = calculateEstimate(input, calculateProject(input), const EstimateInput());
-      final cables = e.lines.where((l) => l.category == EstimateCategory.cable);
+      final ProjectInput input = apartment.copyWith(cableDefaults: const CableDefaults());
+      final EstimateResult e = calculateEstimate(
+        input,
+        calculateProject(input),
+        const EstimateInput(),
+      );
+      final Iterable<EstimateLine> cables = e.lines.where(
+        (l) => l.category == EstimateCategory.cable,
+      );
       expect(
         cables.every((l) => l.missing.contains('длина') && l.total == PriceRange.zero),
         isTrue,
@@ -128,11 +146,14 @@ void main() {
   });
 
   group('selections', () {
-    final slot = slotsFor(apartment, apartmentResult).firstWhere((s) => s.id.endsWith('/rcbo'));
-    final chosen = compatibleProducts(slot.requirement, catalog).last.product;
+    final ApparatusSlot slot = slotsFor(
+      apartment,
+      apartmentResult,
+    ).firstWhere((s) => s.id.endsWith('/rcbo'));
+    final ApparatusProduct chosen = compatibleProducts(slot.requirement, catalog).last.product;
 
     test('a compatible selection is used with its snapshot price', () {
-      final e = calculateEstimate(
+      final EstimateResult e = calculateEstimate(
         apartment,
         apartmentResult,
         EstimateInput(
@@ -141,7 +162,7 @@ void main() {
           },
         ),
       );
-      final line = e.lines.firstWhere((l) => l.id == slot.id);
+      final EstimateLine line = e.lines.firstWhere((l) => l.id == slot.id);
       expect(line.productId, chosen.id);
       expect(line.source, PriceSource.selection);
       expect(line.total, chosen.price);
@@ -149,7 +170,7 @@ void main() {
 
     test('user price overrides the catalog price', () {
       const price = PriceRange.exact(123400);
-      final e = calculateEstimate(
+      final EstimateResult e = calculateEstimate(
         apartment,
         apartmentResult,
         EstimateInput(
@@ -162,17 +183,17 @@ void main() {
           },
         ),
       );
-      final line = e.lines.firstWhere((l) => l.id == slot.id);
+      final EstimateLine line = e.lines.firstWhere((l) => l.id == slot.id);
       expect(line.source, PriceSource.custom);
       expect(line.total, price);
     });
 
     test('a selection that no longer fits the calculation is replaced and reported as stale', () {
-      final circuitId = slot.circuitId!;
-      final changed = apartment.copyWith(
+      final String circuitId = slot.circuitId!;
+      final ProjectInput changed = apartment.copyWith(
         circuitSettings: {circuitId: const CircuitSettings(breakerA: 25)},
       );
-      final e = calculateEstimate(
+      final EstimateResult e = calculateEstimate(
         changed,
         calculateProject(changed),
         EstimateInput(
@@ -181,7 +202,7 @@ void main() {
           },
         ),
       );
-      final line = e.lines.firstWhere((l) => l.id == slot.id);
+      final EstimateLine line = e.lines.firstWhere((l) => l.id == slot.id);
       expect(line.source, isNot(PriceSource.selection));
       expect(e.warnings.map((w) => w.code), contains('stale_selection'));
     });

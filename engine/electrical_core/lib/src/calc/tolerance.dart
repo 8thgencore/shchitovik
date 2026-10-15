@@ -12,7 +12,7 @@ bool lessOrEqual(double a, double b) => a <= b + epsilon;
 
 /// Formats a number for Russian messages: comma decimal separator, at most [digits] digits.
 String fmt(double value, [int digits = 1]) {
-  var s = value.toStringAsFixed(digits);
+  String s = value.toStringAsFixed(digits);
   if (s.contains('.')) {
     s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
   }

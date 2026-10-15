@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 /// Reference values typed from the text of ГОСТ Р 50571.5.52-2011, not from data/*.json.
 void main() {
-  final table = NormsData.embedded.ampacity;
+  final AmpacityTable table = NormsData.embedded.ampacity;
 
   double? current(
     Insulation i,
@@ -19,10 +19,10 @@ void main() {
     sectionMm2: s,
   );
 
-  const cu = ConductorMaterial.copper;
-  const al = ConductorMaterial.aluminium;
-  const pvc = Insulation.pvc;
-  const xlpe = Insulation.xlpe;
+  const ConductorMaterial cu = ConductorMaterial.copper;
+  const ConductorMaterial al = ConductorMaterial.aluminium;
+  const Insulation pvc = Insulation.pvc;
+  const Insulation xlpe = Insulation.xlpe;
 
   final cases = <(String, double?, double?)>[
     ('B.52.2 Cu 1,5 A1', current(pvc, cu, 2, ReferenceMethod.a1, 1.5), 14.5),
@@ -54,16 +54,16 @@ void main() {
   }
 
   group('invariants over all columns', () {
-    final sections = table.sections;
+    final List<double> sections = table.sections;
 
     test('current does not decrease with section', () {
-      for (final i in Insulation.values) {
-        for (final m in ConductorMaterial.values) {
+      for (final Insulation i in Insulation.values) {
+        for (final ConductorMaterial m in ConductorMaterial.values) {
           for (final loaded in const [2, 3]) {
-            for (final method in ReferenceMethod.values) {
+            for (final ReferenceMethod method in ReferenceMethod.values) {
               double? previous;
               for (final s in sections) {
-                final value = current(i, m, loaded, method, s);
+                final double? value = current(i, m, loaded, method, s);
                 if (value == null) continue;
                 if (previous != null) {
                   expect(value, greaterThanOrEqualTo(previous), reason: '$i $m $loaded $method $s');
@@ -77,28 +77,28 @@ void main() {
     });
 
     test('XLPE ≥ PVC, two loaded ≥ three loaded, copper > aluminium', () {
-      for (final method in ReferenceMethod.values) {
+      for (final ReferenceMethod method in ReferenceMethod.values) {
         for (final s in sections) {
-          for (final m in ConductorMaterial.values) {
+          for (final ConductorMaterial m in ConductorMaterial.values) {
             for (final loaded in const [2, 3]) {
-              final p = current(pvc, m, loaded, method, s);
-              final x = current(xlpe, m, loaded, method, s);
+              final double? p = current(pvc, m, loaded, method, s);
+              final double? x = current(xlpe, m, loaded, method, s);
               if (p != null && x != null) {
                 expect(x, greaterThanOrEqualTo(p), reason: '$m $loaded $method $s');
               }
             }
-            for (final i in Insulation.values) {
-              final two = current(i, m, 2, method, s);
-              final three = current(i, m, 3, method, s);
+            for (final Insulation i in Insulation.values) {
+              final double? two = current(i, m, 2, method, s);
+              final double? three = current(i, m, 3, method, s);
               if (two != null && three != null) {
                 expect(two, greaterThanOrEqualTo(three), reason: '$i $m $method $s');
               }
             }
           }
-          for (final i in Insulation.values) {
+          for (final Insulation i in Insulation.values) {
             for (final loaded in const [2, 3]) {
-              final c = current(i, cu, loaded, method, s);
-              final a = current(i, al, loaded, method, s);
+              final double? c = current(i, cu, loaded, method, s);
+              final double? a = current(i, al, loaded, method, s);
               if (c != null && a != null) {
                 expect(c, greaterThan(a), reason: '$i $loaded $method $s');
               }

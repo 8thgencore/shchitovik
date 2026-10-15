@@ -1,13 +1,13 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:norms_data/norms_data.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 
 /// Russian label of a room kind.
 String roomKindLabel(BuildContext context, RoomKind kind) {
-  final t = context.translations;
+  final CommonTranslationsLocalizations t = context.translations;
   return switch (kind) {
     RoomKind.standard => t.roomKindStandard,
     RoomKind.kitchen => t.roomKindKitchen,
@@ -18,17 +18,15 @@ String roomKindLabel(BuildContext context, RoomKind kind) {
 }
 
 /// Choice of a room template (or an empty room).
-class RoomTemplatePicker extends StatelessWidget {
-  const RoomTemplatePicker({super.key});
-
+class const RoomTemplatePicker({super.key}) extends StatelessWidget {
   /// Shows the picker.
   static Future<RoomTemplate?> show(BuildContext context) =>
       showUiSheet<RoomTemplate>(context, builder: (_) => const RoomTemplatePicker());
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final templates = NormsData.embedded.roomTemplates;
+    final CommonTranslationsLocalizations t = context.translations;
+    final List<RoomTemplate> templates = NormsData.embedded.roomTemplates;
     return UiSheet(
       title: t.roomsAddTitle,
       body: ListView(
@@ -65,9 +63,7 @@ class RoomTemplatePicker extends StatelessWidget {
 }
 
 /// Choice of a catalog device or a custom one (returns `Object()` for custom).
-class DeviceTemplatePicker extends StatefulWidget {
-  const DeviceTemplatePicker({super.key});
-
+class const DeviceTemplatePicker({super.key}) extends StatefulWidget {
   /// Shows the picker: [DeviceTemplate], a non-template object for «свой прибор», or `null`.
   static Future<Object?> show(BuildContext context) =>
       showUiSheet<Object>(context, builder: (_) => const DeviceTemplatePicker());
@@ -76,7 +72,7 @@ class DeviceTemplatePicker extends StatefulWidget {
   State<DeviceTemplatePicker> createState() => _DeviceTemplatePickerState();
 }
 
-class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
+class _DeviceTemplatePickerState() extends State<DeviceTemplatePicker> {
   final _search = TextEditingController();
   var _query = '';
 
@@ -93,8 +89,8 @@ class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final devices = NormsData.embedded.devices
+    final CommonTranslationsLocalizations t = context.translations;
+    final List<DeviceTemplate> devices = NormsData.embedded.devices
         .where((d) => d.name.toLowerCase().contains(_query.toLowerCase()))
         .toList();
     return UiSheet(
@@ -154,12 +150,11 @@ class _DeviceTemplatePickerState extends State<DeviceTemplatePicker> {
 }
 
 /// Edits name and kind of a room.
-class RoomEditorSheet extends StatefulWidget {
-  const RoomEditorSheet({required this.room, super.key});
-
+class const RoomEditorSheet({
   /// Room.
-  final RoomInput room;
-
+  required final RoomInput room,
+  super.key,
+}) extends StatefulWidget {
   /// Shows the sheet; `null` if cancelled.
   static Future<RoomInput?> show(BuildContext context, RoomInput room) =>
       showUiSheet<RoomInput>(context, builder: (_) => RoomEditorSheet(room: room));
@@ -168,9 +163,9 @@ class RoomEditorSheet extends StatefulWidget {
   State<RoomEditorSheet> createState() => _RoomEditorSheetState();
 }
 
-class _RoomEditorSheetState extends State<RoomEditorSheet> {
+class _RoomEditorSheetState() extends State<RoomEditorSheet> {
   late final _name = TextEditingController(text: widget.room.name);
-  late var _kind = widget.room.kind;
+  late RoomKind _kind = widget.room.kind;
 
   @override
   void dispose() {
@@ -187,7 +182,7 @@ class _RoomEditorSheetState extends State<RoomEditorSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     return UiSheet(
       title: t.roomRename,
       body: SingleChildScrollView(

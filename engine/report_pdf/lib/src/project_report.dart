@@ -9,50 +9,38 @@ import 'package:pdf/widgets.dart' as pw;
 
 /// Fonts with Cyrillic and Greek glyphs (TrueType bytes), e.g. Noto Sans.
 @immutable
-final class ReportFonts {
-  const ReportFonts({required this.regular, required this.bold});
-
+final class const ReportFonts({
   /// Regular face.
-  final ByteData regular;
+  required final ByteData regular,
 
   /// Bold face.
-  final ByteData bold;
-}
+  required final ByteData bold,
+});
 
 /// Data shown in the report.
 @immutable
-final class ProjectReportData {
-  const ProjectReportData({
-    required this.projectName,
-    required this.generatedAt,
-    required this.appVersion,
-    required this.input,
-    required this.result,
-    this.estimate,
-    this.board,
-  });
-
+final class const ProjectReportData({
   /// Project name.
-  final String projectName;
+  required final String projectName,
 
   /// Generation time (local time is shown).
-  final DateTime generatedAt;
+  required final DateTime generatedAt,
 
   /// App version for the footer.
-  final String appVersion;
+  required final String appVersion,
 
   /// Calculation input.
-  final ProjectInput input;
+  required final ProjectInput input,
 
   /// Calculation result.
-  final ProjectResult result;
+  required final ProjectResult result,
 
   /// Estimate; `null` — the estimate sections are omitted.
-  final EstimateResult? estimate;
+  final EstimateResult? estimate,
 
   /// Switchboard; `null` — the switchboard section is omitted.
-  final SwitchboardLayout? board;
-}
+  final SwitchboardLayout? board,
+});
 
 /// Disclaimer printed on the first page.
 const reportDisclaimer =
@@ -101,7 +89,7 @@ const _headerFill = PdfColor.fromInt(0xFFE8EEF5);
 
 String _num(double? v, [int digits = 1]) {
   if (v == null) return '—';
-  var s = v.toStringAsFixed(digits);
+  String s = v.toStringAsFixed(digits);
   if (s.contains('.')) s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
   return s.replaceAll('.', ',');
 }
@@ -120,7 +108,7 @@ String _range(PriceRange p) =>
     '${_rub(p.minKopecks)} … ${_rub(p.maxKopecks)} (типично ${_rub(p.typicalKopecks)})';
 
 String _date(DateTime t) {
-  final local = t.toLocal();
+  final DateTime local = t.toLocal();
   String two(int v) => v.toString().padLeft(2, '0');
   return '${two(local.day)}.${two(local.month)}.${local.year} ${two(local.hour)}:${two(local.minute)}';
 }
@@ -178,8 +166,8 @@ pw.Widget _footer(pw.Context context, ProjectReportData data) => pw.Row(
 // ------------------------------------------------------------------ sections
 
 List<pw.Widget> _title(ProjectReportData data) {
-  final input = data.input;
-  final result = data.result;
+  final ProjectInput input = data.input;
+  final ProjectResult result = data.result;
   return [
     pw.Text(
       'Расчёт электрощита',
@@ -206,8 +194,8 @@ List<pw.Widget> _title(ProjectReportData data) {
 
 List<pw.Widget> _initialData(ProjectReportData data) {
   final rows = <List<String>>[];
-  for (final room in data.input.rooms) {
-    for (final d in data.input.devices.where((d) => d.roomId == room.id)) {
+  for (final RoomInput room in data.input.rooms) {
+    for (final DeviceInput d in data.input.devices.where((d) => d.roomId == room.id)) {
       rows.add([
         room.name,
         d.name,
@@ -221,7 +209,7 @@ List<pw.Widget> _initialData(ProjectReportData data) {
       ]);
     }
   }
-  final defaults = data.input.cableDefaults;
+  final CableDefaults defaults = data.input.cableDefaults;
   return [
     _heading('1. Исходные данные'),
     _paragraph(
@@ -237,9 +225,9 @@ List<pw.Widget> _initialData(ProjectReportData data) {
 }
 
 List<pw.Widget> _incomer(ProjectReportData data) {
-  final incomer = data.result.incomer;
-  final fire = data.result.fireRcd;
-  final rows = [
+  final IncomerResult incomer = data.result.incomer;
+  final SharedRcdResult? fire = data.result.fireRcd;
+  final List<List<String>> rows = [
     ['Установленная мощность', '${_num(incomer.installedPowerW / 1000, 2)} кВт'],
     ['Нагрузка «по приборам» (Σ P·ku)', '${_num(incomer.demandByDevicesW / 1000, 2)} кВт'],
     ['Расчётная нагрузка по СП 256', '${_num(incomer.demandNormativeW / 1000, 2)} кВт'],
@@ -262,7 +250,7 @@ List<pw.Widget> _incomer(ProjectReportData data) {
       ],
     for (final c in incomer.checks) [c.message, c.status.label],
   ];
-  final cable = incomer.cable;
+  final CableResult? cable = incomer.cable;
   return [
     _heading('2. Ввод'),
     _table(
@@ -278,7 +266,7 @@ List<pw.Widget> _incomer(ProjectReportData data) {
 }
 
 List<pw.Widget> _circuits(ProjectReportData data) {
-  final rows = [
+  final List<List<String>> rows = [
     for (final c in data.result.circuits)
       [
         c.number.toString(),
@@ -326,16 +314,18 @@ List<pw.Widget> _circuits(ProjectReportData data) {
 
 List<pw.Widget> _notes(ProjectReportData data) {
   final rows = <List<String>>[];
-  for (final c in data.result.circuits) {
-    for (final check in c.allChecks) {
+  for (final CircuitResult c in data.result.circuits) {
+    for (final Check check in c.allChecks) {
       if (check.status == CheckStatus.failed || check.status == CheckStatus.warning) {
         rows.add(['№${c.number}', check.status.label, check.message, check.reference ?? '']);
       }
     }
-    final rcd = c.protection.rcd;
+    final RcdResult? rcd = c.protection.rcd;
     if (rcd != null) rows.add(['№${c.number}', 'УЗО', rcd.reasons.join('; '), '']);
   }
-  final issues = [for (final i in data.result.issues) _paragraph('• ${i.message}', size: _small)];
+  final List<pw.Widget> issues = [
+    for (final i in data.result.issues) _paragraph('• ${i.message}', size: _small),
+  ];
   return [
     _heading('4. Замечания по проверкам и требования к УЗО'),
     if (rows.isEmpty) _paragraph('Замечаний нет.'),
@@ -355,7 +345,7 @@ List<pw.Widget> _notes(ProjectReportData data) {
 }
 
 List<pw.Widget> _phaseBalance(ProjectReportData data) {
-  final balance = data.result.phaseBalance;
+  final PhaseBalanceResult? balance = data.result.phaseBalance;
   if (balance == null) return const [];
   return [
     _heading('5. Распределение по фазам'),
@@ -374,20 +364,20 @@ List<pw.Widget> _phaseBalance(ProjectReportData data) {
 
 List<pw.Widget> _estimate(EstimateResult estimate) {
   final apparatus = <String, ({int count, int modules})>{};
-  for (final l in estimate.lines.where((l) => l.category != EstimateCategory.cable)) {
-    final current = apparatus[l.description];
+  for (final EstimateLine l in estimate.lines.where((l) => l.category != EstimateCategory.cable)) {
+    final ({int count, int modules})? current = apparatus[l.description];
     apparatus[l.description] = (
       count: (current?.count ?? 0) + 1,
       modules: (current?.modules ?? 0) + l.moduleUnits,
     );
   }
   final cables = <String, double>{};
-  for (final l in estimate.lines.where(
+  for (final EstimateLine l in estimate.lines.where(
     (l) => l.category == EstimateCategory.cable && l.missing.isEmpty,
   )) {
     cables[l.description] = (cables[l.description] ?? 0) + l.quantity;
   }
-  final lines = [
+  final List<List<String>> lines = [
     for (final l in estimate.lines)
       [
         l.title,
@@ -439,7 +429,7 @@ List<pw.Widget> _estimate(EstimateResult estimate) {
 }
 
 /// Page width between the margins of A4 landscape.
-const _contentWidth = 841.89 - 56;
+const double _contentWidth = 841.89 - 56;
 
 /// Conductor colours of the phases by ГОСТ 33542-2015 (IEC 60445): L1 brown, L2 black, L3 grey.
 PdfColor _phaseColor(Phase? phase) => switch (phase) {
@@ -450,8 +440,8 @@ PdfColor _phaseColor(Phase? phase) => switch (phase) {
 };
 
 List<pw.Widget> _switchboard(ProjectReportData data, SwitchboardLayout board) {
-  final perRail = board.rails.fold(board.modulesPerRail, (m, r) => r.used > m ? r.used : m);
-  final module = (_contentWidth / perRail).clamp(0.0, 32.0);
+  final int perRail = board.rails.fold(board.modulesPerRail, (m, r) => r.used > m ? r.used : m);
+  final double module = (_contentWidth / perRail).clamp(0.0, 32.0);
   return [
     pw.NewPage(),
     _heading('8. Щит'),
@@ -497,8 +487,8 @@ List<pw.Widget> _switchboard(ProjectReportData data, SwitchboardLayout board) {
 }
 
 pw.Widget _boardModule(ProjectReportData data, BoardItem item, double module) {
-  final result = data.result;
-  final (top, title, bottom, strip) = switch (item.kind) {
+  final ProjectResult result = data.result;
+  final (String top, String title, String bottom, PdfColor strip) = switch (item.kind) {
     BoardItemKind.incomer => (
       'Ввод',
       'C${_num(result.incomer.breakerA, 0)}',
@@ -512,11 +502,11 @@ pw.Widget _boardModule(ProjectReportData data, BoardItem item, double module) {
       const PdfColor.fromInt(0xFFB3261E),
     ),
     BoardItemKind.auxiliary => () {
-      final line = data.estimate?.lines.where((l) => l.id == item.id).firstOrNull;
+      final EstimateLine? line = data.estimate?.lines.where((l) => l.id == item.id).firstOrNull;
       return ('Доп.', line?.title ?? '', line?.description ?? '', _grey);
     }(),
     BoardItemKind.groupRcd => () {
-      final rcd = result.sharedRcds.firstWhere((x) => x.id == item.id);
+      final SharedRcdResult rcd = result.sharedRcds.firstWhere((x) => x.id == item.id);
       return (
         'УЗО',
         '${_num(rcd.residualMa, 0)} мА',
@@ -525,7 +515,7 @@ pw.Widget _boardModule(ProjectReportData data, BoardItem item, double module) {
       );
     }(),
     BoardItemKind.circuit => () {
-      final c = result.circuits.firstWhere((x) => x.id == item.id);
+      final CircuitResult c = result.circuits.firstWhere((x) => x.id == item.id);
       return (
         '${c.number} · ${c.phase?.label ?? '3ф'}',
         c.protection.label,
@@ -583,7 +573,7 @@ String _boardWarning(ProjectReportData data, BoardWarning warning) => switch (wa
   BoardReserveLow() =>
     'Резерв меньше ${_num(enclosureReserveShare * 100, 0)} % — нет места для новых линий.',
   BoardGroupSplit(:final rcdId) => () {
-    final numbers = [
+    final List<String> numbers = [
       for (final c in data.result.circuits)
         if (data.result.sharedRcds.any((r) => r.id == rcdId && r.circuitIds.contains(c.id)))
           '№${c.number}',

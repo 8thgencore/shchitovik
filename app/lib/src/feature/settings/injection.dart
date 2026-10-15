@@ -4,12 +4,10 @@ import 'package:shchitovik/src/feature/settings/application/settings_service.dar
 import 'package:shchitovik/src/feature/settings/data/repositories/settings_repository_impl.dart';
 
 /// Container with global settings state.
-class SettingsContainer {
-  const SettingsContainer._(this.settingsService);
-
+class const SettingsContainer._(
   /// Service for managing settings.
-  final SettingsService settingsService;
-
+  final SettingsService settingsService,
+) {
   /// Create a new [SettingsContainer] with the given [sharedPreferences].
   static Future<SettingsContainer> create({
     required SharedPreferencesAsync sharedPreferences,
@@ -18,7 +16,9 @@ class SettingsContainer {
       sharedPreferences: sharedPreferences,
     );
 
-    final settingsService = await SettingsServiceImpl.create(repository: settingsRepository);
+    final SettingsServiceImpl settingsService = await SettingsServiceImpl.create(
+      repository: settingsRepository,
+    );
 
     return SettingsContainer._(settingsService);
   }

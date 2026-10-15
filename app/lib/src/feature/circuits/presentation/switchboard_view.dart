@@ -2,9 +2,9 @@ import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
 import 'package:estimate_core/estimate_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
@@ -20,17 +20,16 @@ const _moduleWidth = 36.0;
 /// In the rearrange mode a tap selects a device, which then moves with the arrow buttons or
 /// keys; on expanded windows devices can also be dragged. The arrangement and the enclosure
 /// are saved with the estimate choices.
-class SwitchboardView extends StatefulWidget {
-  const SwitchboardView({required this.state, super.key});
-
+class const SwitchboardView({
   /// Project with its calculation and estimate.
-  final ProjectReady state;
-
+  required final ProjectReady state,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<SwitchboardView> createState() => _SwitchboardViewState();
 }
 
-class _SwitchboardViewState extends State<SwitchboardView> {
+class _SwitchboardViewState() extends State<SwitchboardView> {
   bool _editing = false;
   String? _selected;
 
@@ -42,7 +41,7 @@ class _SwitchboardViewState extends State<SwitchboardView> {
   );
 
   void _move(SwitchboardLayout layout, BoardMove move) {
-    final id = _selected;
+    final String? id = _selected;
     if (id != null) _edit((b) => moveBoardItem(b, layout, id, move));
   }
 
@@ -53,18 +52,18 @@ class _SwitchboardViewState extends State<SwitchboardView> {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
-    final board = _state.document.estimate.board;
-    final layout = arrangeSwitchboard(
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final BoardArrangement board = _state.document.estimate.board;
+    final SwitchboardLayout layout = arrangeSwitchboard(
       switchboardItems(_state.document.input, _state.result, _state.estimate),
       board,
     );
-    final draggable = _editing && MediaQuery.sizeOf(context).width >= UiBreakpoints.expanded;
-    final selected = layout.rails.any((r) => r.items.any((i) => i.id == _selected))
+    final bool draggable = _editing && MediaQuery.sizeOf(context).width >= UiBreakpoints.expanded;
+    final String? selected = layout.rails.any((r) => r.items.any((i) => i.id == _selected))
         ? _selected
         : null;
-    final enclosureModules = layout.enclosureRails * layout.modulesPerRail;
+    final int enclosureModules = layout.enclosureRails * layout.modulesPerRail;
 
     Widget rails = SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -159,8 +158,8 @@ class _SwitchboardViewState extends State<SwitchboardView> {
   }
 
   String _warningText(BoardWarning warning) {
-    final t = context.translations;
-    final result = _state.result;
+    final CommonTranslationsLocalizations t = context.translations;
+    final ProjectResult result = _state.result;
     return switch (warning) {
       BoardRailOverfull(:final rail) => t.boardWarningOverfull(rail + 1),
       BoardEnclosureTooSmall() => t.boardWarningTooSmall,
@@ -176,27 +175,18 @@ class _SwitchboardViewState extends State<SwitchboardView> {
   }
 }
 
-class _Toolbar extends StatelessWidget {
-  const _Toolbar({
-    required this.board,
-    required this.layout,
-    required this.editing,
-    required this.onToggleEditing,
-    required this.onEnclosure,
-    required this.onReset,
-  });
-
-  final BoardArrangement board;
-  final SwitchboardLayout layout;
-  final bool editing;
-  final VoidCallback onToggleEditing;
-  final ValueChanged<(int, int)?> onEnclosure;
-  final VoidCallback onReset;
-
+class const _Toolbar({
+  required final BoardArrangement board,
+  required final SwitchboardLayout layout,
+  required final bool editing,
+  required final VoidCallback onToggleEditing,
+  required final ValueChanged<(int, int)?> onEnclosure,
+  required final VoidCallback onReset,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final auto = t.boardEnclosureOption(
+    final CommonTranslationsLocalizations t = context.translations;
+    final String auto = t.boardEnclosureOption(
       layout.enclosureRails,
       layout.modulesPerRail,
       layout.enclosureRails * layout.modulesPerRail,
@@ -234,16 +224,14 @@ class _Toolbar extends StatelessWidget {
   }
 }
 
-class _MoveButtons extends StatelessWidget {
-  const _MoveButtons({required this.onMove});
-
+class const _MoveButtons({
   /// `null` — nothing is selected.
-  final ValueChanged<BoardMove>? onMove;
-
+  required final ValueChanged<BoardMove>? onMove,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final onMove = this.onMove;
+    final CommonTranslationsLocalizations t = context.translations;
+    final ValueChanged<BoardMove>? onMove = this.onMove;
     VoidCallback? on(BoardMove move) => onMove == null ? null : () => onMove(move);
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -269,34 +257,22 @@ class _MoveButtons extends StatelessWidget {
   }
 }
 
-class _Rail extends StatelessWidget {
-  const _Rail({
-    required this.number,
-    required this.rail,
-    required this.outside,
-    required this.state,
-    required this.editing,
-    required this.draggable,
-    required this.selected,
-    required this.onSelect,
-    required this.onDrop,
-  });
-
-  final int number;
-  final BoardRail rail;
-  final bool outside;
-  final ProjectReady state;
-  final bool editing;
-  final bool draggable;
-  final String? selected;
-  final ValueChanged<String> onSelect;
-  final void Function(String id, int index) onDrop;
-
+class const _Rail({
+  required final int number,
+  required final BoardRail rail,
+  required final bool outside,
+  required final ProjectReady state,
+  required final bool editing,
+  required final bool draggable,
+  required final String? selected,
+  required final ValueChanged<String> onSelect,
+  required final void Function(String id, int index) onDrop,
+}) extends StatelessWidget {
   /// Index before which a device whose centre is dropped at [x] from the rail start goes.
   int _dropIndex(double x) {
     var start = 0;
     for (var i = 0; i < rail.items.length; i++) {
-      final units = rail.items[i].units;
+      final int units = rail.items[i].units;
       if (x < (start + units / 2) * _moduleWidth) return i;
       start += units;
     }
@@ -305,10 +281,10 @@ class _Rail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
-    final modules = rail.used > rail.capacity ? rail.used : rail.capacity;
-    final label = t.boardRail(number, rail.used, rail.capacity);
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final int modules = rail.used > rail.capacity ? rail.used : rail.capacity;
+    final String label = t.boardRail(number, rail.used, rail.capacity);
     return Padding(
       padding: const EdgeInsets.only(bottom: UiSpace.s),
       child: Column(
@@ -320,7 +296,7 @@ class _Rail extends StatelessWidget {
             onWillAcceptWithDetails: (_) => draggable,
             onAcceptWithDetails: (details) {
               final box = context.findRenderObject()! as RenderBox;
-              final x = box.globalToLocal(details.offset).dx + _moduleWidth / 2;
+              final double x = box.globalToLocal(details.offset).dx + _moduleWidth / 2;
               onDrop(details.data, _dropIndex(x));
             },
             builder: (context, candidates, _) => SizedBox(
@@ -385,27 +361,18 @@ typedef _ModuleFace = ({
   String label,
 });
 
-class _BoardItemModule extends StatelessWidget {
-  const _BoardItemModule({
-    required this.item,
-    required this.state,
-    required this.editing,
-    required this.draggable,
-    required this.selected,
-    required this.onSelect,
-  });
-
-  final BoardItem item;
-  final ProjectReady state;
-  final bool editing;
-  final bool draggable;
-  final bool selected;
-  final VoidCallback onSelect;
-
+class const _BoardItemModule({
+  required final BoardItem item,
+  required final ProjectReady state,
+  required final bool editing,
+  required final bool draggable,
+  required final bool selected,
+  required final VoidCallback onSelect,
+}) extends StatelessWidget {
   _ModuleFace _face(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
-    final result = state.result;
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final ProjectResult result = state.result;
     switch (item.kind) {
       case BoardItemKind.incomer:
         return (
@@ -417,7 +384,7 @@ class _BoardItemModule extends StatelessWidget {
           label: t.boardIncomer,
         );
       case BoardItemKind.fireRcd:
-        final rcd = result.fireRcd!;
+        final SharedRcdResult rcd = result.fireRcd!;
         return (
           top: t.boardRcd,
           title: '${formatNumber(rcd.residualMa, 0)} мА',
@@ -427,7 +394,7 @@ class _BoardItemModule extends StatelessWidget {
           label: t.boardRcd,
         );
       case BoardItemKind.auxiliary:
-        final line = state.estimate.lines.firstWhere((l) => l.id == item.id);
+        final EstimateLine line = state.estimate.lines.firstWhere((l) => l.id == item.id);
         return (
           top: t.boardAuxiliary,
           title: line.title,
@@ -437,7 +404,7 @@ class _BoardItemModule extends StatelessWidget {
           label: line.title,
         );
       case BoardItemKind.groupRcd:
-        final rcd = result.sharedRcds.firstWhere((r) => r.id == item.id);
+        final SharedRcdResult rcd = result.sharedRcds.firstWhere((r) => r.id == item.id);
         return (
           top: t.boardRcd,
           title: '${formatNumber(rcd.residualMa, 0)} мА',
@@ -447,8 +414,8 @@ class _BoardItemModule extends StatelessWidget {
           label: t.boardRcd,
         );
       case BoardItemKind.circuit:
-        final circuit = result.circuits.firstWhere((x) => x.id == item.id);
-        final phase = circuit.phase;
+        final CircuitResult circuit = result.circuits.firstWhere((x) => x.id == item.id);
+        final Phase? phase = circuit.phase;
         return (
           top: '${circuit.number} · ${phase?.label ?? '3ф'}',
           title: circuit.protection.label,
@@ -462,13 +429,13 @@ class _BoardItemModule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
-    final face = _face(context);
-    final circuit = item.kind == BoardItemKind.circuit
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final _ModuleFace face = _face(context);
+    final CircuitResult? circuit = item.kind == BoardItemKind.circuit
         ? state.result.circuits.firstWhere((x) => x.id == item.id)
         : null;
-    final onPressed = editing
+    final void Function()? onPressed = editing
         ? onSelect
         : circuit == null
         ? null
@@ -520,31 +487,20 @@ class _BoardItemModule extends StatelessWidget {
   }
 }
 
-class _Module extends StatelessWidget {
-  const _Module({
-    required this.units,
-    required this.top,
-    required this.title,
-    required this.bottom,
-    required this.strip,
-    this.frame,
-    this.underline,
-    this.hovered = false,
-  });
-
-  final int units;
-  final String top;
-  final String title;
-  final String bottom;
-  final Color strip;
-  final Color? frame;
-  final Color? underline;
-  final bool hovered;
-
+class const _Module({
+  required final int units,
+  required final String top,
+  required final String title,
+  required final String bottom,
+  required final Color strip,
+  final Color? frame,
+  final Color? underline,
+  final bool hovered = false,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final width = units * _moduleWidth - 2;
+    final UiColors c = context.uiColors;
+    final double width = units * _moduleWidth - 2;
     final onStrip = ThemeData.estimateBrightnessForColor(strip) == Brightness.dark
         ? const Color(0xFFFFFFFF)
         : const Color(0xFF000000);
@@ -633,9 +589,7 @@ class _Module extends StatelessWidget {
   }
 }
 
-class _BlankModule extends StatelessWidget {
-  const _BlankModule();
-
+class const _BlankModule() extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(1, 18, 1, 0),

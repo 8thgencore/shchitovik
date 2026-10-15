@@ -13,13 +13,13 @@ ProjectInput projectFromTemplates({
   double? allowedPowerKw,
   NormsData? norms,
 }) {
-  final data = norms ?? NormsData.embedded;
+  final NormsData data = norms ?? NormsData.embedded;
   final rooms = <RoomInput>[];
   final devices = <DeviceInput>[];
   for (var i = 0; i < roomTemplateIds.length; i++) {
-    final template = data.roomTemplates.firstWhere((r) => r.id == roomTemplateIds[i]);
+    final RoomTemplate template = data.roomTemplates.firstWhere((r) => r.id == roomTemplateIds[i]);
     final roomId = 'r${i + 1}';
-    final sameKindBefore = roomTemplateIds.take(i).where((id) => id == template.id).length;
+    final int sameKindBefore = roomTemplateIds.take(i).where((id) => id == template.id).length;
     rooms.add(
       RoomInput(
         id: roomId,
@@ -28,7 +28,7 @@ ProjectInput projectFromTemplates({
       ),
     );
     for (var j = 0; j < template.devices.length; j++) {
-      final entry = template.devices[j];
+      final ({int count, String deviceId}) entry = template.devices[j];
       devices.add(
         DeviceInput.fromTemplate(
           data.device(entry.deviceId),
@@ -50,7 +50,7 @@ ProjectInput projectFromTemplates({
 }
 
 /// Demo projects shown on the first launch and used as regression scenarios.
-abstract final class DemoProjects {
+abstract final class DemoProjects() {
   /// One-room apartment, single-phase supply.
   static ProjectInput oneRoomApartment() => projectFromTemplates(
     objectType: ObjectType.apartment,

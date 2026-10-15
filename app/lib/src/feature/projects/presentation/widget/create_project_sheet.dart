@@ -1,15 +1,13 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Result of [CreateProjectSheet].
 typedef NewProjectParams = ({String name, ObjectType objectType, SupplyPhases supplyPhases});
 
 /// Asks for the name, object type and supply of a new project.
-class CreateProjectSheet extends StatefulWidget {
-  const CreateProjectSheet({super.key});
-
+class const CreateProjectSheet({super.key}) extends StatefulWidget {
   /// Shows the sheet; `null` if cancelled.
   static Future<NewProjectParams?> show(BuildContext context) =>
       showUiSheet<NewProjectParams>(context, builder: (_) => const CreateProjectSheet());
@@ -18,10 +16,10 @@ class CreateProjectSheet extends StatefulWidget {
   State<CreateProjectSheet> createState() => _CreateProjectSheetState();
 }
 
-class _CreateProjectSheetState extends State<CreateProjectSheet> {
+class _CreateProjectSheetState() extends State<CreateProjectSheet> {
   late final _name = TextEditingController(text: context.translations.createProjectDefaultName);
-  var _objectType = ObjectType.apartment;
-  var _supply = SupplyPhases.single;
+  ObjectType _objectType = ObjectType.apartment;
+  SupplyPhases _supply = SupplyPhases.single;
 
   @override
   void dispose() {
@@ -39,7 +37,7 @@ class _CreateProjectSheetState extends State<CreateProjectSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     return UiSheet(
       title: t.createProjectTitle,
       body: SingleChildScrollView(

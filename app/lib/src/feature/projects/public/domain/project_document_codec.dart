@@ -3,12 +3,10 @@ import 'package:estimate_core/estimate_core.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 
 /// Thrown when stored or imported project data cannot be read.
-final class ProjectFormatException implements Exception {
-  const ProjectFormatException(this.message);
-
+final class const ProjectFormatException(
   /// Russian message for the user.
-  final String message;
-
+  final String message,
+) implements Exception {
   @override
   String toString() => 'ProjectFormatException: $message';
 }
@@ -18,7 +16,7 @@ final class ProjectFormatException implements Exception {
 /// The same document schema is used in the database and inside `.shchitovik` files.
 /// When `ProjectInput` or `EstimateInput` change incompatibly, bump [currentSchemaVersion]
 /// and add a migration `vN → vN+1` to [_migrations]; older data is upgraded on read.
-abstract final class ProjectDocumentCodec {
+abstract final class ProjectDocumentCodec() {
   /// Current schema version.
   static const currentSchemaVersion = 1;
 
@@ -39,7 +37,7 @@ abstract final class ProjectDocumentCodec {
 
   /// Decodes [json] of any supported version, migrating it to the current one.
   static ProjectDocument decode(Map<String, Object?> json) {
-    final migrated = migrate(json);
+    final Map<String, Object?> migrated = migrate(json);
     try {
       return ProjectDocument(
         id: migrated['id']! as String,
@@ -57,7 +55,7 @@ abstract final class ProjectDocumentCodec {
 
   /// Upgrades [json] to [currentSchemaVersion].
   static Map<String, Object?> migrate(Map<String, Object?> json) {
-    final version = json['schema_version'];
+    final Object? version = json['schema_version'];
     if (version is! int || version < 1) {
       throw const ProjectFormatException('Неизвестная версия формата проекта');
     }
@@ -67,7 +65,7 @@ abstract final class ProjectDocumentCodec {
       );
     }
     var result = json;
-    for (var v = version; v < currentSchemaVersion; v++) {
+    for (int v = version; v < currentSchemaVersion; v++) {
       result = {..._migrations[v]!(result), 'schema_version': v + 1};
     }
     return result;

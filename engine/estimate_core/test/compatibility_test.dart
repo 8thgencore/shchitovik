@@ -34,7 +34,7 @@ void main() {
   );
 
   test('exact MCB match', () {
-    final c = checkCompatibility(
+    final Compatibility c = checkCompatibility(
       product(
         ApparatusFunction.mcb,
         const ApparatusSpec(poles: 1, ratedCurrentA: 16, curve: 'C', breakingCapacityA: 4500),
@@ -68,7 +68,7 @@ void main() {
   });
 
   test('MCB rating and curve must match exactly', () {
-    final c = checkCompatibility(
+    final Compatibility c = checkCompatibility(
       product(
         ApparatusFunction.mcb,
         const ApparatusSpec(poles: 2, ratedCurrentA: 20, curve: 'B', breakingCapacityA: 4500),
@@ -130,7 +130,7 @@ void main() {
   });
 
   test('leakage and selectivity must match', () {
-    final c = checkCompatibility(
+    final Compatibility c = checkCompatibility(
       product(
         ApparatusFunction.rcd,
         const ApparatusSpec(
@@ -150,7 +150,7 @@ void main() {
   });
 
   test('archived model stays usable with a difference noted', () {
-    final c = checkCompatibility(
+    final Compatibility c = checkCompatibility(
       product(
         ApparatusFunction.mcb,
         const ApparatusSpec(poles: 1, ratedCurrentA: 16, curve: 'C', breakingCapacityA: 4500),
@@ -163,10 +163,13 @@ void main() {
   });
 
   test('choice list: only compatible, exact first, sorted by manufacturer and series', () {
-    final list = compatibleProducts(mcbC16, EstimateCatalog.embedded);
+    final List<({Compatibility compatibility, ApparatusProduct product})> list = compatibleProducts(
+      mcbC16,
+      EstimateCatalog.embedded,
+    );
     expect(list, isNotEmpty);
     expect(list.every((e) => e.compatibility.isCompatible), isTrue);
-    final statuses = list.map((e) => e.compatibility.status.index).toList();
+    final List<int> statuses = list.map((e) => e.compatibility.status.index).toList();
     expect(statuses, [...statuses]..sort());
   });
 }

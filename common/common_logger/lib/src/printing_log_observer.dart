@@ -6,12 +6,12 @@ import 'package:stack_trace/stack_trace.dart';
 /// {@template printing_log_observer}
 /// [LogObserver] that prints logs using `dart:developer`.
 /// {@endtemplate}
-final class PrintingLogObserver with LogObserver {
-  /// {@macro printing_log_observer}
-  const PrintingLogObserver({required this.logLevel});
-
+final class const PrintingLogObserver({
   /// The log level to observe.
-  final LogLevel logLevel;
+  required final LogLevel logLevel,
+}) with LogObserver {
+  /// {@macro printing_log_observer}
+  this;
 
   @override
   void onLog(LogMessage logMessage) {

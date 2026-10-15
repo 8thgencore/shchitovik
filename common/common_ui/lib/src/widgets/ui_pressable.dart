@@ -1,78 +1,59 @@
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Interaction state of a [UiPressable].
 @immutable
-final class UiPressState {
-  const UiPressState({
-    required this.enabled,
-    required this.hovered,
-    required this.focused,
-    required this.pressed,
-  });
-
+final class const UiPressState({
   /// Whether it reacts to input.
-  final bool enabled;
+  required final bool enabled,
 
   /// Pointer is over it.
-  final bool hovered;
+  required final bool hovered,
 
   /// Has keyboard focus (focus ring visible only in keyboard mode).
-  final bool focused;
+  required final bool focused,
 
   /// Pointer is down on it.
-  final bool pressed;
-}
+  required final bool pressed,
+});
 
 /// Base of every tappable element: hover, keyboard focus, press, Enter/Space activation,
 /// pointer cursor and button semantics. Looks are left to [builder].
-class UiPressable extends StatefulWidget {
-  const UiPressable({
-    required this.onPressed,
-    required this.builder,
-    this.semanticLabel,
-    this.selected,
-    this.toggled,
-    this.focusNode,
-    this.autofocus = false,
-    this.isButton = true,
-    this.onFocusHighlight,
-    super.key,
-  });
-
+class const UiPressable({
   /// Tap and activation handler; `null` disables the element.
-  final VoidCallback? onPressed;
+  required final VoidCallback? onPressed,
 
   /// Builds the element for its current state.
-  final Widget Function(BuildContext context, UiPressState state) builder;
+  required final Widget Function(BuildContext context, UiPressState state) builder,
 
   /// Accessible label when the visible content is not enough (icon-only).
-  final String? semanticLabel;
+  final String? semanticLabel,
 
   /// Selected state for screen readers (tabs, segments, navigation).
-  final bool? selected;
+  final bool? selected,
 
   /// Toggled state for screen readers (switches).
-  final bool? toggled;
+  final bool? toggled,
 
   /// Focus node.
-  final FocusNode? focusNode;
+  final FocusNode? focusNode,
 
   /// Whether to take focus on first build.
-  final bool autofocus;
+  final bool autofocus = false,
 
   /// Announce as a button.
-  final bool isButton;
+  final bool isButton = true,
 
   /// Keyboard focus highlight appeared or went away.
-  final ValueChanged<bool>? onFocusHighlight;
-
+  final ValueChanged<bool>? onFocusHighlight,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<UiPressable> createState() => _UiPressableState();
 }
 
-class _UiPressableState extends State<UiPressable> {
+class _UiPressableState() extends State<UiPressable> {
   var _hovered = false;
   var _focused = false;
   var _pressed = false;
@@ -135,27 +116,20 @@ class _UiPressableState extends State<UiPressable> {
 }
 
 /// Draws the keyboard focus ring outside [child] when [visible].
-class UiFocusRing extends StatelessWidget {
-  const UiFocusRing({
-    required this.visible,
-    required this.child,
-    this.radius = UiRadius.controlAll,
-    this.inset = false,
-    super.key,
-  });
-
+class const UiFocusRing({
   /// Whether the ring is drawn.
-  final bool visible;
+  required final bool visible,
 
   /// Ringed element.
-  final Widget child;
+  required final Widget child,
 
   /// Corner radius of the element.
-  final BorderRadius radius;
+  final BorderRadius radius = UiRadius.controlAll,
 
   /// Draw inside the bounds (rows in lists, where outside would be clipped).
-  final bool inset;
-
+  final bool inset = false,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DecoratedBox(
     position: DecorationPosition.foreground,

@@ -18,7 +18,7 @@ void main() {
   );
 
   test('round trip', () {
-    final file = ProjectFileCodec.encode(
+    final String file = ProjectFileCodec.encode(
       document,
       appVersion: '0.1.0',
       exportedAt: DateTime.utc(2026, 10, 9),
@@ -26,12 +26,12 @@ void main() {
     final json = jsonDecode(file) as Map<String, Object?>;
     expect(json['format'], 'shchitovik-project');
     expect(json['algorithm_version'], algorithmVersion);
-    final decoded = ProjectFileCodec.decode(file);
+    final ProjectDocument decoded = ProjectFileCodec.decode(file);
     expect(ProjectDocumentCodec.encode(decoded), ProjectDocumentCodec.encode(document));
   });
 
   test('round trip keeps a manual switchboard arrangement', () {
-    final manual = document.copyWith(
+    final ProjectDocument manual = document.copyWith(
       estimate: const EstimateInput(
         board: BoardArrangement(
           enclosure: (2, 18),
@@ -42,19 +42,19 @@ void main() {
         ),
       ),
     );
-    final file = ProjectFileCodec.encode(
+    final String file = ProjectFileCodec.encode(
       manual,
       appVersion: '0.1.0',
       exportedAt: DateTime.utc(2026),
     );
-    final board = ProjectFileCodec.decode(file).estimate.board;
+    final BoardArrangement board = ProjectFileCodec.decode(file).estimate.board;
     expect(board.enclosure, (2, 18));
     expect(board.rails, manual.estimate.board.rails);
   });
 
   test('rejects foreign files and newer versions', () {
     expect(() => ProjectFileCodec.decode('{"a":1}'), throwsA(isA<ProjectFormatException>()));
-    final newer = jsonEncode({
+    final String newer = jsonEncode({
       'format': 'shchitovik-project',
       'format_version': 99,
       'document': <String, Object?>{},
@@ -69,12 +69,15 @@ void main() {
         ),
       ),
     );
-    final newerSchema = {...ProjectDocumentCodec.encode(document), 'schema_version': 99};
+    final Map<String, Object?> newerSchema = {
+      ...ProjectDocumentCodec.encode(document),
+      'schema_version': 99,
+    };
     expect(() => ProjectDocumentCodec.decode(newerSchema), throwsA(isA<ProjectFormatException>()));
   });
 
   test('corrupted document is reported, not thrown as a raw error', () {
-    final broken = {...ProjectDocumentCodec.encode(document)}..remove('input');
+    final Map<String, Object?> broken = {...ProjectDocumentCodec.encode(document)}..remove('input');
     expect(() => ProjectDocumentCodec.decode(broken), throwsA(isA<ProjectFormatException>()));
   });
 

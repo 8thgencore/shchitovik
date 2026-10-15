@@ -1,10 +1,9 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:norms_data/norms_data.dart';
-import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
@@ -16,22 +15,20 @@ import 'package:uuid/uuid.dart';
 const _uuid = Uuid();
 
 /// Rooms of the project with their devices.
-class RoomsScreen extends StatelessWidget {
-  const RoomsScreen({super.key});
-
+class const RoomsScreen({super.key}) extends StatelessWidget {
   Future<void> _addRoom(BuildContext context) async {
-    final template = await RoomTemplatePicker.show(context);
+    final RoomTemplate? template = await RoomTemplatePicker.show(context);
     if (template == null || !context.mounted) return;
-    final roomId = _uuid.v4();
+    final String roomId = _uuid.v4();
     ProjectScope.edit(context, (d) {
-      final input = d.input;
-      final sameName = input.rooms.where((r) => r.name.startsWith(template.name)).length;
+      final ProjectInput input = d.input;
+      final int sameName = input.rooms.where((r) => r.name.startsWith(template.name)).length;
       final room = RoomInput(
         id: roomId,
         name: sameName == 0 ? template.name : '${template.name} ${sameName + 1}',
         kind: template.kind,
       );
-      final devices = [
+      final List<DeviceInput> devices = [
         for (final entry in template.devices)
           DeviceInput.fromTemplate(
             NormsData.embedded.device(entry.deviceId),
@@ -51,8 +48,8 @@ class RoomsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final input = (context.watch<ProjectBloc>().state as ProjectReady).document.input;
+    final CommonTranslationsLocalizations t = context.translations;
+    final ProjectInput input = (context.watch<ProjectBloc>().state as ProjectReady).document.input;
     if (input.rooms.isEmpty) {
       return UiEmptyState(
         icon: UiIcons.rooms,
@@ -63,7 +60,9 @@ class RoomsScreen extends StatelessWidget {
         ],
       );
     }
-    final cards = [for (final room in input.rooms) _RoomCard(room: room, input: input)];
+    final List<_RoomCard> cards = [
+      for (final room in input.rooms) _RoomCard(room: room, input: input),
+    ];
     return PageBody(
       children: [
         UiSectionHeader(
@@ -104,16 +103,12 @@ class RoomsScreen extends StatelessWidget {
   }
 }
 
-class _RoomCard extends StatelessWidget {
-  const _RoomCard({required this.room, required this.input});
-
-  final RoomInput room;
-  final ProjectInput input;
-
+class const _RoomCard({required final RoomInput room, required final ProjectInput input})
+    extends StatelessWidget {
   Future<void> _addDevice(BuildContext context) async {
-    final template = await DeviceTemplatePicker.show(context);
+    final Object? template = await DeviceTemplatePicker.show(context);
     if (!context.mounted || template == null) return;
-    final device = switch (template) {
+    final DeviceInput device = switch (template) {
       DeviceTemplate() => DeviceInput.fromTemplate(template, id: _uuid.v4(), roomId: room.id),
       _ => DeviceInput(
         id: _uuid.v4(),
@@ -131,7 +126,7 @@ class _RoomCard extends StatelessWidget {
   }
 
   Future<void> _rename(BuildContext context) async {
-    final result = await RoomEditorSheet.show(context, room);
+    final RoomInput? result = await RoomEditorSheet.show(context, room);
     if (result == null || !context.mounted) return;
     ProjectScope.edit(
       context,
@@ -144,8 +139,8 @@ class _RoomCard extends StatelessWidget {
   }
 
   Future<void> _delete(BuildContext context) async {
-    final t = context.translations;
-    final confirmed = await showUiConfirm(
+    final CommonTranslationsLocalizations t = context.translations;
+    final bool confirmed = await showUiConfirm(
       context,
       title: t.roomDeleteTitle(room.name),
       message: t.roomDeleteMessage,
@@ -155,7 +150,7 @@ class _RoomCard extends StatelessWidget {
     if (!confirmed || !context.mounted) return;
     ProjectScope.edit(
       context,
-      (ProjectDocument d) => d.copyWith(
+      (d) => d.copyWith(
         input: d.input.copyWith(
           rooms: [
             for (final r in d.input.rooms)
@@ -172,9 +167,9 @@ class _RoomCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final devices = input.devices.where((d) => d.roomId == room.id).toList();
-    final total = devices.fold<int>(0, (s, d) => s + d.totalPowerW);
+    final CommonTranslationsLocalizations t = context.translations;
+    final List<DeviceInput> devices = input.devices.where((d) => d.roomId == room.id).toList();
+    final int total = devices.fold<int>(0, (s, d) => s + d.totalPowerW);
     return UiCard(
       eyebrow: roomKindLabel(context, room.kind),
       title: room.name,

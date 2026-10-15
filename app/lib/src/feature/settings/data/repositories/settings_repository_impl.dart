@@ -6,11 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/settings.dart';
 import 'package:shchitovik/src/feature/settings/domain/repositories/settings_repository.dart';
 
-final class SettingsRepositoryImpl implements SettingsRepository {
-  const SettingsRepositoryImpl({required this.sharedPreferences});
-
-  final SharedPreferencesAsync sharedPreferences;
-
+final class const SettingsRepositoryImpl({required final SharedPreferencesAsync sharedPreferences})
+    implements SettingsRepository {
   SharedPreferencesColumnJson get _column => SharedPreferencesColumnJson(
     sharedPreferences: sharedPreferences,
     key: 'settings',
@@ -23,7 +20,7 @@ final class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<Settings> read() async {
-    final settingsMap = await _column.read();
+    final Map<String, Object?>? settingsMap = await _column.read();
     if (settingsMap == null) return const Settings();
 
     return Settings.fromJson(settingsMap);

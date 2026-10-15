@@ -6,20 +6,19 @@ import 'package:report_pdf/report_pdf.dart';
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 
 /// Builds PDF reports of projects.
-final class ReportService {
-  ReportService({required this.appVersion, AssetBundle? bundle}) : _bundle = bundle ?? rootBundle;
-
+final class ReportService({
   /// Version printed in the footer.
-  final String appVersion;
-
-  final AssetBundle _bundle;
+  required final String appVersion,
+  AssetBundle? bundle,
+}) {
+  final AssetBundle _bundle = bundle ?? rootBundle;
   ReportFonts? _fonts;
 
   /// Calculates [document] and renders the report with the estimate priced by [catalog]
   /// (the embedded catalog when omitted).
   Future<Uint8List> build(ProjectDocument document, {EstimateCatalog? catalog}) async {
-    final result = calculateProject(document.input);
-    final estimate = calculateEstimate(
+    final ProjectResult result = calculateProject(document.input);
+    final EstimateResult estimate = calculateEstimate(
       document.input,
       result,
       document.estimate,

@@ -12,42 +12,31 @@ const double minimumBreakingCapacityA = 4500;
 
 /// What has to be installed in one place of the panel.
 @immutable
-final class ApparatusRequirement {
-  const ApparatusRequirement({
-    required this.function,
-    required this.poles,
-    required this.ratedCurrentA,
-    this.curve,
-    this.minBreakingCapacityA = minimumBreakingCapacityA,
-    this.leakageMa,
-    this.rcdType,
-    this.selective = false,
-  });
-
+final class const ApparatusRequirement({
   /// Function.
-  final ApparatusFunction function;
+  required final ApparatusFunction function,
 
   /// Poles (RCD/RCBO count N: 2 = 1P+N, 4 = 3P+N).
-  final int poles;
+  required final int poles,
 
   /// Rated current: exact for MCB/RCBO, minimum for RCD.
-  final double ratedCurrentA;
+  required final double ratedCurrentA,
 
   /// Curve (MCB, RCBO).
-  final BreakerCurve? curve;
+  final BreakerCurve? curve,
 
   /// Minimum breaking capacity, A (MCB, RCBO).
-  final double minBreakingCapacityA;
+  final double minBreakingCapacityA = minimumBreakingCapacityA,
 
   /// Residual current, mA (RCD, RCBO).
-  final double? leakageMa;
+  final double? leakageMa,
 
   /// Minimum RCD type (RCD, RCBO).
-  final RcdType? rcdType;
+  final RcdType? rcdType,
 
   /// Time-delayed RCD required.
-  final bool selective;
-
+  final bool selective = false,
+}) {
   /// Short description like `MCB 1P C16`.
   String get label {
     final parts = <String>[
@@ -89,33 +78,26 @@ final class ApparatusRequirement {
 
 /// Place for one device in the panel.
 @immutable
-final class ApparatusSlot {
-  const ApparatusSlot({
-    required this.id,
-    required this.title,
-    required this.requirement,
-    this.circuitId,
-  });
-
+final class const ApparatusSlot({
   /// Stable id: `<circuit id>/mcb|rcd|rcbo`, `incomer/mcb`, `incomer/rcd`, `rcd-<n>`.
-  final String id;
+  required final String id,
 
   /// Title for the estimate.
-  final String title;
+  required final String title,
 
   /// Requirement.
-  final ApparatusRequirement requirement;
+  required final ApparatusRequirement requirement,
 
   /// Circuit served, if any.
-  final String? circuitId;
-}
+  final String? circuitId,
+});
 
 /// Builds the list of slots from a calculation result. The incomer comes first.
 List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result) {
   final three = input.supplyPhases == SupplyPhases.three;
   final slots = <ApparatusSlot>[];
 
-  final incomerA = result.incomer.breakerA;
+  final double? incomerA = result.incomer.breakerA;
   if (incomerA != null) {
     slots.add(
       ApparatusSlot(
@@ -130,7 +112,7 @@ List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result) {
       ),
     );
   }
-  final fire = result.fireRcd;
+  final SharedRcdResult? fire = result.fireRcd;
   if (fire != null) {
     slots.add(
       ApparatusSlot(
@@ -147,7 +129,7 @@ List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result) {
       ),
     );
   }
-  for (final rcd in result.sharedRcds) {
+  for (final SharedRcdResult rcd in result.sharedRcds) {
     slots.add(
       ApparatusSlot(
         id: rcd.id,
@@ -163,11 +145,11 @@ List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result) {
     );
   }
 
-  for (final c in result.circuits) {
-    final p = c.protection;
+  for (final CircuitResult c in result.circuits) {
+    final ProtectionResult p = c.protection;
     final three = c.phases == 3;
     final title = '№${c.number} ${c.name}';
-    final rcdType = p.rcd == null ? null : RcdType.fromKey(p.rcd!.type);
+    final RcdType? rcdType = p.rcd == null ? null : RcdType.fromKey(p.rcd!.type);
     switch (p.device) {
       case ProtectionDevice.rcbo:
         slots.add(

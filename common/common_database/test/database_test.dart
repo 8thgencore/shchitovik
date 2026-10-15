@@ -26,7 +26,7 @@ void main() {
     await db.upsertProject(
       row('a', DateTime.utc(2026, 4)).copyWith(name: const Value('Новое имя')),
     );
-    final list = await db.watchProjects().first;
+    final List<ProjectRow> list = await db.watchProjects().first;
     expect(list.map((p) => p.id), ['a', 'b']);
     expect(list.first.name, 'Новое имя');
 
@@ -45,7 +45,7 @@ void main() {
     );
     await db.replaceCatalogCache([row('a', '1'), row('b', '1')]);
     await db.replaceCatalogCache([row('a', '2')]);
-    final rows = await db.getCatalogCache();
+    final List<CatalogCacheRow> rows = await db.getCatalogCache();
     expect(rows.map((r) => (r.dataset, r.catalogVersion)), [('a', '2')]);
   });
 }

@@ -1,8 +1,9 @@
 import 'package:estimate_core/src/catalog/catalog.dart';
 import 'package:estimate_core/src/estimate/requirements.dart';
+import 'package:norms_data/src/protection.dart';
 
 /// How well a model matches a requirement.
-enum CompatibilityStatus {
+enum CompatibilityStatus() {
   /// Matches the requirement exactly.
   exact,
 
@@ -14,7 +15,10 @@ enum CompatibilityStatus {
 }
 
 /// Reason why a model differs from or cannot meet the requirement.
-enum CompatibilityReason {
+enum CompatibilityReason(
+  /// Russian description.
+  final String message,
+) {
   archived('модель снята с продажи'),
   functionMismatch('другой тип аппарата'),
   polesMismatch('другое число полюсов'),
@@ -27,24 +31,17 @@ enum CompatibilityReason {
   selectivityMismatch('другая селективность'),
   higherRcdRating('номинал УЗО выше требуемого'),
   betterRcdType('тип УЗО выше требуемого'),
-  higherBreakingCapacity('отключающая способность выше требуемой');
-
-  const CompatibilityReason(this.message);
-
-  /// Russian description.
-  final String message;
+  higherBreakingCapacity('отключающая способность выше требуемой'),
 }
 
 /// Result of a compatibility check.
-final class Compatibility {
-  const Compatibility(this.status, this.reasons);
-
+final class const Compatibility(
   /// Status.
-  final CompatibilityStatus status;
+  final CompatibilityStatus status,
 
   /// Blocking reasons (incompatible) or differences (compatible).
-  final List<CompatibilityReason> reasons;
-
+  final List<CompatibilityReason> reasons,
+) {
   /// Can be installed.
   bool get isCompatible => status != CompatibilityStatus.incompatible;
 }
@@ -58,7 +55,7 @@ final class Compatibility {
 Compatibility checkCompatibility(ApparatusProduct product, ApparatusRequirement requirement) {
   final blocking = <CompatibilityReason>[];
   final differences = <CompatibilityReason>[];
-  final spec = product.spec;
+  final ApparatusSpec spec = product.spec;
 
   if (!product.active) differences.add(CompatibilityReason.archived);
   if (product.function != requirement.function) blocking.add(CompatibilityReason.functionMismatch);
@@ -74,13 +71,13 @@ Compatibility checkCompatibility(ApparatusProduct product, ApparatusRequirement 
     blocking.add(CompatibilityReason.ratedCurrentMismatch);
   }
 
-  final curve = requirement.curve;
+  final BreakerCurve? curve = requirement.curve;
   if (curve != null && spec.curve?.toUpperCase() != curve.name.toUpperCase()) {
     blocking.add(CompatibilityReason.curveMismatch);
   }
 
   if (requirement.function != ApparatusFunction.rcd) {
-    final capacity = spec.breakingCapacityA ?? 0;
+    final double capacity = spec.breakingCapacityA ?? 0;
     if (capacity < requirement.minBreakingCapacityA) {
       blocking.add(CompatibilityReason.breakingCapacityBelowRequired);
     } else if (capacity > requirement.minBreakingCapacityA) {
@@ -91,9 +88,9 @@ Compatibility checkCompatibility(ApparatusProduct product, ApparatusRequirement 
   if (requirement.leakageMa != null && spec.leakageMa != requirement.leakageMa) {
     blocking.add(CompatibilityReason.leakageMismatch);
   }
-  final type = requirement.rcdType;
+  final RcdType? type = requirement.rcdType;
   if (type != null) {
-    final actual = spec.rcdType;
+    final RcdType? actual = spec.rcdType;
     if (actual == null || actual.index < type.index) {
       blocking.add(CompatibilityReason.rcdTypeInsufficient);
     } else if (actual.index > type.index) {

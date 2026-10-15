@@ -5,34 +5,25 @@ import 'package:electrical_core/src/model/project_input.dart';
 import 'package:norms_data/norms_data.dart';
 
 /// Circuit before protection and cable selection.
-final class CircuitDraft {
-  CircuitDraft({
-    required this.id,
-    required this.purpose,
-    required this.name,
-    required this.devices,
-    required this.rooms,
-    required this.sortKey,
-  });
-
+final class CircuitDraft({
   /// Stable id: `dev-<deviceId>` for dedicated circuits, `<group key>-<n>` for shared ones.
-  final String id;
+  required final String id,
 
   /// Purpose.
-  final CircuitPurpose purpose;
+  required final CircuitPurpose purpose,
 
   /// Name for the user.
-  final String name;
+  required final String name,
 
   /// Devices.
-  final List<DeviceInput> devices;
+  required final List<DeviceInput> devices,
 
   /// Rooms of the devices, in input order.
-  final List<RoomInput> rooms;
+  required final List<RoomInput> rooms,
 
   /// Ordering key for numbering.
-  final String sortKey;
-
+  required final String sortKey,
+}) {
   /// 3 if the circuit feeds a three-phase device, otherwise 1.
   int get phases => devices.any((d) => d.phases == 3) ? 3 : 1;
 }
@@ -41,7 +32,10 @@ final class CircuitDraft {
 ///
 /// Lighting circuits are protected by 10 A breakers, socket circuits by 16 A breakers
 /// (socket-outlets 10(16) A, СП 256 п. 15.28), so the shared load must fit these ratings.
-const sharedLimitA = {CircuitPurpose.lighting: 10.0, CircuitPurpose.power: 16.0};
+const Map<CircuitPurpose, double> sharedLimitA = {
+  CircuitPurpose.lighting: 10.0,
+  CircuitPurpose.power: 16.0,
+};
 
 /// Groups devices into circuits.
 ///
@@ -60,8 +54,8 @@ List<CircuitDraft> buildCircuits({
   required double phaseVoltageV,
   required double lineVoltageV,
 }) {
-  final roomById = {for (final r in rooms) r.id: r};
-  final roomIndex = {for (var i = 0; i < rooms.length; i++) rooms[i].id: i};
+  final Map<String, RoomInput> roomById = {for (final r in rooms) r.id: r};
+  final Map<String, int> roomIndex = {for (var i = 0; i < rooms.length; i++) rooms[i].id: i};
   double current(DeviceInput d) =>
       deviceCurrent(d, phaseVoltageV: phaseVoltageV, lineVoltageV: lineVoltageV).magnitudeA;
 
@@ -70,13 +64,15 @@ List<CircuitDraft> buildCircuits({
   final sharedMeta = <String, ({CircuitPurpose purpose, String title, String sortKey})>{};
 
   for (final device in devices) {
-    final room = roomById[device.roomId]!;
-    final purpose = _isLightingCircuitLoad(device) ? CircuitPurpose.lighting : CircuitPurpose.power;
-    final dedicated =
+    final RoomInput room = roomById[device.roomId]!;
+    final CircuitPurpose purpose = _isLightingCircuitLoad(device)
+        ? CircuitPurpose.lighting
+        : CircuitPurpose.power;
+    final bool dedicated =
         device.dedicatedLine != DedicatedLine.no ||
         device.phases == 3 ||
         current(device) > sharedLimitA[purpose]! + epsilon;
-    final roomOrder = roomIndex[room.id]!.toString().padLeft(4, '0');
+    final String roomOrder = roomIndex[room.id]!.toString().padLeft(4, '0');
     if (dedicated) {
       drafts.add(
         CircuitDraft(
@@ -94,7 +90,7 @@ List<CircuitDraft> buildCircuits({
     final String title;
     final String sortKey;
     if (purpose == CircuitPurpose.lighting) {
-      final zone = switch (room.kind) {
+      final (String, String) zone = switch (room.kind) {
         RoomKind.bathroom => ('wet', 'Освещение влажных помещений'),
         RoomKind.outdoor => ('outdoor', 'Наружное освещение'),
         _ => ('dry', 'Освещение'),
@@ -104,7 +100,7 @@ List<CircuitDraft> buildCircuits({
       sortKey = '1-${zone.$1 == 'dry' ? 0 : (zone.$1 == 'wet' ? 1 : 2)}';
     } else {
       key = 'power-${room.id}';
-      final roomHasSockets = devices.any(
+      final bool roomHasSockets = devices.any(
         (d) =>
             d.roomId == room.id &&
             !_isLightingCircuitLoad(d) &&
@@ -117,19 +113,19 @@ List<CircuitDraft> buildCircuits({
     sharedMeta[key] = (purpose: purpose, title: title, sortKey: sortKey);
   }
 
-  for (final entry in shared.entries) {
-    final meta = sharedMeta[entry.key]!;
-    final limit = sharedLimitA[meta.purpose]!;
-    final items = [...entry.value]
+  for (final MapEntry<String, List<DeviceInput>> entry in shared.entries) {
+    final ({CircuitPurpose purpose, String sortKey, String title}) meta = sharedMeta[entry.key]!;
+    final double limit = sharedLimitA[meta.purpose]!;
+    final List<DeviceInput> items = [...entry.value]
       ..sort((a, b) {
-        final byCurrent = current(b).compareTo(current(a));
+        final int byCurrent = current(b).compareTo(current(a));
         return byCurrent != 0 ? byCurrent : a.id.compareTo(b.id);
       });
     final bins = <List<DeviceInput>>[];
     final loads = <double>[];
     for (final item in items) {
-      final i = current(item);
-      final index = loads.indexWhere((load) => lessOrEqual(load + i, limit));
+      final double i = current(item);
+      final int index = loads.indexWhere((load) => lessOrEqual(load + i, limit));
       if (index >= 0) {
         bins[index].add(item);
         loads[index] += i;
@@ -139,11 +135,11 @@ List<CircuitDraft> buildCircuits({
       }
     }
     for (var n = 0; n < bins.length; n++) {
-      final binDevices = [...bins[n]]
+      final List<DeviceInput> binDevices = [...bins[n]]
         ..sort((a, b) => devices.indexOf(a).compareTo(devices.indexOf(b)));
       final binRooms = <RoomInput>[];
       for (final d in binDevices) {
-        final r = roomById[d.roomId]!;
+        final RoomInput r = roomById[d.roomId]!;
         if (!binRooms.contains(r)) binRooms.add(r);
       }
       binRooms.sort((a, b) => roomIndex[a.id]!.compareTo(roomIndex[b.id]!));

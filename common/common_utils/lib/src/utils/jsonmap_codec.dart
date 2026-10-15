@@ -3,9 +3,9 @@ import 'dart:convert';
 /// {@template json_map_codec}
 /// A codec for converting between a [T] and a [Map<String, Object?>].
 /// {@endtemplate}
-abstract class JsonMapCodec<T> extends Codec<T, Map<String, Object?>> {
+abstract class const JsonMapCodec<T>() extends Codec<T, Map<String, Object?>> {
   /// {@macro json_map_codec}
-  const JsonMapCodec();
+  this;
 
   ({T? decoded, Object? error, StackTrace? stackTrace}) tryDecode(Map<String, Object?> input) {
     try {
@@ -27,11 +27,7 @@ abstract class JsonMapCodec<T> extends Codec<T, Map<String, Object?>> {
       _FuncConverter<T, Map<String, Object?>>($encode);
 }
 
-class _FuncConverter<S, T> extends Converter<S, T> {
-  const _FuncConverter(this._onConvert);
-
-  final T Function(S) _onConvert;
-
+class const _FuncConverter<S, T>(final T Function(S) _onConvert) extends Converter<S, T> {
   @override
   T convert(S input) => _onConvert(input);
 }

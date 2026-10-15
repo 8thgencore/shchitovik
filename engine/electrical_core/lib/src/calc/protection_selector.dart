@@ -8,7 +8,7 @@ import 'package:norms_data/norms_data.dart';
 const double socketBreakerLimitA = 16;
 
 /// Minimum automatic ratings by purpose, A.
-const minimumBreakerA = {
+const Map<CircuitPurpose, double> minimumBreakerA = {
   CircuitPurpose.lighting: 10.0,
   CircuitPurpose.power: 16.0,
   CircuitPurpose.dedicated: 10.0,
@@ -44,18 +44,16 @@ List<String> rcdReasons({required List<DeviceInput> devices, required List<RoomI
 }
 
 /// Breaker rating and curve choice for a circuit.
-final class BreakerChoice {
-  const BreakerChoice({required this.ratedA, required this.curves, required this.checks});
-
+final class const BreakerChoice({
   /// Rated current In, A.
-  final double ratedA;
+  required final double ratedA,
 
   /// Acceptable curves in order of preference; the cable selection may fall back to the next.
-  final List<BreakerCurve> curves;
+  required final List<BreakerCurve> curves,
 
   /// Protection checks.
-  final List<Check> checks;
-}
+  required final List<Check> checks,
+});
 
 /// Selects the breaker of a circuit.
 ///
@@ -72,14 +70,14 @@ BreakerChoice selectBreaker({
   double? manualRatedA,
   BreakerCurve? manualCurve,
 }) {
-  final breakers = norms.breakers;
-  final minimum = minimumBreakerA[purpose]!;
+  final BreakerData breakers = norms.breakers;
+  final double minimum = minimumBreakerA[purpose]!;
   final required = designCurrentA > minimum ? designCurrentA : minimum;
-  final rated =
+  final double rated =
       manualRatedA ?? breakers.ratedCurrentAtOrAbove(required) ?? breakers.ratedCurrents.last;
   final checks = <Check>[];
 
-  final loadOk = lessOrEqual(designCurrentA, rated);
+  final bool loadOk = lessOrEqual(designCurrentA, rated);
   checks.add(
     Check(
       code: CheckCode.loadVsBreaker,
@@ -94,7 +92,7 @@ BreakerChoice selectBreaker({
   );
 
   if (socketCircuit) {
-    final ok = lessOrEqual(rated, socketBreakerLimitA);
+    final bool ok = lessOrEqual(rated, socketBreakerLimitA);
     checks.add(
       Check(
         code: CheckCode.socketRating,
@@ -120,7 +118,7 @@ BreakerChoice selectBreaker({
   } else {
     curves = [BreakerCurve.d];
   }
-  final startOk = startsWith(curves.first);
+  final bool startOk = startsWith(curves.first);
   checks.add(
     Check(
       code: CheckCode.startingCurrent,

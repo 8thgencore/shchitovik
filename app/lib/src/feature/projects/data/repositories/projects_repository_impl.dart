@@ -7,12 +7,10 @@ import 'package:shchitovik/src/feature/projects/public/domain/project_document.d
 import 'package:shchitovik/src/feature/projects/public/domain/project_document_codec.dart';
 
 /// [ProjectsRepository] backed by the drift database.
-final class ProjectsRepositoryImpl implements ProjectsRepository {
-  const ProjectsRepositoryImpl({required this.database});
-
+final class const ProjectsRepositoryImpl({
   /// Database.
-  final AppDatabase database;
-
+  required final AppDatabase database,
+}) implements ProjectsRepository {
   @override
   Stream<List<ProjectSummary>> watchProjects() => database.watchProjects().map(
     (rows) => [
@@ -32,13 +30,13 @@ final class ProjectsRepositoryImpl implements ProjectsRepository {
 
   @override
   Future<ProjectDocument?> getProject(String id) async {
-    final row = await database.getProject(id);
+    final ProjectRow? row = await database.getProject(id);
     return row == null || row.isDeleted ? null : _decode(row);
   }
 
   @override
   Future<void> save(ProjectDocument document) {
-    final json = ProjectDocumentCodec.encode(document);
+    final Map<String, Object?> json = ProjectDocumentCodec.encode(document);
     return database.upsertProject(
       ProjectsCompanion.insert(
         id: document.id,

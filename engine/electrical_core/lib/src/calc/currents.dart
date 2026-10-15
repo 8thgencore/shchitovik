@@ -6,17 +6,15 @@ import 'package:electrical_core/src/model/project_input.dart';
 ///
 /// Summing components (not magnitudes) gives the vector sum of currents with different
 /// power factors.
-final class CurrentVector {
-  const CurrentVector(this.activeA, this.reactiveA);
-
-  /// Zero current.
-  static const zero = CurrentVector(0, 0);
-
+final class const CurrentVector(
   /// Active component, A.
-  final double activeA;
+  final double activeA,
 
   /// Reactive component, A.
-  final double reactiveA;
+  final double reactiveA,
+) {
+  /// Zero current.
+  static const zero = CurrentVector(0, 0);
 
   /// Magnitude, A.
   double get magnitudeA => math.sqrt(activeA * activeA + reactiveA * reactiveA);
@@ -39,9 +37,11 @@ CurrentVector deviceCurrent(
   required double lineVoltageV,
   bool demand = false,
 }) {
-  final power = device.totalPowerW * (demand ? device.usageFactor : 1);
-  final active = device.phases == 3 ? power / (math.sqrt(3) * lineVoltageV) : power / phaseVoltageV;
-  final cos = device.cosPhi;
-  final tan = cos >= 1 ? 0.0 : math.sqrt(1 - cos * cos) / cos;
+  final num power = device.totalPowerW * (demand ? device.usageFactor : 1);
+  final double active = device.phases == 3
+      ? power / (math.sqrt(3) * lineVoltageV)
+      : power / phaseVoltageV;
+  final double cos = device.cosPhi;
+  final double tan = cos >= 1 ? 0.0 : math.sqrt(1 - cos * cos) / cos;
   return CurrentVector(active, active * tan);
 }
