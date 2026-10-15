@@ -32,10 +32,13 @@ COPY . .
 RUN --mount=type=cache,target=/var/cache/pub \
     bash scripts/bootstrap.bash \
     && cd app \
-    && flutter build web --release \
+    # CanvasKit is served from this site, not from the gstatic CDN: from Russia the CDN takes
+    # seconds to deliver the 2 MB+ wasm, and the first frame waits for it.
+    && flutter build web --release --no-web-resources-cdn \
       --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${APP_BASE_URL} \
-    # A release build loads CanvasKit from the gstatic CDN; the local copy (~36 MB) is never used.
-    && rm -rf build/web/canvaskit
+    # Only the CanvasKit renderer is built; the skwasm/wimp engines and debug symbols are unused.
+    && rm -rf build/web/canvaskit/skwasm* build/web/canvaskit/wimp.* \
+    && find build/web/canvaskit -name '*.symbols' -delete
 
 # --- Price catalog -----------------------------------------------------------------------------
 FROM python:3.13-alpine AS catalog
