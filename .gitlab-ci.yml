@@ -55,7 +55,7 @@ test:
 build_web:
   stage: build
   script:
-    - cd app && flutter build web --release --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL="$APP_BASE_URL"
+    - cd app && flutter build web --release --no-web-resources-cdn --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL="$APP_BASE_URL"
   artifacts:
     paths: [app/build/web/]
     expire_in: 1 week
