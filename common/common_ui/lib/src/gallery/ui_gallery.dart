@@ -57,6 +57,11 @@ class _UiGalleryState extends State<UiGallery> {
             UiButton(label: 'Формируем PDF…', icon: UiIcons.report, busy: true, onPressed: () {}),
             const UiButton(label: 'Недоступно', onPressed: null),
             UiIconButton(icon: UiIcons.report, tooltip: 'Сохранить PDF', onPressed: () {}),
+            UiIconButton(icon: UiIcons.moveLeft, tooltip: 'Сдвинуть влево', onPressed: () {}),
+            UiIconButton(icon: UiIcons.moveUp, tooltip: 'На рейку выше', onPressed: () {}),
+            UiIconButton(icon: UiIcons.moveDown, tooltip: 'На рейку ниже', onPressed: () {}),
+            UiIconButton(icon: UiIcons.moveRight, tooltip: 'Сдвинуть вправо', onPressed: () {}),
+            UiButton.secondary(label: 'Переставить', icon: UiIcons.rearrange, onPressed: () {}),
             UiMenuButton(
               tooltip: 'Ещё',
               entries: [

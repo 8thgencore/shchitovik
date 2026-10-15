@@ -616,6 +616,69 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get boardAuxiliary => 'Доп.';
 
   @override
+  String get boardRearrange => 'Переставить';
+
+  @override
+  String get boardRearrangeDone => 'Готово';
+
+  @override
+  String get boardRearrangeHint =>
+      'Нажмите на аппарат и двигайте его кнопками или стрелками клавиатуры. На широком экране аппарат можно перетащить.';
+
+  @override
+  String get boardManual => 'Раскладка вручную';
+
+  @override
+  String get boardReset => 'Сбросить раскладку';
+
+  @override
+  String get boardEnclosureLabel => 'Корпус';
+
+  @override
+  String boardEnclosureOption(int rails, int perRail, int total) {
+    return '$rails×$perRail ($total мод.)';
+  }
+
+  @override
+  String get boardMoveLeft => 'Сдвинуть влево';
+
+  @override
+  String get boardMoveRight => 'Сдвинуть вправо';
+
+  @override
+  String get boardMoveUp => 'Перенести на рейку выше';
+
+  @override
+  String get boardMoveDown => 'Перенести на рейку ниже';
+
+  @override
+  String boardSelected(String label) {
+    return '$label, выбран';
+  }
+
+  @override
+  String get boardRailOutside => 'не помещается в корпус';
+
+  @override
+  String boardWarningOverfull(int number) {
+    return 'Рейка $number переполнена: аппараты шире рейки.';
+  }
+
+  @override
+  String get boardWarningTooSmall =>
+      'Аппараты не помещаются в выбранный корпус — лишние рейки показаны ниже.';
+
+  @override
+  String boardWarningReserve(int percent) {
+    return 'Резерв меньше $percent % — для новых линий места нет.';
+  }
+
+  @override
+  String boardWarningGroupSplit(String circuits) {
+    return 'Группа УЗО (линии $circuits) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить — нужны перемычки.';
+  }
+
+  @override
   String get projectsEmptyHint =>
       'Создайте проект — линии, щит и смета посчитаются по нормам автоматически.';
 

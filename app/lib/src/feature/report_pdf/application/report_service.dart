@@ -19,6 +19,12 @@ final class ReportService {
   /// (the embedded catalog when omitted).
   Future<Uint8List> build(ProjectDocument document, {EstimateCatalog? catalog}) async {
     final result = calculateProject(document.input);
+    final estimate = calculateEstimate(
+      document.input,
+      result,
+      document.estimate,
+      catalog: catalog,
+    );
     return buildProjectReport(
       ProjectReportData(
         projectName: document.name,
@@ -26,7 +32,11 @@ final class ReportService {
         appVersion: appVersion,
         input: document.input,
         result: result,
-        estimate: calculateEstimate(document.input, result, document.estimate, catalog: catalog),
+        estimate: estimate,
+        board: arrangeSwitchboard(
+          switchboardItems(document.input, result, estimate),
+          document.estimate.board,
+        ),
       ),
       _fonts ??= ReportFonts(
         regular: await _bundle.load('assets/fonts/NotoSans-Regular.ttf'),
