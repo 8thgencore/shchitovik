@@ -117,4 +117,19 @@ abstract final class UiIcons {
 
   /// Reset to automatic.
   static const reset = LucideIcons.rotateCcw300;
+
+  /// Rearrange mode.
+  static const rearrange = LucideIcons.move300;
+
+  /// Move left.
+  static const moveLeft = LucideIcons.arrowLeft300;
+
+  /// Move right.
+  static const moveRight = LucideIcons.arrowRight300;
+
+  /// Move up.
+  static const moveUp = LucideIcons.arrowUp300;
+
+  /// Move down.
+  static const moveDown = LucideIcons.arrowDown300;
 }

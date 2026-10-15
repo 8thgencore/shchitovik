@@ -1,5 +1,6 @@
 import 'package:electrical_core/electrical_core.dart';
-import 'package:estimate_core/estimate_core.dart';
+import 'package:estimate_core/src/board/board_arrangement.dart';
+import 'package:estimate_core/src/estimate/estimate_result.dart';
 import 'package:meta/meta.dart';
 
 /// What a piece of the switchboard is.
@@ -54,16 +55,59 @@ final class BoardRail {
   int get used => items.fold(0, (s, i) => s + i.units);
 }
 
+/// Problem of a switchboard arrangement worth showing to the user.
+@immutable
+sealed class BoardWarning {
+  const BoardWarning();
+}
+
+/// Items on a rail are wider than the rail.
+final class BoardRailOverfull extends BoardWarning {
+  const BoardRailOverfull(this.rail);
+
+  /// Rail index, 0-based.
+  final int rail;
+}
+
+/// The chosen enclosure has fewer rails than the arrangement uses.
+final class BoardEnclosureTooSmall extends BoardWarning {
+  const BoardEnclosureTooSmall();
+}
+
+/// Less than [enclosureReserveShare] of the enclosure is free.
+final class BoardReserveLow extends BoardWarning {
+  const BoardReserveLow();
+}
+
+/// A shared RCD and its circuits are not side by side on one rail, so a busbar cannot
+/// connect them.
+final class BoardGroupSplit extends BoardWarning {
+  const BoardGroupSplit(this.rcdId);
+
+  /// Shared RCD id.
+  final String rcdId;
+}
+
 /// Switchboard: enclosure size and the items placed on its rails.
 @immutable
 final class SwitchboardLayout {
-  const SwitchboardLayout({required this.rails, required this.modulesPerRail});
+  const SwitchboardLayout({
+    required this.rails,
+    required this.modulesPerRail,
+    this._enclosureRails,
+  });
 
-  /// Rails, top to bottom; some may be empty.
+  /// Rails, top to bottom; some may be empty. Rails past [enclosureRails] do not fit the
+  /// enclosure.
   final List<BoardRail> rails;
 
   /// Modules per rail of the enclosure.
   final int modulesPerRail;
+
+  final int? _enclosureRails;
+
+  /// Rails of the enclosure.
+  int get enclosureRails => _enclosureRails ?? rails.length;
 
   /// Modules of the enclosure.
   int get totalModules => rails.length * modulesPerRail;
@@ -73,6 +117,33 @@ final class SwitchboardLayout {
 
   /// Free modules.
   int get reserveModules => totalModules - occupiedModules;
+
+  /// Problems of the arrangement, in board order.
+  List<BoardWarning> get warnings {
+    final groups = <String, List<(int, int)>>{};
+    for (var r = 0; r < rails.length; r++) {
+      for (var i = 0; i < rails[r].items.length; i++) {
+        final groupId = rails[r].items[i].groupId;
+        if (groupId != null) (groups[groupId] ??= []).add((r, i));
+      }
+    }
+    bool split(List<(int, int)> places) {
+      final (rail, first) = places.first;
+      for (var k = 1; k < places.length; k++) {
+        if (places[k] != (rail, first + k)) return true;
+      }
+      return false;
+    }
+
+    return [
+      for (var r = 0; r < rails.length; r++)
+        if (rails[r].used > rails[r].capacity) BoardRailOverfull(r),
+      if (rails.length > enclosureRails) const BoardEnclosureTooSmall(),
+      if (reserveModules < enclosureReserveShare * totalModules) const BoardReserveLow(),
+      for (final MapEntry(key: id, value: places) in groups.entries)
+        if (split(places)) BoardGroupSplit(id),
+    ];
+  }
 }
 
 /// Typical modular enclosures, smallest first, as (rails, modules per rail).
@@ -81,7 +152,7 @@ const typicalEnclosures = [(1, 12), (1, 18), (2, 12), (2, 18), (3, 18), (4, 18),
 /// Share of the enclosure left free for future circuits.
 ///
 /// ASSUMPTION: design practice, not a norm clause; to be confirmed at the verification stage
-/// (verification/VERIFICATION.md, E9) before enclosure selection moves into `estimate_core`.
+/// (verification/VERIFICATION.md, E9).
 const enclosureReserveShare = 0.2;
 
 /// Lists the switchboard items in mounting order: incomer, fire RCD, auxiliary devices,
@@ -170,11 +241,59 @@ SwitchboardLayout layoutSwitchboard(List<BoardItem> items) {
   return _layout(packed, packed.length, perRail);
 }
 
+/// Places [items] by [arrangement]: the chosen enclosure or the automatic one, the stored
+/// order of items or the mounting order.
+///
+/// Stored ids missing from [items] are skipped; items missing from the arrangement go, in
+/// mounting order, to the first rail with room, or to an extra rail. Rails that do not fit
+/// the enclosure are kept and reported in [SwitchboardLayout.warnings].
+SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arrangement) {
+  if (arrangement.isAuto) return layoutSwitchboard(items);
+  final (rails, perRail) = arrangement.enclosure ?? _autoEnclosure(items);
+  final stored = arrangement.rails;
+  if (stored == null) {
+    final packed = _packBalanced(items, rails, perRail) ?? _pack(items, perRail);
+    return _layout(packed, rails, perRail);
+  }
+  final byId = {for (final item in items) item.id: item};
+  final placed = <String>{};
+  final packed = [
+    for (final rail in stored)
+      [
+        for (final id in rail)
+          if (byId[id] case final item? when placed.add(id)) item,
+      ],
+  ];
+  while (packed.length > rails && packed.last.isEmpty) {
+    packed.removeLast();
+  }
+  while (packed.length < rails) {
+    packed.add([]);
+  }
+  int used(List<BoardItem> rail) => rail.fold(0, (s, i) => s + i.units);
+  for (final item in items) {
+    if (placed.contains(item.id)) continue;
+    final rail = packed.where((r) => used(r) + item.units <= perRail).firstOrNull;
+    if (rail != null) {
+      rail.add(item);
+    } else {
+      packed.add([item]);
+    }
+  }
+  return _layout(packed, rails, perRail);
+}
+
+(int, int) _autoEnclosure(List<BoardItem> items) {
+  final layout = layoutSwitchboard(items);
+  return (layout.rails.length, layout.modulesPerRail);
+}
+
 SwitchboardLayout _layout(List<List<BoardItem>> packed, int rails, int perRail) =>
     SwitchboardLayout(
       modulesPerRail: perRail,
+      enclosureRails: rails,
       rails: [
-        for (var i = 0; i < rails; i++)
+        for (var i = 0; i < (packed.length > rails ? packed.length : rails); i++)
           BoardRail(items: i < packed.length ? packed[i] : const [], capacity: perRail),
       ],
     );

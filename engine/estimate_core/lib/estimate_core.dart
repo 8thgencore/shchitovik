@@ -1,6 +1,8 @@
 /// Apparatus selection, compatibility checks and the project estimate.
 library;
 
+export 'src/board/board_arrangement.dart';
+export 'src/board/switchboard_layout.dart';
 export 'src/catalog/catalog.dart';
 export 'src/catalog/price.dart';
 export 'src/estimate/compatibility.dart';

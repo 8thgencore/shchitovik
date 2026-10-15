@@ -313,6 +313,64 @@
   "boardIncomer": "Ввод",
   "boardRcd": "УЗО",
   "boardAuxiliary": "Доп.",
+  "boardRearrange": "Переставить",
+  "boardRearrangeDone": "Готово",
+  "boardRearrangeHint": "Нажмите на аппарат и двигайте его кнопками или стрелками клавиатуры. На широком экране аппарат можно перетащить.",
+  "boardManual": "Раскладка вручную",
+  "boardReset": "Сбросить раскладку",
+  "boardEnclosureLabel": "Корпус",
+  "boardEnclosureOption": "{rails}×{perRail} ({total} мод.)",
+  "@boardEnclosureOption": {
+    "placeholders": {
+      "rails": {
+        "type": "int"
+      },
+      "perRail": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "boardMoveLeft": "Сдвинуть влево",
+  "boardMoveRight": "Сдвинуть вправо",
+  "boardMoveUp": "Перенести на рейку выше",
+  "boardMoveDown": "Перенести на рейку ниже",
+  "boardSelected": "{label}, выбран",
+  "@boardSelected": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "boardRailOutside": "не помещается в корпус",
+  "boardWarningOverfull": "Рейка {number} переполнена: аппараты шире рейки.",
+  "@boardWarningOverfull": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "boardWarningTooSmall": "Аппараты не помещаются в выбранный корпус — лишние рейки показаны ниже.",
+  "boardWarningReserve": "Резерв меньше {percent} % — для новых линий места нет.",
+  "@boardWarningReserve": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "boardWarningGroupSplit": "Группа УЗО (линии {circuits}) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить — нужны перемычки.",
+  "@boardWarningGroupSplit": {
+    "placeholders": {
+      "circuits": {
+        "type": "String"
+      }
+    }
+  },
   "projectsEmptyHint": "Создайте проект — линии, щит и смета посчитаются по нормам автоматически.",
   "projectsImportPickAnother": "Выбрать другой файл",
   "copyErrorDetails": "Скопировать подробности",
