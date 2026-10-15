@@ -1,54 +1,50 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_pressable.dart';
 import 'package:common_ui/src/widgets/ui_status.dart';
 import 'package:common_ui/src/widgets/ui_surfaces.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Column of a [UiTable].
 @immutable
-final class UiTableColumn {
-  const UiTableColumn({required this.label, this.flex = 1, this.width, this.numeric = false});
-
+final class const UiTableColumn({
   /// Header.
-  final String label;
+  required final String label,
 
   /// Share of the free width when [width] is not set.
-  final int flex;
+  final int flex = 1,
 
   /// Fixed width.
-  final double? width;
+  final double? width,
 
   /// Right-aligned mono values.
-  final bool numeric;
-}
+  final bool numeric = false,
+});
 
 /// Row of a [UiTable].
 @immutable
-final class UiTableRow {
-  const UiTableRow({required this.cells, this.onTap, this.stripe});
-
+final class const UiTableRow({
   /// One widget per column; plain strings go through [UiTableCell].
-  final List<Widget> cells;
+  required final List<Widget> cells,
 
   /// Opens the row.
-  final VoidCallback? onTap;
+  final VoidCallback? onTap,
 
   /// Attention bar on the leading edge.
-  final UiTone? stripe;
-}
+  final UiTone? stripe,
+});
 
 /// Text cell: mono for numeric columns.
-class UiTableCell extends StatelessWidget {
-  const UiTableCell(this.text, {this.muted = false, super.key});
-
+class const UiTableCell(
   /// Text.
-  final String text;
+  final String text, {
 
   /// Secondary colour.
-  final bool muted;
-
+  final bool muted = false,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     text,
@@ -61,22 +57,21 @@ class UiTableCell extends StatelessWidget {
 /// Data table for wide screens: stamp-label header, hairline rows, hover and tap per row.
 ///
 /// Scrolls horizontally inside its own box when narrower than [minWidth]; on phones show a list.
-class UiTable extends StatelessWidget {
-  const UiTable({required this.columns, required this.rows, this.minWidth = 720, super.key});
-
+class const UiTable({
   /// Columns.
-  final List<UiTableColumn> columns;
+  required final List<UiTableColumn> columns,
 
   /// Rows.
-  final List<UiTableRow> rows;
+  required final List<UiTableRow> rows,
 
   /// Width below which the table scrolls horizontally.
-  final double minWidth;
-
+  final double minWidth = 720,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
-      final width = constraints.maxWidth < minWidth ? minWidth : constraints.maxWidth;
+      final double width = constraints.maxWidth < minWidth ? minWidth : constraints.maxWidth;
       final table = SizedBox(
         width: width,
         child: Column(
@@ -93,14 +88,10 @@ class UiTable extends StatelessWidget {
   );
 }
 
-class _Header extends StatelessWidget {
-  const _Header({required this.columns});
-
-  final List<UiTableColumn> columns;
-
+class const _Header({required final List<UiTableColumn> columns}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.sunken,
@@ -121,15 +112,11 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _Row extends StatelessWidget {
-  const _Row({required this.columns, required this.row});
-
-  final List<UiTableColumn> columns;
-  final UiTableRow row;
-
+class const _Row({required final List<UiTableColumn> columns, required final UiTableRow row})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     Widget body(UiPressState? state) => UiFocusRing(
       visible: state?.focused ?? false,
       inset: true,
@@ -176,19 +163,12 @@ class _Row extends StatelessWidget {
   }
 }
 
-class _Cells extends StatelessWidget {
-  const _Cells({
-    required this.columns,
-    required this.children,
-    required this.vertical,
-    this.leftInset = 0,
-  });
-
-  final List<UiTableColumn> columns;
-  final List<Widget> children;
-  final double vertical;
-  final double leftInset;
-
+class const _Cells({
+  required final List<UiTableColumn> columns,
+  required final List<Widget> children,
+  required final double vertical,
+  final double leftInset = 0,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.fromLTRB(UiSpace.s + leftInset, vertical, UiSpace.s, vertical),

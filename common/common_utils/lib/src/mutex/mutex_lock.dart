@@ -4,15 +4,13 @@ import 'dart:collection';
 /// A simple mutex implementation using a queue of completers.
 /// This allows for synchronizing access to a critical section of code,
 /// ensuring that only one task can execute the critical section at a time.
-class MutexLock {
-  MutexLock();
-
+class MutexLock() {
   final _queue = DoubleLinkedQueue<Completer<void>>();
 
   /// Locks the mutex and returns
   /// a future that completes when the lock is acquired.
   Future<void> lock() {
-    final previous = _queue.lastOrNull?.future ?? Future<void>.value();
+    final Future<void> previous = _queue.lastOrNull?.future ?? Future<void>.value();
     _queue.add(Completer<void>.sync());
 
     return previous;
@@ -25,7 +23,7 @@ class MutexLock {
       return;
     }
 
-    final completer = _queue.removeFirst();
+    final Completer<void> completer = _queue.removeFirst();
 
     if (completer.isCompleted) {
       assert(false, 'Mutex unlock called when the completer is already completed.');

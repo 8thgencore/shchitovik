@@ -1,9 +1,9 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:estimate_core/estimate_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
@@ -13,15 +13,13 @@ import 'package:shchitovik/src/widget/form_fields.dart';
 /// Estimate: scenario, total range, lines by category, composition options and warnings.
 ///
 /// Expanded layout keeps the total and the options in a side column next to the lines.
-class EstimateScreen extends StatelessWidget {
-  const EstimateScreen({super.key});
-
+class const EstimateScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ProjectBloc>().state as ProjectReady;
-    final estimate = state.estimate;
-    final t = context.translations;
-    final sections = [
+    final EstimateResult estimate = state.estimate;
+    final CommonTranslationsLocalizations t = context.translations;
+    final List<_CategoryCard> sections = [
       for (final (title, category, total) in [
         (t.estimateApparatus, EstimateCategory.apparatus, estimate.apparatusTotal),
         (t.estimateAuxiliary, EstimateCategory.auxiliary, estimate.auxiliaryTotal),
@@ -30,11 +28,11 @@ class EstimateScreen extends StatelessWidget {
         if (estimate.lines.any((l) => l.category == category))
           _CategoryCard(state: state, title: title, category: category, total: total),
     ];
-    final summary = [
+    final List<StatelessWidget> summary = [
       _ScenarioPicker(state: state),
       _TotalCard(estimate: estimate),
     ];
-    final extras = [
+    final List<StatelessWidget> extras = [
       _OptionsCard(state: state),
       _WarningsCard(estimate: estimate),
     ];
@@ -64,11 +62,7 @@ class EstimateScreen extends StatelessWidget {
 }
 
 /// Cards stacked with the section gap.
-class _Column extends StatelessWidget {
-  const _Column({required this.children});
-
-  final List<Widget> children;
-
+class const _Column({required final List<Widget> children}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,14 +78,10 @@ class _Column extends StatelessWidget {
 void _edit(BuildContext context, EstimateInput Function(EstimateInput) change) =>
     ProjectScope.edit(context, (d) => d.copyWith(estimate: change(d.estimate)));
 
-class _ScenarioPicker extends StatelessWidget {
-  const _ScenarioPicker({required this.state});
-
-  final ProjectReady state;
-
+class const _ScenarioPicker({required final ProjectReady state}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     return UiSegmented<EstimateScenario>(
       label: t.estimateScenario,
       segments: [
@@ -105,17 +95,13 @@ class _ScenarioPicker extends StatelessWidget {
   }
 }
 
-class _TotalCard extends StatelessWidget {
-  const _TotalCard({required this.estimate});
-
-  final EstimateResult estimate;
-
+class const _TotalCard({required final EstimateResult estimate}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
-    final total = estimate.total;
-    final span = total.maxKopecks - total.minKopecks;
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final PriceRange total = estimate.total;
+    final int span = total.maxKopecks - total.minKopecks;
     return UiCard(
       title: t.estimateTotal,
       trailing: UiBadge(label: t.estimateModules(estimate.moduleUnits), tone: UiTone.neutral),
@@ -141,22 +127,17 @@ class _TotalCard extends StatelessWidget {
   }
 }
 
-class _CategoryCard extends StatelessWidget {
-  const _CategoryCard({
-    required this.state,
-    required this.title,
-    required this.category,
-    required this.total,
-  });
-
-  final ProjectReady state;
-  final String title;
-  final EstimateCategory category;
-  final PriceRange total;
-
+class const _CategoryCard({
+  required final ProjectReady state,
+  required final String title,
+  required final EstimateCategory category,
+  required final PriceRange total,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final lines = state.estimate.lines.where((l) => l.category == category).toList();
+    final List<EstimateLine> lines = state.estimate.lines
+        .where((l) => l.category == category)
+        .toList();
     return UiCard(
       child: UiDisclosure(
         initiallyExpanded: context.isExpandedLayout,
@@ -173,15 +154,11 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-class _LineRow extends StatelessWidget {
-  const _LineRow({required this.projectId, required this.line});
-
-  final String projectId;
-  final EstimateLine line;
-
+class const _LineRow({required final String projectId, required final EstimateLine line})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final missing = line.missing.isNotEmpty;
+    final bool missing = line.missing.isNotEmpty;
     return UiListRow(
       dense: true,
       title: line.title,
@@ -201,15 +178,11 @@ class _LineRow extends StatelessWidget {
   }
 }
 
-class _OptionsCard extends StatelessWidget {
-  const _OptionsCard({required this.state});
-
-  final ProjectReady state;
-
+class const _OptionsCard({required final ProjectReady state}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final choices = state.document.estimate;
+    final CommonTranslationsLocalizations t = context.translations;
+    final EstimateInput choices = state.document.estimate;
     return UiCard(
       title: t.estimateOptions,
       child: Column(
@@ -259,15 +232,11 @@ class _OptionsCard extends StatelessWidget {
   }
 }
 
-class _WarningsCard extends StatelessWidget {
-  const _WarningsCard({required this.estimate});
-
-  final EstimateResult estimate;
-
+class const _WarningsCard({required final EstimateResult estimate}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final c = context.uiColors;
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
     return UiCard(
       child: UiDisclosure(
         title: t.estimateWarnings,

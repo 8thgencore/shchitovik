@@ -1,7 +1,5 @@
 /// [PersistedColumn] describes a single persisted column.
-abstract base class PersistedColumn<T extends Object> {
-  const PersistedColumn();
-
+abstract base class const PersistedColumn<T extends Object>() {
   /// Read the value
   Future<T?> read();
 

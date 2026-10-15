@@ -8,7 +8,7 @@ import 'package:shchitovik/src/feature/catalog_sync/data/catalog_remote_source.d
 import 'package:shchitovik/src/feature/catalog_sync/domain/catalog_manifest.dart';
 
 /// Outcome of an update check.
-enum CatalogUpdateStatus {
+enum CatalogUpdateStatus() {
   /// A newer catalog was downloaded and activated.
   updated,
 
@@ -23,13 +23,12 @@ enum CatalogUpdateStatus {
 }
 
 /// Provides the price catalog: the downloaded update if valid, otherwise the embedded one.
-final class CatalogService {
-  CatalogService({required this._database, this._remote, EstimateCatalog? embedded})
-    : _embedded = embedded ?? EstimateCatalog.embedded;
-
-  final AppDatabase _database;
-  final CatalogRemoteSource? _remote;
-  final EstimateCatalog _embedded;
+final class CatalogService({
+  required final AppDatabase _database,
+  final CatalogRemoteSource? _remote,
+  EstimateCatalog? embedded,
+}) {
+  final EstimateCatalog _embedded = embedded ?? EstimateCatalog.embedded;
   EstimateCatalog? _current;
 
   /// Catalog to use for estimates.
@@ -40,16 +39,16 @@ final class CatalogService {
   /// Every file is verified by SHA-256 and parsed before anything is stored; the cache is
   /// replaced in one transaction, so a partial download never becomes active.
   Future<CatalogUpdateStatus> checkForUpdates() async {
-    final remote = _remote;
+    final CatalogRemoteSource? remote = _remote;
     if (remote == null) return CatalogUpdateStatus.disabled;
     try {
-      final manifest = await remote.manifest();
-      final active = await current();
+      final CatalogManifest manifest = await remote.manifest();
+      final EstimateCatalog active = await current();
       if (manifest.catalogVersion == active.catalogVersion) return CatalogUpdateStatus.upToDate;
 
       final contents = <String, String>{};
       for (final MapEntry(key: dataset, value: file) in manifest.files.entries) {
-        final text = await remote.file(file.path);
+        final String text = await remote.file(file.path);
         if (sha256.convert(utf8.encode(text)).toString() != file.sha256) {
           throw FormatException('Checksum mismatch for $dataset');
         }
@@ -59,7 +58,7 @@ final class CatalogService {
       if (catalog.catalogVersion != manifest.catalogVersion) {
         throw const FormatException('Catalog version does not match the manifest');
       }
-      final now = clock.now().toUtc();
+      final DateTime now = clock.now().toUtc();
       await _database.replaceCatalogCache([
         for (final e in contents.entries)
           CatalogCacheCompanion.insert(
@@ -77,8 +76,8 @@ final class CatalogService {
   }
 
   Future<EstimateCatalog?> _loadCached() async {
-    final rows = await _database.getCatalogCache();
-    final contents = {for (final r in rows) r.dataset: r.content};
+    final List<CatalogCacheRow> rows = await _database.getCatalogCache();
+    final Map<String, String> contents = {for (final r in rows) r.dataset: r.content};
     if (!catalogDatasets.every(contents.containsKey)) return null;
     try {
       return EstimateCatalog.fromJsonStrings(contents);

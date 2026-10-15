@@ -4,11 +4,15 @@ import 'package:shchitovik/src/feature/projects/data/repositories/projects_repos
 import 'package:shchitovik/src/feature/report_pdf/application/report_service.dart';
 
 /// Dependencies of the projects feature.
-class ProjectsContainer {
-  const ProjectsContainer._(this.projectsService, this.reportService);
+class const ProjectsContainer._(
+  /// Project use cases.
+  final ProjectsService projectsService,
 
+  /// PDF reports.
+  final ReportService reportService,
+) {
   /// Creates the container on top of [database].
-  factory ProjectsContainer.create({required AppDatabase database, required String appVersion}) =>
+  factory create({required AppDatabase database, required String appVersion}) =>
       ProjectsContainer._(
         ProjectsService(
           repository: ProjectsRepositoryImpl(database: database),
@@ -16,10 +20,4 @@ class ProjectsContainer {
         ),
         ReportService(appVersion: appVersion),
       );
-
-  /// Project use cases.
-  final ProjectsService projectsService;
-
-  /// PDF reports.
-  final ReportService reportService;
 }

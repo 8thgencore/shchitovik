@@ -1,8 +1,8 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:norms_data/norms_data.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
@@ -11,27 +11,30 @@ import 'package:shchitovik/src/feature/projects/public/presentation/project_scop
 import 'package:shchitovik/src/widget/form_fields.dart';
 
 /// Details of a circuit: values, checks with references, settings and expert overrides.
-class CircuitScreen extends StatelessWidget {
-  const CircuitScreen({required this.circuitId, super.key});
-
+class const CircuitScreen({
   /// Circuit id.
-  final String circuitId;
-
+  required final String circuitId,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     final state = context.watch<ProjectBloc>().state as ProjectReady;
-    final circuit = state.result.circuits.where((c) => c.id == circuitId).firstOrNull;
+    final CircuitResult? circuit = state.result.circuits
+        .where((c) => c.id == circuitId)
+        .firstOrNull;
     if (circuit == null) {
       return UiEmptyState(icon: UiIcons.circuits, title: t.circuitsEmpty, message: '');
     }
-    final input = state.document.input;
-    final settings = input.circuitSettings[circuitId] ?? const CircuitSettings();
-    final expert = isExpertMode(context);
-    final devices = input.devices.where((d) => circuit.deviceIds.contains(d.id));
+    final ProjectInput input = state.document.input;
+    final CircuitSettings settings = input.circuitSettings[circuitId] ?? const CircuitSettings();
+    final bool expert = isExpertMode(context);
+    final Iterable<DeviceInput> devices = input.devices.where(
+      (d) => circuit.deviceIds.contains(d.id),
+    );
 
     void edit(CircuitSettings Function(CircuitSettings) change) => ProjectScope.edit(context, (d) {
-      final current = d.input.circuitSettings[circuitId] ?? const CircuitSettings();
+      final CircuitSettings current = d.input.circuitSettings[circuitId] ?? const CircuitSettings();
       return d.copyWith(
         input: d.input.copyWith(
           circuitSettings: {...d.input.circuitSettings, circuitId: change(current)},
@@ -39,7 +42,7 @@ class CircuitScreen extends StatelessWidget {
       );
     });
 
-    final cable = circuit.cable;
+    final CableResult cable = circuit.cable;
     final values = <(String, String)>[
       ('IB', '${formatNumber(circuit.designCurrentA, 2)} А'),
       ('In', circuit.protection.label),
@@ -127,8 +130,8 @@ class CircuitScreen extends StatelessWidget {
       ),
     );
 
-    final rcd = circuit.protection.rcd;
-    final rcdCard = rcd == null
+    final RcdResult? rcd = circuit.protection.rcd;
+    final UiCard? rcdCard = rcd == null
         ? null
         : UiCard(
             title: t.circuitRcdReasons,
@@ -177,7 +180,7 @@ class CircuitScreen extends StatelessWidget {
       ],
     );
 
-    final expertCard = !expert
+    final UiFieldGroup? expertCard = !expert
         ? null
         : UiFieldGroup(
             title: t.circuitExpert,
@@ -286,11 +289,7 @@ class CircuitScreen extends StatelessWidget {
 }
 
 /// Cards stacked with the section gap.
-class _Column extends StatelessWidget {
-  const _Column({required this.children});
-
-  final List<Widget> children;
-
+class const _Column({required final List<Widget> children}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,

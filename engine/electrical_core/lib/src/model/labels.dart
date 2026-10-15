@@ -59,8 +59,8 @@ extension CheckStatusLabel on CheckStatus {
 extension ProtectionLabel on ProtectionResult {
   /// Short description like `Дифавтомат C16, 30 мА, тип A`.
   String get description {
-    final breaker = label;
-    final rcd = this.rcd;
+    final String breaker = label;
+    final RcdResult? rcd = this.rcd;
     return switch (device) {
       ProtectionDevice.mcb => 'Автомат $breaker',
       ProtectionDevice.rcbo => 'Дифавтомат $breaker, ${_n(rcd!.residualMa)} мА, тип ${rcd.type}',

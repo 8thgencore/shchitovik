@@ -1,18 +1,18 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_icons.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_pressable.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Visible label above a field.
-class UiFieldLabel extends StatelessWidget {
-  const UiFieldLabel(this.text, {super.key});
-
+class const UiFieldLabel(
   /// Text.
-  final String text;
-
+  final String text, {
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: UiSpace.s),
@@ -29,74 +29,56 @@ class UiFieldLabel extends StatelessWidget {
 /// Text input with a label above, a unit inside the field, helper and error text below.
 ///
 /// Numbers and the unit are set in mono when [numeric] is on.
-class UiTextField extends StatelessWidget {
-  const UiTextField({
-    required this.label,
-    this.controller,
-    this.focusNode,
-    this.help,
-    this.error,
-    this.unit,
-    this.placeholder,
-    this.prefixIcon,
-    this.numeric = false,
-    this.keyboardType,
-    this.textInputAction,
-    this.autofocus = false,
-    this.onChanged,
-    this.onSubmitted,
-    this.inputFormatters,
-    super.key,
-  });
-
+class const UiTextField({
   /// Label above the field.
-  final String label;
+  required final String label,
 
   /// Controller.
-  final TextEditingController? controller;
+  final TextEditingController? controller,
 
   /// Focus node.
-  final FocusNode? focusNode;
+  final FocusNode? focusNode,
 
   /// Helper text below the field.
-  final String? help;
+  final String? help,
 
   /// Error text; replaces [help] and turns the border red.
-  final String? error;
+  final String? error,
 
   /// Unit inside the field on the right («м», «кВт»).
-  final String? unit;
+  final String? unit,
 
   /// Format hint inside the empty field. Never a replacement for [label].
-  final String? placeholder;
+  final String? placeholder,
 
   /// Icon at the start (search).
-  final IconData? prefixIcon;
+  final IconData? prefixIcon,
 
   /// Mono digits and a decimal keyboard.
-  final bool numeric;
+  final bool numeric = false,
 
   /// Keyboard type.
-  final TextInputType? keyboardType;
+  final TextInputType? keyboardType,
 
   /// Keyboard action.
-  final TextInputAction? textInputAction;
+  final TextInputAction? textInputAction,
 
   /// Focus on first build.
-  final bool autofocus;
+  final bool autofocus = false,
 
   /// Every change.
-  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onChanged,
 
   /// Enter pressed.
-  final ValueChanged<String>? onSubmitted;
+  final ValueChanged<String>? onSubmitted,
 
   /// Input formatters.
-  final List<TextInputFormatter>? inputFormatters;
-
+  final List<TextInputFormatter>? inputFormatters,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -154,42 +136,34 @@ class UiTextField extends StatelessWidget {
 }
 
 /// Dropdown with a label above; options open in a menu under the field.
-class UiSelect<T> extends StatefulWidget {
-  const UiSelect({
-    required this.label,
-    required this.value,
-    required this.options,
-    required this.onChanged,
-    this.help,
-    super.key,
-  });
-
+class const UiSelect<T>({
   /// Label above the field.
-  final String label;
+  required final String label,
 
   /// Selected value.
-  final T value;
+  required final T value,
 
   /// Options with their labels.
-  final List<(T value, String label)> options;
+  required final List<(T value, String label)> options,
 
   /// Selection handler; `null` disables the field.
-  final ValueChanged<T>? onChanged;
+  required final ValueChanged<T>? onChanged,
 
   /// Helper text below.
-  final String? help;
-
+  final String? help,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<UiSelect<T>> createState() => _UiSelectState<T>();
 }
 
-class _UiSelectState<T> extends State<UiSelect<T>> {
+class _UiSelectState<T>() extends State<UiSelect<T>> {
   final _controller = MenuController();
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final current = widget.options.where((o) => o.$1 == widget.value).firstOrNull?.$2 ?? '';
+    final UiColors c = context.uiColors;
+    final String current = widget.options.where((o) => o.$1 == widget.value).firstOrNull?.$2 ?? '';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
@@ -272,44 +246,35 @@ class _UiSelectState<T> extends State<UiSelect<T>> {
 
 /// Option of a [UiSegmented].
 @immutable
-final class UiSegment<T> {
-  const UiSegment({required this.value, required this.label, this.icon});
-
+final class const UiSegment<T>({
   /// Value.
-  final T value;
+  required final T value,
 
   /// Label.
-  final String label;
+  required final String label,
 
   /// Icon before the label.
-  final IconData? icon;
-}
+  final IconData? icon,
+});
 
 /// Segmented choice of 2–4 short options on a recessed track.
-class UiSegmented<T> extends StatelessWidget {
-  const UiSegmented({
-    required this.segments,
-    required this.selected,
-    required this.onChanged,
-    this.label,
-    super.key,
-  });
-
+class const UiSegmented<T>({
   /// Options.
-  final List<UiSegment<T>> segments;
+  required final List<UiSegment<T>> segments,
 
   /// Selected value.
-  final T selected;
+  required final T selected,
 
   /// Selection handler.
-  final ValueChanged<T> onChanged;
+  required final ValueChanged<T> onChanged,
 
   /// Label above the control.
-  final String? label;
-
+  final String? label,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     final track = DecoratedBox(
       decoration: BoxDecoration(color: c.sunken, borderRadius: UiRadius.cardAll),
       child: Padding(

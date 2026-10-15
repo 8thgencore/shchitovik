@@ -1,39 +1,32 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_button.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Bordered surface on the canvas: 1px hairline, 4px corners, no shadow.
-class UiCard extends StatelessWidget {
-  const UiCard({
-    required this.child,
-    this.title,
-    this.eyebrow,
-    this.trailing,
-    this.padding = EdgeInsets.zero,
-    super.key,
-  });
-
+class const UiCard({
   /// Content.
-  final Widget child;
+  required final Widget child,
 
   /// Heading in the card header.
-  final String? title;
+  final String? title,
 
   /// Stamp label above [title].
-  final String? eyebrow;
+  final String? eyebrow,
 
   /// Widget at the end of the header: a badge or an action.
-  final Widget? trailing;
+  final Widget? trailing,
 
   /// Padding around [child].
-  final EdgeInsetsGeometry padding;
-
+  final EdgeInsetsGeometry padding = EdgeInsets.zero,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final hasHeader = title != null || eyebrow != null || trailing != null;
+    final UiColors c = context.uiColors;
+    final bool hasHeader = title != null || eyebrow != null || trailing != null;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface,
@@ -87,18 +80,17 @@ class UiCard extends StatelessWidget {
 }
 
 /// Upper-case mono label, like the text in a drawing stamp: groups and value names.
-class UiLabel extends StatelessWidget {
-  const UiLabel(this.text, {this.color, this.symbol = false, super.key});
-
+class const UiLabel(
   /// Text; shown in upper case.
-  final String text;
-
-  /// A quantity symbol (In, ΔU, cos φ): keep the case, it carries meaning.
-  final bool symbol;
+  final String text, {
 
   /// Colour; defaults to the muted text colour.
-  final Color? color;
+  final Color? color,
 
+  /// A quantity symbol (In, ΔU, cos φ): keep the case, it carries meaning.
+  final bool symbol = false,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     symbol ? text : text.toUpperCase(),
@@ -110,21 +102,20 @@ class UiLabel extends StatelessWidget {
 }
 
 /// Group heading above a block of cards or fields.
-class UiSectionHeader extends StatelessWidget {
-  const UiSectionHeader(this.title, {this.trailing, this.description, super.key});
-
+class const UiSectionHeader(
   /// Title.
-  final String title;
-
-  /// One line under the title.
-  final String? description;
+  final String title, {
 
   /// Widget at the end: an action.
-  final Widget? trailing;
+  final Widget? trailing,
 
+  /// One line under the title.
+  final String? description,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return Padding(
       padding: const EdgeInsets.only(top: UiSpace.s, bottom: UiSpace.s),
       child: Row(
@@ -151,15 +142,14 @@ class UiSectionHeader extends StatelessWidget {
 }
 
 /// Column with hairlines between the children: rows inside a card.
-class UiDivided extends StatelessWidget {
-  const UiDivided({required this.children, this.topBorder = false, super.key});
-
+class const UiDivided({
   /// Rows.
-  final List<Widget> children;
+  required final List<Widget> children,
 
   /// Draw a hairline above the first row too (after a card header).
-  final bool topBorder;
-
+  final bool topBorder = false,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final line = ColoredBox(
@@ -180,19 +170,14 @@ class UiDivided extends StatelessWidget {
 }
 
 /// Caps the page content at [maxWidth] and centers it; chrome stays full width.
-class UiContentWidth extends StatelessWidget {
-  const UiContentWidth({
-    required this.child,
-    this.maxWidth = UiBreakpoints.contentMax,
-    super.key,
-  });
-
+class const UiContentWidth({
   /// Page content.
-  final Widget child;
+  required final Widget child,
 
   /// Maximum width.
-  final double maxWidth;
-
+  final double maxWidth = UiBreakpoints.contentMax,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Align(
     alignment: Alignment.topCenter,
@@ -204,15 +189,14 @@ class UiContentWidth extends StatelessWidget {
 }
 
 /// Bar pinned to the bottom of a screen: wizard navigation, the main action on phones.
-class UiActionBar extends StatelessWidget {
-  const UiActionBar({required this.child, super.key});
-
+class const UiActionBar({
   /// Content: a notice and buttons.
-  final Widget child;
-
+  required final Widget child,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface,
@@ -230,18 +214,17 @@ class UiActionBar extends StatelessWidget {
 }
 
 /// Card with a heading and form fields stacked with a 16px rhythm.
-class UiFieldGroup extends StatelessWidget {
-  const UiFieldGroup({required this.title, required this.children, this.eyebrow, super.key});
-
+class const UiFieldGroup({
   /// Heading.
-  final String title;
-
-  /// Stamp label above the heading.
-  final String? eyebrow;
+  required final String title,
 
   /// Fields.
-  final List<Widget> children;
+  required final List<Widget> children,
 
+  /// Stamp label above the heading.
+  final String? eyebrow,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => UiCard(
     title: title,

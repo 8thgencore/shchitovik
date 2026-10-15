@@ -13,7 +13,7 @@ import 'package:shchitovik/src/feature/rooms_devices/presentation/rooms_screen.d
 import 'package:shchitovik/src/feature/settings/presentation/settings_screen.dart';
 
 /// Route paths of the application; they double as web URLs and must stay stable.
-abstract final class AppRoutes {
+abstract final class AppRoutes() {
   /// List of projects, the start screen.
   static const projects = '/';
 

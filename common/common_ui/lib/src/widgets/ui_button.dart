@@ -4,10 +4,10 @@ import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_pressable.dart';
 import 'package:common_ui/src/widgets/ui_progress.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Visual weight of a [UiButton].
-enum UiButtonVariant {
+enum UiButtonVariant() {
   /// Ink fill: the one main action of a screen or bar.
   primary,
 
@@ -23,7 +23,7 @@ enum UiButtonVariant {
 
 /// Button with a verb-first label, optional icon and a busy state.
 class UiButton extends StatelessWidget {
-  const UiButton({
+  const new({
     required this.label,
     required this.onPressed,
     this.variant = UiButtonVariant.primary,
@@ -37,7 +37,7 @@ class UiButton extends StatelessWidget {
   });
 
   /// Outlined button.
-  const UiButton.secondary({
+  const new secondary({
     required this.label,
     required this.onPressed,
     this.icon,
@@ -50,7 +50,7 @@ class UiButton extends StatelessWidget {
   }) : variant = UiButtonVariant.secondary;
 
   /// Text button.
-  const UiButton.ghost({
+  const new ghost({
     required this.label,
     required this.onPressed,
     this.icon,
@@ -63,7 +63,7 @@ class UiButton extends StatelessWidget {
   }) : variant = UiButtonVariant.ghost;
 
   /// Destructive button.
-  const UiButton.danger({
+  const new danger({
     required this.label,
     required this.onPressed,
     this.icon,
@@ -104,7 +104,7 @@ class UiButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     return UiPressable(
       onPressed: onPressed == null
           ? null
@@ -113,8 +113,8 @@ class UiButton extends StatelessWidget {
             },
       autofocus: autofocus,
       builder: (context, state) {
-        final (background, foreground, border) = _colors(c, state);
-        final iconWidget = busy
+        final (Color background, Color foreground, Color? border) = _colors(c, state);
+        final StatelessWidget? iconWidget = busy
             ? UiSpinner(size: UiSize.iconSmall, color: foreground)
             : icon == null
             ? null
@@ -199,42 +199,34 @@ class UiButton extends StatelessWidget {
 /// Square icon-only button; [tooltip] is required and doubles as the accessible label.
 ///
 /// The tooltip shows on hover, long press and keyboard focus.
-class UiIconButton extends StatefulWidget {
-  const UiIconButton({
-    required this.icon,
-    required this.tooltip,
-    required this.onPressed,
-    this.busy = false,
-    this.color,
-    super.key,
-  });
-
+class const UiIconButton({
   /// Icon.
-  final IconData icon;
+  required final IconData icon,
 
   /// Tooltip and accessible label: a verb («Сохранить PDF»).
-  final String tooltip;
+  required final String tooltip,
 
   /// Action; `null` disables the button.
-  final VoidCallback? onPressed;
+  required final VoidCallback? onPressed,
 
   /// Shows a spinner instead of the icon.
-  final bool busy;
+  final bool busy = false,
 
   /// Icon colour; defaults to the text colour.
-  final Color? color;
-
+  final Color? color,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<UiIconButton> createState() => _UiIconButtonState();
 }
 
-class _UiIconButtonState extends State<UiIconButton> {
+class _UiIconButtonState() extends State<UiIconButton> {
   final _tooltip = GlobalKey<TooltipState>();
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final onPressed = widget.onPressed;
+    final UiColors c = context.uiColors;
+    final VoidCallback? onPressed = widget.onPressed;
     return Tooltip(
       key: _tooltip,
       message: widget.tooltip,
@@ -254,7 +246,7 @@ class _UiIconButtonState extends State<UiIconButton> {
           }
         },
         builder: (context, state) {
-          final foreground = state.enabled ? (widget.color ?? c.text) : c.textMuted;
+          final Color foreground = state.enabled ? (widget.color ?? c.text) : c.textMuted;
           return UiFocusRing(
             visible: state.focused,
             inset: true,

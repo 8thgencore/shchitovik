@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 /// Spacing scale: 4pt for micro gaps, 8pt for layout.
-abstract final class UiSpace {
+abstract final class UiSpace() {
   /// 4.
   static const xs = 4.0;
 
@@ -25,7 +25,7 @@ abstract final class UiSpace {
 }
 
 /// Corner radii: sharp, like a drawing.
-abstract final class UiRadius {
+abstract final class UiRadius() {
   /// Controls: buttons, inputs, badges.
   static const control = 3.0;
 
@@ -40,7 +40,7 @@ abstract final class UiRadius {
 }
 
 /// Fixed sizes of controls.
-abstract final class UiSize {
+abstract final class UiSize() {
   /// Minimum touch target and the height of regular controls.
   static const control = 44.0;
 
@@ -61,7 +61,7 @@ abstract final class UiSize {
 }
 
 /// Motion durations; everything respects «reduce motion» via [UiMotion.of].
-abstract final class UiMotion {
+abstract final class UiMotion() {
   /// Hover, press, toggles.
   static const fast = Duration(milliseconds: 150);
 
@@ -69,7 +69,7 @@ abstract final class UiMotion {
   static const medium = Duration(milliseconds: 200);
 
   /// Easing for state changes.
-  static const curve = Curves.easeOutCubic;
+  static const Cubic curve = Curves.easeOutCubic;
 
   /// [duration], or zero when the platform asks to reduce motion.
   static Duration of(BuildContext context, Duration duration) =>
@@ -77,7 +77,7 @@ abstract final class UiMotion {
 }
 
 /// Window breakpoints.
-abstract final class UiBreakpoints {
+abstract final class UiBreakpoints() {
   /// From this width the app uses the expanded layout: sidebar, tables, two columns.
   static const expanded = 840.0;
 

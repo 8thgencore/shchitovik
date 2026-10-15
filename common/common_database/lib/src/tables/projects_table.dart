@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 
 /// Projects stored as documents.
 @DataClassName('ProjectRow')
-class Projects extends Table {
+class Projects() extends Table {
   /// UUID.
   TextColumn get id => text()();
 

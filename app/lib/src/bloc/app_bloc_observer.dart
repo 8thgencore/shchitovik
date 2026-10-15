@@ -3,12 +3,12 @@ import 'package:common_utils/common_utils.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// [BlocObserver] that logs state transitions and errors.
-class AppBlocObserver extends BlocObserver {
-  /// Creates an instance of [AppBlocObserver] with the provided [logger].
-  const AppBlocObserver(this.logger);
-
+class const AppBlocObserver(
   /// Logger used to log bloc lifecycle events.
-  final Logger logger;
+  final Logger logger,
+) extends BlocObserver {
+  /// Creates an instance of [AppBlocObserver] with the provided [logger].
+  this;
 
   @override
   void onTransition(Bloc<Object?, Object?> bloc, Transition<Object?, Object?> transition) {

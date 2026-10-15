@@ -9,88 +9,70 @@ import 'package:shchitovik/src/feature/projects/application/projects_service.dar
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 
 /// Events of [ProjectBloc].
-sealed class ProjectEvent {
-  const ProjectEvent();
-}
+sealed class const ProjectEvent();
 
 /// The stored document changed (internal).
-final class _DocumentChanged extends ProjectEvent {
-  const _DocumentChanged(this.document);
-
-  final ProjectDocument? document;
-}
+final class const _DocumentChanged(final ProjectDocument? document) extends ProjectEvent;
 
 /// User edit of the project.
-final class ProjectEdited extends ProjectEvent {
-  const ProjectEdited(this.transform);
-
+final class const ProjectEdited(
   /// Changes to apply.
-  final ProjectDocument Function(ProjectDocument document) transform;
-}
+  final ProjectDocument Function(ProjectDocument document) transform,
+) extends ProjectEvent;
 
 /// State of [ProjectBloc].
-sealed class ProjectState {
-  const ProjectState();
-}
+sealed class const ProjectState();
 
 /// Loading the project.
-final class ProjectLoading extends ProjectState {
-  const ProjectLoading();
-}
+final class const ProjectLoading() extends ProjectState;
 
 /// The project does not exist (deleted or wrong link).
-final class ProjectNotFound extends ProjectState {
-  const ProjectNotFound();
-}
+final class const ProjectNotFound() extends ProjectState;
 
 /// Project with its calculation and estimate.
-final class ProjectReady extends ProjectState {
-  const ProjectReady({
-    required this.document,
-    required this.result,
-    required this.estimate,
-    required this.catalog,
-  });
-
+final class const ProjectReady({
   /// Stored document.
-  final ProjectDocument document;
+  required final ProjectDocument document,
 
   /// Calculation result.
-  final ProjectResult result;
+  required final ProjectResult result,
 
   /// Estimate.
-  final EstimateResult estimate;
+  required final EstimateResult estimate,
 
   /// Catalog used for the estimate.
-  final EstimateCatalog catalog;
-}
+  required final EstimateCatalog catalog,
+}) extends ProjectState;
 
 /// Loads a project, recomputes it on every change and applies edits.
 ///
 /// Results are derived, never stored: the document stream is the single source of truth.
-final class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
-  ProjectBloc({required this.projectId, required this._projects, required this._catalog})
-    : super(const ProjectLoading()) {
+final class ProjectBloc({
+  /// Project id.
+  required final String projectId,
+  required final ProjectsService _projects,
+  required final CatalogService _catalog,
+}) extends Bloc<ProjectEvent, ProjectState> {
+  this : super(const ProjectLoading()) {
     on<_DocumentChanged>(_onDocumentChanged);
     on<ProjectEdited>(_onEdited);
     _subscription = _projects.watchProject(projectId).listen((d) => add(_DocumentChanged(d)));
   }
 
-  /// Project id.
-  final String projectId;
-
-  final ProjectsService _projects;
-  final CatalogService _catalog;
   late final StreamSubscription<ProjectDocument?> _subscription;
 
   Future<void> _onDocumentChanged(_DocumentChanged event, Emitter<ProjectState> emit) async {
-    final document = event.document;
+    final ProjectDocument? document = event.document;
     if (document == null) {
       emit(const ProjectNotFound());
       return;
     }
-    final catalog = await _catalog.current();
-    final computed = await compute(_calculate, (document.input, document.estimate, catalog));
+    final EstimateCatalog catalog = await _catalog.current();
+    final (ProjectResult, EstimateResult) computed = await compute(_calculate, (
+      document.input,
+      document.estimate,
+      catalog,
+    ));
     emit(
       ProjectReady(
         document: document,
@@ -114,6 +96,6 @@ final class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
 
 (ProjectResult, EstimateResult) _calculate((ProjectInput, EstimateInput, EstimateCatalog) args) {
   final (input, estimate, catalog) = args;
-  final result = calculateProject(input);
+  final ProjectResult result = calculateProject(input);
   return (result, calculateEstimate(input, result, estimate, catalog: catalog));
 }

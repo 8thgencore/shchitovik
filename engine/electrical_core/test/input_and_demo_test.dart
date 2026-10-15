@@ -4,7 +4,7 @@ import 'package:electrical_core/electrical_core.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final demos = {
+  final Map<String, ProjectInput> demos = {
     'one room apartment': DemoProjects.oneRoomApartment(),
     'three room apartment': DemoProjects.threeRoomApartment(),
     'house': DemoProjects.house(),
@@ -12,10 +12,10 @@ void main() {
 
   for (final MapEntry(key: name, value: input) in demos.entries) {
     group(name, () {
-      final result = calculateProject(input);
+      final ProjectResult result = calculateProject(input);
 
       test('JSON round trip of the input is lossless', () {
-        final json = jsonEncode(input.toJson());
+        final String json = jsonEncode(input.toJson());
         expect(
           jsonEncode(ProjectInput.fromJson(jsonDecode(json) as Map<String, Object?>).toJson()),
           json,
@@ -31,13 +31,13 @@ void main() {
       });
 
       test('every device is in exactly one circuit', () {
-        final ids = result.circuits.expand((c) => c.deviceIds).toList();
+        final List<String> ids = result.circuits.expand((c) => c.deviceIds).toList();
         expect(ids.toSet().length, ids.length);
         expect(ids.toSet(), input.devices.map((d) => d.id).toSet());
       });
 
       test('invariants: IB ≤ In ≤ Iz, section ≥ minimum, ΔU within limit', () {
-        for (final c in result.circuits) {
+        for (final CircuitResult c in result.circuits) {
           expect(c.designCurrentA, lessThanOrEqualTo(c.protection.breakerA + 1e-9), reason: c.name);
           expect(
             c.protection.breakerA,
@@ -58,7 +58,7 @@ void main() {
       });
 
       test('circuits that need an RCD have one (default strategy: RCBO)', () {
-        for (final c in result.circuits) {
+        for (final CircuitResult c in result.circuits) {
           final needs = c.protection.rcd != null;
           expect(
             c.protection.device,

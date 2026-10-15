@@ -1,7 +1,7 @@
 import 'package:shchitovik/src/feature/projects/public/domain/project_document.dart';
 
 /// Persistent storage of projects.
-abstract interface class ProjectsRepository {
+abstract interface class ProjectsRepository() {
   /// Live list of projects, most recently updated first.
   Stream<List<ProjectSummary>> watchProjects();
 

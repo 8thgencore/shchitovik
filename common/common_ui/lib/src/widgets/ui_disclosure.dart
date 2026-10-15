@@ -1,53 +1,45 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_icons.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
 import 'package:common_ui/src/widgets/ui_pressable.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Collapsible section: a header row that shows or hides [child].
 ///
 /// Put it inside a `UiCard`; several disclosures in one card are separated by `UiDivided`.
-class UiDisclosure extends StatefulWidget {
-  const UiDisclosure({
-    required this.title,
-    required this.child,
-    this.subtitle,
-    this.trailing,
-    this.leading,
-    this.initiallyExpanded = false,
-    super.key,
-  });
-
+class const UiDisclosure({
   /// Title.
-  final String title;
-
-  /// Secondary line.
-  final String? subtitle;
-
-  /// Value at the end of the header: a total.
-  final Widget? trailing;
-
-  /// Leading widget: a status icon.
-  final Widget? leading;
+  required final String title,
 
   /// Content.
-  final Widget child;
+  required final Widget child,
+
+  /// Secondary line.
+  final String? subtitle,
+
+  /// Value at the end of the header: a total.
+  final Widget? trailing,
+
+  /// Leading widget: a status icon.
+  final Widget? leading,
 
   /// Whether it starts open.
-  final bool initiallyExpanded;
-
+  final bool initiallyExpanded = false,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<UiDisclosure> createState() => _UiDisclosureState();
 }
 
-class _UiDisclosureState extends State<UiDisclosure> {
-  late var _expanded = widget.initiallyExpanded;
+class _UiDisclosureState() extends State<UiDisclosure> {
+  late bool _expanded = widget.initiallyExpanded;
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final duration = UiMotion.of(context, UiMotion.medium);
+    final UiColors c = context.uiColors;
+    final Duration duration = UiMotion.of(context, UiMotion.medium);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,

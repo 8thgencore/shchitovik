@@ -2,12 +2,12 @@ import 'package:norms_data/norms_data.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final norms = NormsData.embedded;
+  final NormsData norms = NormsData.embedded;
 
   group('temperature, B.52.14 / B.52.15', () {
-    final t = norms.temperatureFactors;
-    const air = CableEnvironment.air;
-    const ground = CableEnvironment.ground;
+    final TemperatureFactors t = norms.temperatureFactors;
+    const CableEnvironment air = CableEnvironment.air;
+    const CableEnvironment ground = CableEnvironment.ground;
 
     test('reference temperatures give 1,0', () {
       expect(t.factor(air, Insulation.pvc, 30), 1.0);
@@ -27,11 +27,11 @@ void main() {
       expect(t.factor(air, Insulation.xlpe, 80), 0.41);
     });
     test('factor does not increase with temperature', () {
-      for (final env in CableEnvironment.values) {
-        for (final ins in Insulation.values) {
+      for (final CableEnvironment env in CableEnvironment.values) {
+        for (final Insulation ins in Insulation.values) {
           double? previous;
           for (var temp = 10.0; temp <= 80; temp += 5) {
-            final f = t.factor(env, ins, temp);
+            final double? f = t.factor(env, ins, temp);
             if (f == null) break;
             if (previous != null) expect(f, lessThanOrEqualTo(previous), reason: '$env $ins $temp');
             previous = f;
@@ -42,7 +42,7 @@ void main() {
   });
 
   group('grouping, B.52.17–B.52.19', () {
-    final g = norms.grouping;
+    final GroupingFactors g = norms.grouping;
     test('bunched: 1 → 1,0; 3 → 0,70; 10 → column 12 = 0,45; 25 → no data', () {
       expect(g.air(AirGroupingArrangement.bunched, 1), 1.0);
       expect(g.air(AirGroupingArrangement.bunched, 3), 0.70);
@@ -63,10 +63,10 @@ void main() {
       expect(g.inDucts(4, GroundSpacing.m1), 0.90);
     });
     test('air factors do not increase with the number of circuits', () {
-      for (final a in AirGroupingArrangement.values) {
+      for (final AirGroupingArrangement a in AirGroupingArrangement.values) {
         double? previous;
         for (var n = 1; n <= 20; n++) {
-          final f = g.air(a, n);
+          final double? f = g.air(a, n);
           if (f == null) break;
           if (previous != null) expect(f, lessThanOrEqualTo(previous), reason: '$a $n');
           previous = f;
@@ -76,7 +76,7 @@ void main() {
   });
 
   group('soil resistivity, B.52.16', () {
-    final s = norms.soilFactors;
+    final SoilResistivityFactors s = norms.soilFactors;
     test('reference 2,5 К·м/Вт gives 1,0', () {
       expect(s.factor(ReferenceMethod.d1, 2.5), 1.0);
       expect(s.factor(ReferenceMethod.d2, 2.5), 1.0);
@@ -89,7 +89,7 @@ void main() {
   });
 
   test('installation methods reference known grouping rows', () {
-    for (final m in norms.installationMethods) {
+    for (final InstallationMethod m in norms.installationMethods) {
       if (m.environment == CableEnvironment.air) {
         expect(m.airArrangement, isNotNull, reason: m.id);
         expect(m.referenceMethod.isInGround, isFalse, reason: m.id);

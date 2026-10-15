@@ -15,7 +15,7 @@ import 'package:shchitovik/src/widget/root_context.dart';
 /// Initializes dependencies and runs app
 Future<void> startup() async {
   const config = AppConfig();
-  final logger = createAppLogger(
+  final Logger logger = createAppLogger(
     observers: [
       if (!kReleaseMode) const PrintingLogObserver(logLevel: LogLevel.trace),
     ],
@@ -35,12 +35,15 @@ Future<void> startup() async {
       Bloc.transformer = sequentialBlocTransformer;
 
       // Setup error reporter and add log observer
-      final errorReporter = await createErrorReporter(config);
+      final ErrorReporter errorReporter = await createErrorReporter(config);
       logger.addObserver(ErrorReporterLogObserver(errorReporter));
 
       Future<void> composeAndRun() async {
         try {
-          final compositionResult = await composeDependencies(config: config, logger: logger);
+          final CompositionResult compositionResult = await composeDependencies(
+            config: config,
+            logger: logger,
+          );
           runApp(RootContext(compositionResult: compositionResult));
         } on Object catch (e, stackTrace) {
           logger.error('Initialization failed', error: e, stackTrace: stackTrace);

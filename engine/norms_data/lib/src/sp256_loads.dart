@@ -2,37 +2,37 @@ import 'package:norms_data/src/json_reading.dart';
 import 'package:norms_data/src/table_lookup.dart';
 
 /// Kitchen stove type, selects the row of СП 256 табл. 7.1.
-enum StoveType {
+enum StoveType(
+  /// Key used in the dataset.
+  final String key,
+) {
   naturalGas('natural_gas'),
   liquefiedGasOrSolidFuel('liquefied_gas_or_solid_fuel'),
-  electric('electric_8_5_kw');
-
-  const StoveType(this.key);
-
-  /// Key used in the dataset.
-  final String key;
+  electric('electric_8_5_kw'),
 }
 
 /// Residential loads, СП 256 раздел 7.1.
-final class ResidentialLoads {
-  ResidentialLoads._({
-    required this._apartments,
-    required this._specificLoad,
-    required this._comfortDeclaredKw,
-    required this._comfortKc,
-    required this._simultaneityApartments,
-    required this._simultaneityKo,
-    required this.regionalKpk,
-    required this.powerFactors,
-  });
+final class ResidentialLoads._({
+  required final List<double> _apartments,
+  required final Map<String, List<double?>> _specificLoad,
+  required final List<double> _comfortDeclaredKw,
+  required final List<double> _comfortKc,
+  required final List<double> _simultaneityApartments,
+  required final List<double> _simultaneityKo,
 
+  /// Regional correction factor kп.к, табл. 7.5а.
+  required final List<({int group, String regions, double k})> regionalKpk,
+
+  /// Power factors of feeders, п. 7.1.12, keyed as in the dataset.
+  required final Map<String, double> powerFactors,
+}) {
   /// Parses the `sp256_residential_loads` dataset.
-  factory ResidentialLoads.fromJson(JsonMap json) {
-    final specific = object(json['specific_load_kw_per_apartment']);
-    final rows = object(specific['rows']);
-    final comfort = object(json['comfort_demand_factor']);
-    final simultaneity = object(json['comfort_simultaneity_factor']);
-    final pf = object(json['power_factor'])..remove('clause');
+  factory fromJson(JsonMap json) {
+    final JsonMap specific = object(json['specific_load_kw_per_apartment']);
+    final JsonMap rows = object(specific['rows']);
+    final JsonMap comfort = object(json['comfort_demand_factor']);
+    final JsonMap simultaneity = object(json['comfort_simultaneity_factor']);
+    final JsonMap pf = object(json['power_factor'])..remove('clause');
     return ResidentialLoads._(
       apartments: doubles(specific['apartments']),
       specificLoad: {for (final e in rows.entries) e.key: nullableDoubles(e.value)},
@@ -47,19 +47,6 @@ final class ResidentialLoads {
       powerFactors: {for (final e in pf.entries) e.key: toDouble(e.value)},
     );
   }
-
-  final List<double> _apartments;
-  final Map<String, List<double?>> _specificLoad;
-  final List<double> _comfortDeclaredKw;
-  final List<double> _comfortKc;
-  final List<double> _simultaneityApartments;
-  final List<double> _simultaneityKo;
-
-  /// Regional correction factor kп.к, табл. 7.5а.
-  final List<({int group, String regions, double k})> regionalKpk;
-
-  /// Power factors of feeders, п. 7.1.12, keyed as in the dataset.
-  final Map<String, double> powerFactors;
 
   /// Specific design load, кВт/квартиру, табл. 7.1 (interpolated, примечание 1).
   ///
@@ -92,27 +79,47 @@ final class ResidentialLoads {
 }
 
 /// Public building loads used for small commercial objects, СП 256 раздел 7.2 and табл. 7.5.
-final class PublicLoads {
-  PublicLoads._({
-    required this.lightingInstalledKw,
-    required this.lightingRows,
-    required this.socketRows,
-    required this.socketPowerKw,
-    required this.powerRows,
-    required this.sanitaryReceivers,
-    required this.sanitaryRows,
-    required this.specificLoads,
-    required this.powerFactorRows,
-    required this._cateringReceivers,
-    required this._cateringKc,
-  });
+final class PublicLoads._({
+  /// Installed lighting power columns of табл. 7.6, кВт («до 5» … «св. 500»).
+  required final List<double> lightingInstalledKw,
 
+  /// Rows of табл. 7.6.
+  required final List<({int item, String organization, List<double?> kc})> lightingRows,
+
+  /// Rows of табл. 7.7.
+  required final List<
+    ({int item, String organization, double group, double feeder, double buildingInput})
+  >
+  socketRows,
+
+  /// Installed power of one socket-outlet, кВт (п. 7.2.4).
+  required final double socketPowerKw,
+
+  /// Rows of табл. 7.8; `upTo3`/`over5` are null when the row refers to another table.
+  required final List<({int item, String loads, double? upTo3, double? over5, String? reference})>
+  powerRows,
+
+  /// Receiver count columns of табл. 7.5.
+  required final List<double> sanitaryReceivers,
+
+  /// Rows of табл. 7.5 by share of sanitary/refrigeration equipment.
+  required final List<({String sharePercent, List<double?> kc})> sanitaryRows,
+
+  /// Rows of табл. 7.14 (enlarged specific loads for estimates).
+  required final List<({int item, String? group, String building, String unit, double value})>
+  specificLoads,
+
+  /// Rows of табл. 7.12 as text (some values are ranges).
+  required final List<({String consumer, String cosPhi})> powerFactorRows,
+  required final List<double> _cateringReceivers,
+  required final List<double> _cateringKc,
+}) {
   /// Parses the `sp256_public_loads` dataset.
-  factory PublicLoads.fromJson(JsonMap json) {
-    final lighting = object(json['lighting_demand_factor']);
-    final sockets = object(json['socket_demand_factor']);
-    final sanitary = object(json['sanitary_demand_factor']);
-    final catering = object(json['catering_demand_factor']);
+  factory fromJson(JsonMap json) {
+    final JsonMap lighting = object(json['lighting_demand_factor']);
+    final JsonMap sockets = object(json['socket_demand_factor']);
+    final JsonMap sanitary = object(json['sanitary_demand_factor']);
+    final JsonMap catering = object(json['catering_demand_factor']);
     return PublicLoads._(
       cateringReceivers: doubles(catering['x']),
       cateringKc: doubles(catering['y']),
@@ -168,37 +175,6 @@ final class PublicLoads {
     );
   }
 
-  /// Installed lighting power columns of табл. 7.6, кВт («до 5» … «св. 500»).
-  final List<double> lightingInstalledKw;
-
-  /// Rows of табл. 7.6.
-  final List<({int item, String organization, List<double?> kc})> lightingRows;
-
-  /// Rows of табл. 7.7.
-  final List<({int item, String organization, double group, double feeder, double buildingInput})>
-  socketRows;
-
-  /// Installed power of one socket-outlet, кВт (п. 7.2.4).
-  final double socketPowerKw;
-
-  /// Rows of табл. 7.8; `upTo3`/`over5` are null when the row refers to another table.
-  final List<({int item, String loads, double? upTo3, double? over5, String? reference})> powerRows;
-
-  /// Receiver count columns of табл. 7.5.
-  final List<double> sanitaryReceivers;
-
-  /// Rows of табл. 7.5 by share of sanitary/refrigeration equipment.
-  final List<({String sharePercent, List<double?> kc})> sanitaryRows;
-
-  /// Rows of табл. 7.14 (enlarged specific loads for estimates).
-  final List<({int item, String? group, String building, String unit, double value})> specificLoads;
-
-  /// Rows of табл. 7.12 as text (some values are ranges).
-  final List<({String consumer, String cosPhi})> powerFactorRows;
-
-  final List<double> _cateringReceivers;
-  final List<double> _cateringKc;
-
   /// Demand factor of thermal catering equipment, табл. 7.9, interpolated by the number of
   /// receivers (примечание 4); one receiver → 1.
   double cateringDemandFactor(int receivers) =>
@@ -216,7 +192,8 @@ final class PublicLoads {
   /// One receiver → 1 (примечание 2). Between «до 3» and «св. 5» the value is interpolated
   /// over 3…5 receivers; `null` if the row refers to another table.
   double? powerDemandFactor(int item, int receivers) {
-    final row = powerRows.firstWhere((r) => r.item == item);
+    final ({int item, String loads, double? over5, String? reference, double? upTo3}) row =
+        powerRows.firstWhere((r) => r.item == item);
     if (row.upTo3 == null || row.over5 == null) return null;
     if (receivers <= 1) return 1;
     return interpolateLinear(const [3, 5], [row.upTo3, row.over5], receivers);

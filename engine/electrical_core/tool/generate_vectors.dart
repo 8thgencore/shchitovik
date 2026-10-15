@@ -22,7 +22,7 @@ void main() {
 String _encode(Object json) => '${const JsonEncoder.withIndent(' ').convert(json)}\n';
 
 /// Deterministic pseudo-random choice (LCG, fixed seed) — the grid must not change between runs.
-final class _Choice {
+final class _Choice() {
   int _state = 20261008;
 
   T pick<T>(List<T> values) {
@@ -36,7 +36,7 @@ final class _Choice {
 Map<String, Object?> circuitVectors() {
   final choice = _Choice();
   final vectors = <Map<String, Object?>>[];
-  const roomKinds = RoomKind.values;
+  const List<RoomKind> roomKinds = RoomKind.values;
   const methods = [
     'plaster_direct',
     'conduit_in_wall',
@@ -51,7 +51,7 @@ Map<String, Object?> circuitVectors() {
     'ground_direct',
   ];
   // kind, power W, phases, cos φ, inrush, connection, dedicated, quantity
-  const loads = [
+  const List<(String, int, int, double, double, DeviceConnection, DedicatedLine, int)> loads = [
     ('lighting', 60, 1, 0.9, 1.0, DeviceConnection.fixed, DedicatedLine.no, 8),
     ('socket', 200, 1, 0.95, 1.0, DeviceConnection.socket, DedicatedLine.no, 6),
     ('kitchen_appliance', 2000, 1, 1.0, 1.0, DeviceConnection.socket, DedicatedLine.no, 1),
@@ -71,10 +71,10 @@ Map<String, Object?> circuitVectors() {
   ];
 
   for (var i = 0; i < 400; i++) {
-    final load = choice.pick(loads);
+    final (String, int, int, double, double, DeviceConnection, DedicatedLine, int) load = choice.pick(loads);
     final (kind, power, phases, cos, inrush, connection, dedicated, quantity) = load;
-    final material = choice.pick(ConductorMaterial.values);
-    final roomKind = choice.pick(roomKinds);
+    final ConductorMaterial material = choice.pick(ConductorMaterial.values);
+    final RoomKind roomKind = choice.pick(roomKinds);
     final input = ProjectInput(
       objectType: choice.pick(ObjectType.values),
       supplyPhases: phases == 3 ? SupplyPhases.three : choice.pick(SupplyPhases.values),
@@ -136,7 +136,7 @@ Map<String, Object?> projectVectors() => {
 
 /// Fields of the result that the oracle recomputes.
 Map<String, Object?> expectedOf(ProjectInput input) {
-  final r = calculateProject(input);
+  final ProjectResult r = calculateProject(input);
   return {
     'issues': [for (final i in r.issues) i.code],
     'incomer': {
