@@ -1,15 +1,13 @@
 /// The environment.
-enum AppEnv {
+enum AppEnv._(
+  /// The environment value.
+  final String value,
+) {
   /// Development environment.
   dev._('dev'),
 
   /// Production environment.
   prod._('prod');
-
-  /// The environment value.
-  final String value;
-
-  const AppEnv._(this.value);
 
   /// Returns the environment from the given [value].
   ///

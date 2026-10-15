@@ -15,7 +15,7 @@ void main() {
   double rCu70(double r20) => r20 * (1 + 50 / 254.5);
 
   group('water heater 3500 W, 25 m, conduit in a wall (B2), Zвнеш = 0,5 Ом', () {
-    final result = calculateProject(
+    final ProjectResult result = calculateProject(
       singleRoomProject(
         [device('heater', powerW: 3500, kind: 'water_heater')],
         lengthM: 25,
@@ -23,8 +23,8 @@ void main() {
         installationMethodId: 'conduit_in_wall',
       ),
     );
-    final c = result.circuits.single;
-    const ib = 3500 / u0;
+    final CircuitResult c = result.circuits.single;
+    const double ib = 3500 / u0;
 
     test('design current IB = P / U0 = 15,91 A → C16', () {
       expect(c.designCurrentA, closeTo(ib, 1e-9));
@@ -33,8 +33,8 @@ void main() {
     });
 
     test('1,5 mm² fails voltage drop (5,42 %), 2,5 mm² passes (3,25 %)', () {
-      const vd15 = 100 * 2 * (0.0225 * 25 / 1.5 * 1.0) * ib / u0;
-      const vd25 = 100 * 2 * (0.0225 * 25 / 2.5 * 1.0) * ib / u0;
+      const double vd15 = 100 * 2 * (0.0225 * 25 / 1.5 * 1.0) * ib / u0;
+      const double vd25 = 100 * 2 * (0.0225 * 25 / 2.5 * 1.0) * ib / u0;
       expect(vd15, greaterThan(4));
       expect(vd25, lessThan(4));
       expect(c.cable.sectionMm2, 2.5);
@@ -48,9 +48,9 @@ void main() {
     });
 
     test('fault loop: Iк.мин = 0,95·U0 / (Zвнеш + Zлинии) ≥ 10·In', () {
-      final r = 2 * rCu70(7.41) * 25 / 1000;
-      const x = 2 * 0.08 * 25 / 1000;
-      final zs = 0.5 + math.sqrt(r * r + x * x);
+      final double r = 2 * rCu70(7.41) * 25 / 1000;
+      const double x = 2 * 0.08 * 25 / 1000;
+      final double zs = 0.5 + math.sqrt(r * r + x * x);
       expect(c.cable.loopImpedanceOhm, closeTo(zs, 1e-9));
       expect(c.cable.faultCurrentMinA, closeTo(cmin * u0 / zs, 1e-6));
       expect(c.cable.faultCurrentMinA, closeTo(221.56, 0.01));
@@ -65,7 +65,7 @@ void main() {
   });
 
   group('long socket line 80 m: C16 cannot clear a fault, B16 can', () {
-    final result = calculateProject(
+    final ProjectResult result = calculateProject(
       singleRoomProject(
         [
           device(
@@ -82,12 +82,12 @@ void main() {
         externalLoopImpedanceOhm: 0.5,
       ),
     );
-    final c = result.circuits.single;
+    final CircuitResult c = result.circuits.single;
 
     test('Iк.мин ≈ 108,9 A < 160 A (C16) but ≥ 80 A (B16)', () {
-      final r = 2 * rCu70(7.41) * 80 / 1000;
-      const x = 2 * 0.08 * 80 / 1000;
-      final ik = cmin * u0 / (0.5 + math.sqrt(r * r + x * x));
+      final double r = 2 * rCu70(7.41) * 80 / 1000;
+      const double x = 2 * 0.08 * 80 / 1000;
+      final double ik = cmin * u0 / (0.5 + math.sqrt(r * r + x * x));
       expect(ik, closeTo(108.93, 0.01));
       expect(c.protection.label, 'B16');
       expect(c.cable.sectionMm2, 2.5);
@@ -102,14 +102,14 @@ void main() {
   });
 
   group('motor with 10× starting current needs curve D', () {
-    final result = calculateProject(
+    final ProjectResult result = calculateProject(
       singleRoomProject(
         [device('motor', powerW: 1500, kind: 'motor', cosPhi: 0.8, inrushMultiple: 10)],
         lengthM: 5,
         externalLoopImpedanceOhm: 0.2,
       ),
     );
-    final c = result.circuits.single;
+    final CircuitResult c = result.circuits.single;
 
     test('IB = 8,52 A, start 85,2 A ≥ 5·10 A → D10', () {
       expect(c.designCurrentA, closeTo(1500 / (u0 * 0.8), 1e-9));
@@ -125,7 +125,7 @@ void main() {
   });
 
   test('three-phase current I = P / (√3·U·cos φ)', () {
-    final result = calculateProject(
+    final ProjectResult result = calculateProject(
       singleRoomProject(
         [device('boiler', powerW: 12000, phases: 3, kind: 'heating_boiler')],
         supply: SupplyPhases.three,
@@ -133,7 +133,7 @@ void main() {
         externalLoopImpedanceOhm: 0.3,
       ),
     );
-    final c = result.circuits.single;
+    final CircuitResult c = result.circuits.single;
     expect(c.designCurrentA, closeTo(12000 / (math.sqrt(3) * 380), 1e-9));
     expect(c.phases, 3);
     expect(c.phase, isNull);

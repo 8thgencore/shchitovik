@@ -6,18 +6,21 @@ import 'package:shchitovik/src/feature/projects/public/domain/project_document.d
 import 'package:uuid/uuid.dart';
 
 /// Demo project kinds offered on the first launch.
-enum DemoProjectKind { oneRoomApartment, threeRoomApartment, house }
+enum DemoProjectKind() {
+  oneRoomApartment,
+  threeRoomApartment,
+  house,
+}
 
 /// Use cases around projects: create, edit, duplicate, delete, import and export.
-final class ProjectsService {
-  ProjectsService({required this._repository, required this.appVersion, Uuid? uuid})
-    : _uuid = uuid ?? const Uuid();
-
-  final ProjectsRepository _repository;
-  final Uuid _uuid;
+final class ProjectsService({
+  required final ProjectsRepository _repository,
 
   /// Version written into exported files.
-  final String appVersion;
+  required final String appVersion,
+  Uuid? uuid,
+}) {
+  final Uuid _uuid = uuid ?? const Uuid();
 
   /// Live project list.
   Stream<List<ProjectSummary>> watchProjects() => _repository.watchProjects();
@@ -50,9 +53,9 @@ final class ProjectsService {
     String id,
     ProjectDocument Function(ProjectDocument) transform,
   ) async {
-    final current = await _repository.getProject(id);
+    final ProjectDocument? current = await _repository.getProject(id);
     if (current == null) throw StateError('Project $id not found');
-    final updated = transform(current)
+    final ProjectDocument updated = transform(current)
         .copyWith(id: id, createdAt: current.createdAt, updatedAt: clock.now().toUtc());
     await _repository.save(updated);
     return updated;
@@ -60,7 +63,7 @@ final class ProjectsService {
 
   /// Copies the project under a new id and name.
   Future<ProjectDocument> duplicate(String id) async {
-    final source = await _repository.getProject(id);
+    final ProjectDocument? source = await _repository.getProject(id);
     if (source == null) throw StateError('Project $id not found');
     return _store(source.copyWith(name: '${source.name} (копия)'));
   }
@@ -70,7 +73,7 @@ final class ProjectsService {
 
   /// Contents of the `.shchitovik` file for the project.
   Future<String> export(String id) async {
-    final document = await _repository.getProject(id);
+    final ProjectDocument? document = await _repository.getProject(id);
     if (document == null) throw StateError('Project $id not found');
     return ProjectFileCodec.encode(document, appVersion: appVersion, exportedAt: clock.now());
   }
@@ -81,15 +84,19 @@ final class ProjectsService {
   Future<ProjectDocument> import(String contents) => _store(ProjectFileCodec.decode(contents));
 
   Future<ProjectDocument> _insert(String name, ProjectInput input) {
-    final now = clock.now().toUtc();
+    final DateTime now = clock.now().toUtc();
     return _store(
       ProjectDocument(id: '', name: name, createdAt: now, updatedAt: now, input: input),
     );
   }
 
   Future<ProjectDocument> _store(ProjectDocument document) async {
-    final now = clock.now().toUtc();
-    final stored = document.copyWith(id: _uuid.v4(), createdAt: now, updatedAt: now);
+    final DateTime now = clock.now().toUtc();
+    final ProjectDocument stored = document.copyWith(
+      id: _uuid.v4(),
+      createdAt: now,
+      updatedAt: now,
+    );
     await _repository.save(stored);
     return stored;
   }

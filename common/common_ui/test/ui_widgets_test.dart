@@ -1,7 +1,7 @@
 import 'package:common_ui/common_ui.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 Widget _app(Widget child, {Size size = const Size(400, 800)}) => MaterialApp(
   theme: UiTheme.light,
@@ -55,7 +55,7 @@ void main() {
   });
 
   testWidgets('UiIconButton exposes its tooltip as the label', (tester) async {
-    final semantics = tester.ensureSemantics();
+    final SemanticsHandle semantics = tester.ensureSemantics();
     await tester.pumpWidget(
       _app(UiIconButton(icon: UiIcons.report, tooltip: 'Сохранить PDF', onPressed: () {})),
     );

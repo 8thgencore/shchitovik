@@ -1,6 +1,6 @@
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Tone of a calculation status.
 UiTone statusTone(CalculationStatus status) => switch (status) {
@@ -18,12 +18,11 @@ UiTone? statusStripe(CalculationStatus status) => switch (status) {
 };
 
 /// Icon of a calculation status with its name as the tooltip.
-class StatusIcon extends StatelessWidget {
-  const StatusIcon(this.status, {super.key});
-
+class const StatusIcon(
   /// Status.
-  final CalculationStatus status;
-
+  final CalculationStatus status, {
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => UiStatusIcon(
     tone: statusTone(status),
@@ -37,23 +36,21 @@ class StatusIcon extends StatelessWidget {
 }
 
 /// Badge with the name of a calculation status.
-class StatusBadge extends StatelessWidget {
-  const StatusBadge(this.status, {super.key});
-
+class const StatusBadge(
   /// Status.
-  final CalculationStatus status;
-
+  final CalculationStatus status, {
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => UiBadge(label: status.label, tone: statusTone(status));
 }
 
 /// Icon of a check status.
-class CheckStatusIcon extends StatelessWidget {
-  const CheckStatusIcon(this.status, {super.key});
-
+class const CheckStatusIcon(
   /// Status.
-  final CheckStatus status;
-
+  final CheckStatus status, {
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => switch (status) {
     CheckStatus.passed => UiStatusIcon(tone: UiTone.success, label: status.label, size: 18),

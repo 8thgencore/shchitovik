@@ -14,22 +14,21 @@ import 'package:common_ui/src/widgets/ui_rows.dart';
 import 'package:common_ui/src/widgets/ui_status.dart';
 import 'package:common_ui/src/widgets/ui_surfaces.dart';
 import 'package:common_ui/src/widgets/ui_table.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Showcase of every token and widget of the design system, for development builds.
 ///
 /// Sample content is a realistic switchboard, not lorem ipsum, so states can be judged in context.
-class UiGallery extends StatefulWidget {
-  const UiGallery({this.onBack, super.key});
-
+class const UiGallery({
   /// Leaves the gallery.
-  final VoidCallback? onBack;
-
+  final VoidCallback? onBack,
+  super.key,
+}) extends StatefulWidget {
   @override
   State<UiGallery> createState() => _UiGalleryState();
 }
 
-class _UiGalleryState extends State<UiGallery> {
+class _UiGalleryState() extends State<UiGallery> {
   var _segment = 'standard';
   var _relay = true;
   var _spd = false;
@@ -38,8 +37,8 @@ class _UiGalleryState extends State<UiGallery> {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
-    final gutter = context.isExpandedLayout ? UiSpace.xl : UiSpace.l;
+    final UiColors c = context.uiColors;
+    final double gutter = context.isExpandedLayout ? UiSpace.xl : UiSpace.l;
     final sections = <(String, Widget)>[
       ('Цвета', const _Swatches()),
       ('Типографика', const _TypeScale()),
@@ -363,12 +362,10 @@ class _UiGalleryState extends State<UiGallery> {
   }
 }
 
-class _Swatches extends StatelessWidget {
-  const _Swatches();
-
+class const _Swatches() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     final roles = <(String, Color)>[
       ('canvas', c.canvas),
       ('surface', c.surface),
@@ -393,16 +390,14 @@ class _Swatches extends StatelessWidget {
   }
 }
 
-class _Swatch extends StatelessWidget {
-  const _Swatch({required this.name, required this.color, required this.colors});
-
-  final String name;
-  final Color color;
-  final UiColors colors;
-
+class const _Swatch({
+  required final String name,
+  required final Color color,
+  required final UiColors colors,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final hex = color.toARGB32().toRadixString(16).substring(2).toUpperCase();
+    final String hex = color.toARGB32().toRadixString(16).substring(2).toUpperCase();
     return SizedBox(
       width: 128,
       child: DecoratedBox(
@@ -435,12 +430,10 @@ class _Swatch extends StatelessWidget {
   }
 }
 
-class _TypeScale extends StatelessWidget {
-  const _TypeScale();
-
+class const _TypeScale() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     final styles = <(String, TextStyle, String)>[
       ('display 28', UiTextStyles.display, 'Щит на 36 модулей'),
       ('title 20', UiTextStyles.title, 'Розетки, кухня'),

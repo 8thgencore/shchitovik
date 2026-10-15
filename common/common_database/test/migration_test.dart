@@ -25,7 +25,7 @@ void main() {
     );
     addTearDown(db.close);
 
-    final projects = await db.watchProjects().first;
+    final List<ProjectRow> projects = await db.watchProjects().first;
     expect(projects.single.name, 'Старый');
     expect(await db.getCatalogCache(), isEmpty);
   });

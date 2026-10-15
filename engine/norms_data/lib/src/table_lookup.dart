@@ -29,9 +29,9 @@ double interpolateLinear(List<num> xs, List<num?> ys, num x) {
   if (x <= points.first.$1) return points.first.$2;
   if (x >= points.last.$1) return points.last.$2;
   for (var i = 1; i < points.length; i++) {
-    final (x1, y1) = points[i];
+    final (double x1, double y1) = points[i];
     if (x <= x1) {
-      final (x0, y0) = points[i - 1];
+      final (double x0, double y0) = points[i - 1];
       return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
     }
   }

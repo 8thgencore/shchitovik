@@ -4,15 +4,13 @@ import 'package:common_utils/common_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// [SharedPreferencesColumn] describes a single persisted entry in [SharedPreferences].
-abstract base class SharedPreferencesColumn<T extends Object> extends PersistedColumn<T> {
-  const SharedPreferencesColumn({required this.sharedPreferences, required this.key});
-
+abstract base class const SharedPreferencesColumn<T extends Object>({
   /// The instance of [SharedPreferences] used to read and write values.
-  final SharedPreferencesAsync sharedPreferences;
+  required final SharedPreferencesAsync sharedPreferences,
 
   /// The key used to store the value in the cache.
-  final String key;
-
+  required final String key,
+}) extends PersistedColumn<T> {
   @override
   Future<void> remove() async {
     await sharedPreferences.remove(key);
@@ -20,9 +18,10 @@ abstract base class SharedPreferencesColumn<T extends Object> extends PersistedC
 }
 
 /// A [int] implementation of [SharedPreferencesColumn].
-final class SharedPreferencesColumnInteger extends SharedPreferencesColumn<int> {
-  const SharedPreferencesColumnInteger({required super.sharedPreferences, required super.key});
-
+final class const SharedPreferencesColumnInteger({
+  required super.sharedPreferences,
+  required super.key,
+}) extends SharedPreferencesColumn<int> {
   @override
   Future<int?> read() => sharedPreferences.getInt(key);
 
@@ -33,12 +32,12 @@ final class SharedPreferencesColumnInteger extends SharedPreferencesColumn<int> 
 }
 
 /// A [String] implementation of [SharedPreferencesColumn].
-final class SharedPreferencesColumnString extends SharedPreferencesColumn<String> {
+final class const SharedPreferencesColumnString({
+  required super.sharedPreferences,
+  required super.key,
+}) extends SharedPreferencesColumn<String> {
   /// {@macro string_preferences_entry}
-  const SharedPreferencesColumnString({
-    required super.sharedPreferences,
-    required super.key,
-  });
+  this;
 
   @override
   Future<String?> read() => sharedPreferences.getString(key);
@@ -50,12 +49,10 @@ final class SharedPreferencesColumnString extends SharedPreferencesColumn<String
 }
 
 /// A [bool] implementation of [SharedPreferencesColumn].
-final class SharedPreferencesColumnBoolean extends SharedPreferencesColumn<bool> {
-  const SharedPreferencesColumnBoolean({
-    required super.sharedPreferences,
-    required super.key,
-  });
-
+final class const SharedPreferencesColumnBoolean({
+  required super.sharedPreferences,
+  required super.key,
+}) extends SharedPreferencesColumn<bool> {
   @override
   Future<bool?> read() => sharedPreferences.getBool(key);
 
@@ -66,12 +63,10 @@ final class SharedPreferencesColumnBoolean extends SharedPreferencesColumn<bool>
 }
 
 /// A [double] implementation of [SharedPreferencesColumn].
-final class SharedPreferencesColumnDouble extends SharedPreferencesColumn<double> {
-  const SharedPreferencesColumnDouble({
-    required super.sharedPreferences,
-    required super.key,
-  });
-
+final class const SharedPreferencesColumnDouble({
+  required super.sharedPreferences,
+  required super.key,
+}) extends SharedPreferencesColumn<double> {
   @override
   Future<double?> read() => sharedPreferences.getDouble(key);
 
@@ -82,12 +77,10 @@ final class SharedPreferencesColumnDouble extends SharedPreferencesColumn<double
 }
 
 /// A [List<String>] implementation of [SharedPreferencesColumn].
-final class SharedPreferencesColumnStringList extends SharedPreferencesColumn<List<String>> {
-  const SharedPreferencesColumnStringList({
-    required super.sharedPreferences,
-    required super.key,
-  });
-
+final class const SharedPreferencesColumnStringList({
+  required super.sharedPreferences,
+  required super.key,
+}) extends SharedPreferencesColumn<List<String>> {
   @override
   Future<List<String>?> read() => sharedPreferences.getStringList(key);
 
@@ -97,15 +90,13 @@ final class SharedPreferencesColumnStringList extends SharedPreferencesColumn<Li
   }
 }
 
-final class SharedPreferencesColumnJson extends SharedPreferencesColumn<Map<String, Object?>> {
-  const SharedPreferencesColumnJson({
-    required super.sharedPreferences,
-    required super.key,
-  });
-
+final class const SharedPreferencesColumnJson({
+  required super.sharedPreferences,
+  required super.key,
+}) extends SharedPreferencesColumn<Map<String, Object?>> {
   @override
   Future<Map<String, Object?>?> read() async {
-    final jsonString = await sharedPreferences.getString(key);
+    final String? jsonString = await sharedPreferences.getString(key);
     if (jsonString == null) {
       return null;
     }
@@ -121,7 +112,7 @@ final class SharedPreferencesColumnJson extends SharedPreferencesColumn<Map<Stri
 
   @override
   Future<void> set(Map<String, Object?> value) async {
-    final jsonString = jsonEncode(value);
+    final String jsonString = jsonEncode(value);
 
     await sharedPreferences.setString(key, jsonString);
   }

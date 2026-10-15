@@ -1,41 +1,33 @@
+import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
 import 'package:common_ui/src/tokens/ui_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Empty or zero-result state: icon in a drawn frame, what is missing, how to fill it.
-class UiEmptyState extends StatelessWidget {
-  const UiEmptyState({
-    required this.title,
-    required this.message,
-    this.icon,
-    this.actions = const [],
-    this.footer,
-    this.standalone = true,
-    super.key,
-  });
-
+class const UiEmptyState({
   /// What is empty.
-  final String title;
+  required final String title,
 
   /// What to do about it.
-  final String message;
+  required final String message,
 
   /// Icon of the missing thing.
-  final IconData? icon;
+  final IconData? icon,
 
   /// Buttons; the primary one first.
-  final List<Widget> actions;
+  final List<Widget> actions = const [],
 
   /// Extra block under the actions: examples to start from.
-  final Widget? footer;
+  final Widget? footer,
 
   /// Fills and centers in the page with its own scrolling; off inside a list or a card.
-  final bool standalone;
-
+  final bool standalone = true,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = context.uiColors;
+    final UiColors c = context.uiColors;
     final content = Padding(
       padding: const EdgeInsets.all(UiSpace.xl),
       child: Center(

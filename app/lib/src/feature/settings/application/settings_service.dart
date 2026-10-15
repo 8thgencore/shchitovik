@@ -5,7 +5,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/settings.dart';
 import 'package:shchitovik/src/feature/settings/domain/repositories/settings_repository.dart';
 
-abstract interface class SettingsService {
+abstract interface class SettingsService() {
   /// Emits settings whenever they change.
   Stream<Settings> get stream;
 
@@ -16,20 +16,16 @@ abstract interface class SettingsService {
   Future<void> update(Settings Function(Settings current) transform);
 }
 
-final class SettingsServiceImpl implements SettingsService {
-  SettingsServiceImpl._(this._repository, this._current);
-
+final class SettingsServiceImpl._(final SettingsRepository _repository, var Settings _current)
+    implements SettingsService {
   /// Create a new [SettingsServiceImpl] with the given [repository].
   static Future<SettingsServiceImpl> create({required SettingsRepository repository}) async {
-    final current = await repository.read();
+    final Settings current = await repository.read();
     return SettingsServiceImpl._(repository, current);
   }
 
-  final SettingsRepository _repository;
   final _controller = StreamController<Settings>.broadcast();
   final _mutex = MutexLock();
-  Settings _current;
-
   @override
   Stream<Settings> get stream => _controller.stream;
 
@@ -38,7 +34,7 @@ final class SettingsServiceImpl implements SettingsService {
 
   @override
   Future<void> update(Settings Function(Settings) transform) => _mutex.runLocked(() async {
-    final updated = transform(current);
+    final Settings updated = transform(current);
     await _repository.save(updated);
     _current = updated;
     _controller.add(updated);

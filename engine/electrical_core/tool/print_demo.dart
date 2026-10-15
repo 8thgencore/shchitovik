@@ -9,7 +9,7 @@ void main() {
     ('3-к квартира', DemoProjects.threeRoomApartment()),
     ('Дом', DemoProjects.house()),
   ]) {
-    final r = calculateProject(input);
+    final ProjectResult r = calculateProject(input);
     stdout.writeln('== $name: ${r.status.name}');
     stdout.writeln(
       '   ввод: Pуст=${(r.incomer.installedPowerW / 1000).toStringAsFixed(1)} кВт, '
@@ -24,8 +24,8 @@ void main() {
         'дисбаланс ${r.phaseBalance!.imbalancePercent.toStringAsFixed(0)} %',
       );
     }
-    for (final c in r.circuits) {
-      final failed = c.allChecks
+    for (final CircuitResult c in r.circuits) {
+      final Iterable<String> failed = c.allChecks
           .where((x) => x.status == CheckStatus.failed)
           .map((x) => x.code.name);
       stdout.writeln(
@@ -36,7 +36,7 @@ void main() {
         '${c.phase?.name ?? '3ф'} ${c.status.name} ${failed.isEmpty ? '' : failed}',
       );
     }
-    for (final i in r.issues) {
+    for (final Issue i in r.issues) {
       stdout.writeln('   ! ${i.severity.name}: ${i.message}');
     }
     if (r.fireRcd != null) {

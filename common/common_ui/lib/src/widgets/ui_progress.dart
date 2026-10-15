@@ -1,18 +1,17 @@
 import 'dart:async';
 
 import 'package:common_ui/src/tokens/ui_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Small circular spinner for buttons and inline waits.
-class UiSpinner extends StatelessWidget {
-  const UiSpinner({this.size = 20, this.color, super.key});
-
+class const UiSpinner({
   /// Diameter.
-  final double size;
+  final double size = 20,
 
   /// Colour; defaults to the accent.
-  final Color? color;
-
+  final Color? color,
+  super.key,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox.square(
     dimension: size,
@@ -26,17 +25,16 @@ class UiSpinner extends StatelessWidget {
 /// Centered spinner that appears only if loading lasts longer than [delay].
 ///
 /// Local loads usually finish in a few milliseconds; a spinner for them only flickers.
-class UiDeferredProgress extends StatefulWidget {
-  const UiDeferredProgress({this.delay = const Duration(milliseconds: 100), super.key});
-
+class const UiDeferredProgress({
   /// How long to show nothing.
-  final Duration delay;
-
+  final Duration delay = const Duration(milliseconds: 100),
+  super.key,
+}) extends StatefulWidget {
   @override
   State<UiDeferredProgress> createState() => _UiDeferredProgressState();
 }
 
-class _UiDeferredProgressState extends State<UiDeferredProgress> {
+class _UiDeferredProgressState() extends State<UiDeferredProgress> {
   late final Timer _timer;
   var _visible = false;
 

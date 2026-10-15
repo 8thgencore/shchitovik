@@ -4,7 +4,7 @@ import 'package:estimate_core/src/estimate/estimate_result.dart';
 import 'package:meta/meta.dart';
 
 /// What a piece of the switchboard is.
-enum BoardItemKind {
+enum BoardItemKind() {
   /// Incomer breaker.
   incomer,
 
@@ -23,89 +23,68 @@ enum BoardItemKind {
 
 /// One device (or the set of devices of one circuit) placed on a DIN rail.
 @immutable
-final class BoardItem {
-  const BoardItem({required this.kind, required this.id, required this.units, this.groupId});
-
+final class const BoardItem({
   /// Kind.
-  final BoardItemKind kind;
+  required final BoardItemKind kind,
 
   /// Circuit id for [BoardItemKind.circuit], shared RCD id for [BoardItemKind.groupRcd],
   /// estimate line id otherwise.
-  final String id;
+  required final String id,
 
   /// Width in DIN modules.
-  final int units;
+  required final int units,
 
   /// Shared RCD the item belongs to; items of one group are kept on one rail when they fit.
-  final String? groupId;
-}
+  final String? groupId,
+});
 
 /// One DIN rail with the items placed on it.
 @immutable
-final class BoardRail {
-  const BoardRail({required this.items, required this.capacity});
-
+final class const BoardRail({
   /// Items, left to right.
-  final List<BoardItem> items;
+  required final List<BoardItem> items,
 
   /// Modules the rail holds.
-  final int capacity;
-
+  required final int capacity,
+}) {
   /// Occupied modules.
   int get used => items.fold(0, (s, i) => s + i.units);
 }
 
 /// Problem of a switchboard arrangement worth showing to the user.
 @immutable
-sealed class BoardWarning {
-  const BoardWarning();
-}
+sealed class const BoardWarning();
 
 /// Items on a rail are wider than the rail.
-final class BoardRailOverfull extends BoardWarning {
-  const BoardRailOverfull(this.rail);
-
+final class const BoardRailOverfull(
   /// Rail index, 0-based.
-  final int rail;
-}
+  final int rail,
+) extends BoardWarning;
 
 /// The chosen enclosure has fewer rails than the arrangement uses.
-final class BoardEnclosureTooSmall extends BoardWarning {
-  const BoardEnclosureTooSmall();
-}
+final class const BoardEnclosureTooSmall() extends BoardWarning;
 
 /// Less than [enclosureReserveShare] of the enclosure is free.
-final class BoardReserveLow extends BoardWarning {
-  const BoardReserveLow();
-}
+final class const BoardReserveLow() extends BoardWarning;
 
 /// A shared RCD and its circuits are not side by side on one rail, so a busbar cannot
 /// connect them.
-final class BoardGroupSplit extends BoardWarning {
-  const BoardGroupSplit(this.rcdId);
-
+final class const BoardGroupSplit(
   /// Shared RCD id.
-  final String rcdId;
-}
+  final String rcdId,
+) extends BoardWarning;
 
 /// Switchboard: enclosure size and the items placed on its rails.
 @immutable
-final class SwitchboardLayout {
-  const SwitchboardLayout({
-    required this.rails,
-    required this.modulesPerRail,
-    this._enclosureRails,
-  });
-
+final class const SwitchboardLayout({
   /// Rails, top to bottom; some may be empty. Rails past [enclosureRails] do not fit the
   /// enclosure.
-  final List<BoardRail> rails;
+  required final List<BoardRail> rails,
 
   /// Modules per rail of the enclosure.
-  final int modulesPerRail;
-
-  final int? _enclosureRails;
-
+  required final int modulesPerRail,
+  final int? _enclosureRails,
+}) {
   /// Rails of the enclosure.
   int get enclosureRails => _enclosureRails ?? rails.length;
 
@@ -123,12 +102,12 @@ final class SwitchboardLayout {
     final groups = <String, List<(int, int)>>{};
     for (var r = 0; r < rails.length; r++) {
       for (var i = 0; i < rails[r].items.length; i++) {
-        final groupId = rails[r].items[i].groupId;
+        final String? groupId = rails[r].items[i].groupId;
         if (groupId != null) (groups[groupId] ??= []).add((r, i));
       }
     }
     bool split(List<(int, int)> places) {
-      final (rail, first) = places.first;
+      final (int rail, int first) = places.first;
       for (var k = 1; k < places.length; k++) {
         if (places[k] != (rail, first + k)) return true;
       }
@@ -167,12 +146,12 @@ List<BoardItem> switchboardItems(
 ) {
   final three = input.supplyPhases == SupplyPhases.three;
   int lineWidth(String id, int typical) {
-    final units = estimate.lines.where((l) => l.id == id).firstOrNull?.moduleUnits ?? 0;
+    final int units = estimate.lines.where((l) => l.id == id).firstOrNull?.moduleUnits ?? 0;
     return units > 0 ? units : typical;
   }
 
   BoardItem circuit(CircuitResult c, [String? groupId]) {
-    final units = estimate.lines
+    final int units = estimate.lines
         .where((l) => l.circuitId == c.id && l.category == EstimateCategory.apparatus)
         .fold(0, (s, l) => s + l.moduleUnits);
     return BoardItem(
@@ -183,7 +162,7 @@ List<BoardItem> switchboardItems(
     );
   }
 
-  final grouped = {for (final r in result.sharedRcds) ...r.circuitIds};
+  final Set<String> grouped = {for (final r in result.sharedRcds) ...r.circuitIds};
   return [
     if (result.incomer.breakerA != null)
       BoardItem(
@@ -230,14 +209,14 @@ int _typicalCircuitWidth(CircuitResult c) {
 /// Items of one shared RCD group stay on one rail when the group fits a rail. If no typical
 /// enclosure fits, rails of 24 modules are added as needed.
 SwitchboardLayout layoutSwitchboard(List<BoardItem> items) {
-  final occupied = items.fold(0, (s, i) => s + i.units);
+  final int occupied = items.fold(0, (s, i) => s + i.units);
   for (final (rails, perRail) in typicalEnclosures) {
     if (occupied > (1 - enclosureReserveShare) * rails * perRail) continue;
-    final packed = _packBalanced(items, rails, perRail);
+    final List<List<BoardItem>>? packed = _packBalanced(items, rails, perRail);
     if (packed != null) return _layout(packed, rails, perRail);
   }
   const perRail = 24;
-  final packed = _pack(items, perRail);
+  final List<List<BoardItem>> packed = _pack(items, perRail);
   return _layout(packed, packed.length, perRail);
 }
 
@@ -249,15 +228,16 @@ SwitchboardLayout layoutSwitchboard(List<BoardItem> items) {
 /// the enclosure are kept and reported in [SwitchboardLayout.warnings].
 SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arrangement) {
   if (arrangement.isAuto) return layoutSwitchboard(items);
-  final (rails, perRail) = arrangement.enclosure ?? _autoEnclosure(items);
-  final stored = arrangement.rails;
+  final (int rails, int perRail) = arrangement.enclosure ?? _autoEnclosure(items);
+  final List<List<String>>? stored = arrangement.rails;
   if (stored == null) {
-    final packed = _packBalanced(items, rails, perRail) ?? _pack(items, perRail);
+    final List<List<BoardItem>> packed =
+        _packBalanced(items, rails, perRail) ?? _pack(items, perRail);
     return _layout(packed, rails, perRail);
   }
-  final byId = {for (final item in items) item.id: item};
+  final Map<String, BoardItem> byId = {for (final item in items) item.id: item};
   final placed = <String>{};
-  final packed = [
+  final List<List<BoardItem>> packed = [
     for (final rail in stored)
       [
         for (final id in rail)
@@ -273,7 +253,7 @@ SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arr
   int used(List<BoardItem> rail) => rail.fold(0, (s, i) => s + i.units);
   for (final item in items) {
     if (placed.contains(item.id)) continue;
-    final rail = packed.where((r) => used(r) + item.units <= perRail).firstOrNull;
+    final List<BoardItem>? rail = packed.where((r) => used(r) + item.units <= perRail).firstOrNull;
     if (rail != null) {
       rail.add(item);
     } else {
@@ -284,7 +264,7 @@ SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arr
 }
 
 (int, int) _autoEnclosure(List<BoardItem> items) {
-  final layout = layoutSwitchboard(items);
+  final SwitchboardLayout layout = layoutSwitchboard(items);
   return (layout.rails.length, layout.modulesPerRail);
 }
 
@@ -301,9 +281,9 @@ SwitchboardLayout _layout(List<List<BoardItem>> packed, int rails, int perRail) 
 /// The smallest per-rail fill that still fits [rails], so every rail keeps some reserve;
 /// null if the items do not fit.
 List<List<BoardItem>>? _packBalanced(List<BoardItem> items, int rails, int perRail) {
-  final occupied = items.fold(0, (s, i) => s + i.units);
-  for (var limit = (occupied / rails).ceil(); limit <= perRail; limit++) {
-    final packed = _pack(items, limit);
+  final int occupied = items.fold(0, (s, i) => s + i.units);
+  for (int limit = (occupied / rails).ceil(); limit <= perRail; limit++) {
+    final List<List<BoardItem>> packed = _pack(items, limit);
     if (packed.length <= rails) return packed;
   }
   return null;
@@ -313,7 +293,7 @@ List<List<BoardItem>>? _packBalanced(List<BoardItem> items, int rails, int perRa
 List<List<BoardItem>> _pack(List<BoardItem> items, int limit) {
   final chunks = <List<BoardItem>>[];
   for (final item in items) {
-    final groupId = item.groupId;
+    final String? groupId = item.groupId;
     if (groupId != null && chunks.isNotEmpty && chunks.last.first.groupId == groupId) {
       chunks.last.add(item);
     } else {
@@ -323,7 +303,7 @@ List<List<BoardItem>> _pack(List<BoardItem> items, int limit) {
   final rails = <List<BoardItem>>[[]];
   int used(List<BoardItem> rail) => rail.fold(0, (s, i) => s + i.units);
   for (final chunk in chunks) {
-    final size = chunk.fold(0, (s, i) => s + i.units);
+    final int size = chunk.fold(0, (s, i) => s + i.units);
     if (size <= limit) {
       if (used(rails.last) + size > limit) rails.add([]);
       rails.last.addAll(chunk);

@@ -1,21 +1,19 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
 import 'package:shchitovik/src/feature/settings/presentation/settings_scope.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
 import 'package:shchitovik/src/widget/form_fields.dart';
 
 /// Screen with application settings.
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-
+class const SettingsScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final general = SettingsScope.of(context).general;
+    final CommonTranslationsLocalizations t = context.translations;
+    final GeneralSettings general = SettingsScope.of(context).general;
 
     void update(GeneralSettings Function(GeneralSettings) change) => SettingsScope.update(
       context,

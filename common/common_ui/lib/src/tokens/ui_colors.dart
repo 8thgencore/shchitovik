@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Colour roles of the «Чертёж» design system: ink on paper, signal orange for the current
 /// element, three status colours.
@@ -6,29 +6,64 @@ import 'package:flutter/material.dart';
 /// Widgets take colours only from these roles (`context.uiColors`), never raw values.
 /// Pairs meet WCAG 2.1 AA contrast in both themes.
 @immutable
-final class UiColors extends ThemeExtension<UiColors> {
-  const UiColors({
-    required this.canvas,
-    required this.surface,
-    required this.sunken,
-    required this.border,
-    required this.borderStrong,
-    required this.text,
-    required this.textMuted,
-    required this.primary,
-    required this.onPrimary,
-    required this.accent,
-    required this.accentText,
-    required this.accentSoft,
-    required this.success,
-    required this.successSoft,
-    required this.warning,
-    required this.warningSoft,
-    required this.danger,
-    required this.dangerSoft,
-    required this.onDanger,
-  });
+final class const UiColors({
+  /// Page background (level 0).
+  required final Color canvas,
 
+  /// Cards, bars, sheets (level 1).
+  required final Color surface,
+
+  /// Recessed areas: segmented track, table header, hover.
+  required final Color sunken,
+
+  /// Hairlines between rows and around cards.
+  required final Color border,
+
+  /// Borders of inputs and controls, at least 3:1 against [surface] and [canvas].
+  required final Color borderStrong,
+
+  /// Body text and icons.
+  required final Color text,
+
+  /// Secondary text, labels, units.
+  required final Color textMuted,
+
+  /// Primary action fill.
+  required final Color primary,
+
+  /// Content on [primary].
+  required final Color onPrimary,
+
+  /// Current step, selection, focus ring. Graphics only; text uses [accentText].
+  required final Color accent,
+
+  /// Accent as text, at least 4.5:1 against [surface].
+  required final Color accentText,
+
+  /// Tint behind selected or focused elements.
+  required final Color accentSoft,
+
+  /// Passed check. Never an action colour.
+  required final Color success,
+
+  /// Tint for [success].
+  required final Color successSoft,
+
+  /// Result that needs review.
+  required final Color warning,
+
+  /// Tint for [warning].
+  required final Color warningSoft,
+
+  /// Failure and destructive actions.
+  required final Color danger,
+
+  /// Tint for [danger].
+  required final Color dangerSoft,
+
+  /// Content on [danger].
+  required final Color onDanger,
+}) extends ThemeExtension<UiColors> {
   /// Light theme: paper and ink, neutral greys without tint.
   static const light = UiColors(
     canvas: Color(0xFFF4F4F4),
@@ -75,63 +110,6 @@ final class UiColors extends ThemeExtension<UiColors> {
     onDanger: Color(0xFF0A0A0A),
   );
 
-  /// Page background (level 0).
-  final Color canvas;
-
-  /// Cards, bars, sheets (level 1).
-  final Color surface;
-
-  /// Recessed areas: segmented track, table header, hover.
-  final Color sunken;
-
-  /// Hairlines between rows and around cards.
-  final Color border;
-
-  /// Borders of inputs and controls, at least 3:1 against [surface] and [canvas].
-  final Color borderStrong;
-
-  /// Body text and icons.
-  final Color text;
-
-  /// Secondary text, labels, units.
-  final Color textMuted;
-
-  /// Primary action fill.
-  final Color primary;
-
-  /// Content on [primary].
-  final Color onPrimary;
-
-  /// Current step, selection, focus ring. Graphics only; text uses [accentText].
-  final Color accent;
-
-  /// Accent as text, at least 4.5:1 against [surface].
-  final Color accentText;
-
-  /// Tint behind selected or focused elements.
-  final Color accentSoft;
-
-  /// Passed check. Never an action colour.
-  final Color success;
-
-  /// Tint for [success].
-  final Color successSoft;
-
-  /// Result that needs review.
-  final Color warning;
-
-  /// Tint for [warning].
-  final Color warningSoft;
-
-  /// Failure and destructive actions.
-  final Color danger;
-
-  /// Tint for [danger].
-  final Color dangerSoft;
-
-  /// Content on [danger].
-  final Color onDanger;
-
   /// Keyboard focus ring.
   Color get focus => accent;
 
@@ -147,7 +125,7 @@ final class UiColors extends ThemeExtension<UiColors> {
   UiColors lerp(UiColors? other, double t) {
     if (other == null) return this;
     final a = this;
-    final b = other;
+    final UiColors b = other;
     Color l(Color Function(UiColors) f) => Color.lerp(f(a), f(b), t)!;
     return UiColors(
       canvas: l((c) => c.canvas),

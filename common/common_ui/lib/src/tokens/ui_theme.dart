@@ -1,14 +1,14 @@
 import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Light and dark [ThemeData] of the «Чертёж» design system.
 ///
 /// The app draws its own widgets from `common_ui`; this theme maps the same tokens onto the
 /// Material widgets that stay underneath (text input, menus, dialogs, tooltips, snack bars),
 /// so nothing falls back to Material defaults.
-abstract final class UiTheme {
+abstract final class UiTheme() {
   /// Light theme.
   static final ThemeData light = _build(UiColors.light, Brightness.light);
 

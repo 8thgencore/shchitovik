@@ -4,7 +4,7 @@ import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
 import 'package:shchitovik/src/feature/settings/domain/model/settings.dart';
 import 'package:shchitovik/src/feature/settings/domain/repositories/settings_repository.dart';
 
-final class _InMemorySettingsRepository implements SettingsRepository {
+final class _InMemorySettingsRepository() implements SettingsRepository {
   Settings? stored;
 
   @override
@@ -16,7 +16,9 @@ final class _InMemorySettingsRepository implements SettingsRepository {
 
 void main() {
   test('defaults to Russian locale and simple interface mode', () async {
-    final service = await SettingsServiceImpl.create(repository: _InMemorySettingsRepository());
+    final SettingsServiceImpl service = await SettingsServiceImpl.create(
+      repository: _InMemorySettingsRepository(),
+    );
 
     expect(service.current.general.locale.languageCode, 'ru');
     expect(service.current.general.interfaceMode, InterfaceModeVO.simple);
@@ -25,9 +27,9 @@ void main() {
 
   test('update persists and emits new settings', () async {
     final repository = _InMemorySettingsRepository();
-    final service = await SettingsServiceImpl.create(repository: repository);
+    final SettingsServiceImpl service = await SettingsServiceImpl.create(repository: repository);
 
-    final emitted = expectLater(
+    final Future<void> emitted = expectLater(
       service.stream.map((s) => s.general.themeMode),
       emits(ThemeModeVO.dark),
     );

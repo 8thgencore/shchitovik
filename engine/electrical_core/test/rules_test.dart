@@ -34,14 +34,14 @@ void main() {
           ),
         ],
       );
-      final circuits = calculateProject(input).circuits;
+      final List<CircuitResult> circuits = calculateProject(input).circuits;
       expect(circuits.map((c) => c.id), ['light-dry-1', 'power-k-1', 'power-b-1']);
       expect(circuits.first.deviceIds, ['l1', 'l2']);
       expect(circuits.map((c) => c.number), [1, 2, 3]);
     });
 
     test('shared socket circuit is split when IB exceeds 16 A (first-fit decreasing)', () {
-      final devices = [
+      final List<DeviceInput> devices = [
         for (var i = 1; i <= 5; i++)
           device(
             'a$i',
@@ -51,14 +51,14 @@ void main() {
             dedicatedLine: DedicatedLine.no,
           ),
       ];
-      final circuits = calculateProject(singleRoomProject(devices)).circuits;
+      final List<CircuitResult> circuits = calculateProject(singleRoomProject(devices)).circuits;
       // 5 × 4,545 A = 22,7 A > 16 A → 3 + 2 devices.
       expect(circuits.map((c) => c.deviceIds.length), [3, 2]);
       expect(circuits.every((c) => c.designCurrentA <= 16), isTrue);
     });
 
     test('device above the shared limit gets its own circuit', () {
-      final circuits = calculateProject(
+      final List<CircuitResult> circuits = calculateProject(
         singleRoomProject([
           device(
             'big',
@@ -72,7 +72,9 @@ void main() {
     });
 
     test('three-phase device on a single-phase supply is rejected', () {
-      final result = calculateProject(singleRoomProject([device('m', powerW: 3000, phases: 3)]));
+      final ProjectResult result = calculateProject(
+        singleRoomProject([device('m', powerW: 3000, phases: 3)]),
+      );
       expect(result.circuits, isEmpty);
       expect(result.issues.single.code, 'three_phase_device_on_single_phase_supply');
       expect(result.status, CalculationStatus.failed);
@@ -82,7 +84,7 @@ void main() {
   group('RCD rules', () {
     test('bathroom lighting goes to the wet zone with an RCD; dry lighting has none', () {
       const bath = RoomInput(id: 'bath', name: 'Ванная', kind: RoomKind.bathroom);
-      final result = calculateProject(
+      final ProjectResult result = calculateProject(
         ProjectInput(
           objectType: ObjectType.apartment,
           supplyPhases: SupplyPhases.single,
@@ -99,22 +101,22 @@ void main() {
           ],
         ),
       );
-      final dry = result.circuits.firstWhere((c) => c.id == 'light-dry-1');
-      final wet = result.circuits.firstWhere((c) => c.id == 'light-wet-1');
+      final CircuitResult dry = result.circuits.firstWhere((c) => c.id == 'light-dry-1');
+      final CircuitResult wet = result.circuits.firstWhere((c) => c.id == 'light-wet-1');
       expect(dry.protection.device, ProtectionDevice.mcb);
       expect(wet.protection.device, ProtectionDevice.rcbo);
       expect(wet.protection.rcd!.reasons.single, contains('701.411.3.3'));
     });
 
     test('heating cable requires an RCD', () {
-      final c = calculateProject(
+      final CircuitResult c = calculateProject(
         singleRoomProject([device('floor', powerW: 1500, kind: 'floor_heating')]),
       ).circuits.single;
       expect(c.protection.rcd!.reasons.single, contains('50571.7.753'));
     });
 
     test('per-circuit RCD strategy: MCB + RCD rated not below In', () {
-      final c = calculateProject(
+      final CircuitResult c = calculateProject(
         singleRoomProject(
           [
             device(
@@ -132,18 +134,20 @@ void main() {
     });
 
     test('grouped strategy: shared RCDs respect leakage 1/3 IΔn and rated ≥ Σ IB', () {
-      final input = DemoProjects.threeRoomApartment().copyWith(rcdStrategy: RcdStrategy.groupedRcd);
-      final result = calculateProject(input);
-      final grouped = result.circuits.where(
+      final ProjectInput input = DemoProjects.threeRoomApartment().copyWith(
+        rcdStrategy: RcdStrategy.groupedRcd,
+      );
+      final ProjectResult result = calculateProject(input);
+      final Iterable<CircuitResult> grouped = result.circuits.where(
         (c) => c.protection.device == ProtectionDevice.mcbUnderGroupRcd,
       );
       expect(grouped, isNotEmpty);
       for (final c in grouped) {
         expect(c.protection.rcd!.groupId, isNotNull);
       }
-      for (final rcd in result.sharedRcds) {
+      for (final SharedRcdResult rcd in result.sharedRcds) {
         expect(rcd.leakageMa, lessThanOrEqualTo(10 + 1e-9));
-        final sum = result.circuits
+        final double sum = result.circuits
             .where((c) => rcd.circuitIds.contains(c.id))
             .fold<double>(0, (s, c) => s + c.designCurrentA);
         expect(rcd.ratedA, greaterThanOrEqualTo(sum));
@@ -160,19 +164,23 @@ void main() {
 
   group('statuses', () {
     test('no length → preliminary, voltage drop and fault loop not evaluated', () {
-      final c = calculateProject(singleRoomProject([device('h', powerW: 2000)])).circuits.single;
+      final CircuitResult c = calculateProject(singleRoomProject([device('h', powerW: 2000)]))
+          .circuits
+          .single;
       expect(c.status, CalculationStatus.preliminary);
       expect(checkOf(c, CheckCode.voltageDrop).status, CheckStatus.notEvaluated);
     });
 
     test('assumed Zвнеш → requires review and an assumption in the report', () {
-      final result = calculateProject(singleRoomProject([device('h', powerW: 2000)], lengthM: 10));
+      final ProjectResult result = calculateProject(
+        singleRoomProject([device('h', powerW: 2000)], lengthM: 10),
+      );
       expect(result.circuits.single.status, CalculationStatus.requiresReview);
       expect(result.assumptions.map((a) => a.code), contains('assumed_external_loop_impedance'));
     });
 
     test('manual 1,5 mm² on a socket circuit fails the normative minimum', () {
-      final c = calculateProject(
+      final CircuitResult c = calculateProject(
         singleRoomProject(
           [
             device(
@@ -193,7 +201,7 @@ void main() {
     });
 
     test('manual breaker above the cable ampacity fails In ≤ Iz', () {
-      final c = calculateProject(
+      final CircuitResult c = calculateProject(
         singleRoomProject(
           [device('h', powerW: 2000)],
           lengthM: 10,
@@ -206,7 +214,7 @@ void main() {
     });
 
     test('manual section without tabulated data fails instead of throwing (Al 1,5 mm²)', () {
-      final c = calculateProject(
+      final CircuitResult c = calculateProject(
         ProjectInput(
           objectType: ObjectType.apartment,
           supplyPhases: SupplyPhases.single,
@@ -222,7 +230,7 @@ void main() {
     });
 
     test('socket circuit protected above 16 A fails', () {
-      final c = calculateProject(
+      final CircuitResult c = calculateProject(
         singleRoomProject(
           [
             device(
@@ -237,7 +245,7 @@ void main() {
       ).circuits.single;
       expect(c.protection.breakerA, 16);
       expect(checkOf(c, CheckCode.socketRating).status, CheckStatus.passed);
-      final big = calculateProject(
+      final CircuitResult big = calculateProject(
         singleRoomProject(
           [
             device(
@@ -256,7 +264,7 @@ void main() {
 
   group('input demand, СП 256', () {
     test('declared power × Kс (табл. 7.2) with interpolation', () {
-      final result = calculateProject(
+      final ProjectResult result = calculateProject(
         singleRoomProject([device('h', powerW: 20000)], allowedPowerKw: 15),
       );
       // Kс(15 кВт) = 0,8 − (0,8 − 0,65) · (15 − 14) / (20 − 14) = 0,775.
@@ -268,21 +276,23 @@ void main() {
     });
 
     test('not below the specific load of табл. 7.1 (gas stove: 4,5 кВт)', () {
-      final result = calculateProject(
+      final ProjectResult result = calculateProject(
         singleRoomProject([device('h', powerW: 1000)], allowedPowerKw: 3),
       );
       expect(result.incomer.demandNormativeW, 4500);
     });
 
     test('without allowed power the installed power is used and flagged', () {
-      final result = calculateProject(singleRoomProject([device('h', powerW: 10000)]));
+      final ProjectResult result = calculateProject(
+        singleRoomProject([device('h', powerW: 10000)]),
+      );
       expect(result.incomer.demandNormativeW, closeTo(10000 * 0.8, 1e-6));
       expect(result.assumptions.map((a) => a.code), contains('declared_power_from_installed'));
     });
 
     test('existing incomer breaker below the design current fails', () {
-      final input = singleRoomProject([device('h', powerW: 9000)], allowedPowerKw: 15);
-      final result = calculateProject(
+      final ProjectInput input = singleRoomProject([device('h', powerW: 9000)], allowedPowerKw: 15);
+      final ProjectResult result = calculateProject(
         ProjectInput(
           objectType: input.objectType,
           supplyPhases: input.supplyPhases,
@@ -299,7 +309,7 @@ void main() {
     });
 
     test('commercial office uses СП 256 7.2 (lighting × Kс.о + power × Kс)', () {
-      final result = calculateProject(
+      final ProjectResult result = calculateProject(
         singleRoomProject(
           [
             device(

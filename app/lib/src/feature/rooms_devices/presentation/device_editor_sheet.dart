@@ -1,23 +1,22 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:norms_data/norms_data.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/widget/form_fields.dart';
 
 /// Bottom sheet editing one device; advanced parameters in the expert mode.
-class DeviceEditorSheet extends StatelessWidget {
-  const DeviceEditorSheet({required this.deviceId, super.key});
-
+class const DeviceEditorSheet({
   /// Device id.
-  final String deviceId;
-
+  required final String deviceId,
+  super.key,
+}) extends StatelessWidget {
   /// Shows the sheet within the project scope of [context].
   static Future<void> show(BuildContext context, {required String deviceId}) {
-    final bloc = context.read<ProjectBloc>();
+    final ProjectBloc bloc = context.read<ProjectBloc>();
     return showUiSheet<void>(
       context,
       builder: (_) => BlocProvider.value(
@@ -29,12 +28,14 @@ class DeviceEditorSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final state = context.watch<ProjectBloc>().state;
+    final CommonTranslationsLocalizations t = context.translations;
+    final ProjectState state = context.watch<ProjectBloc>().state;
     if (state is! ProjectReady) return const SizedBox.shrink();
-    final device = state.document.input.devices.where((d) => d.id == deviceId).firstOrNull;
+    final DeviceInput? device = state.document.input.devices
+        .where((d) => d.id == deviceId)
+        .firstOrNull;
     if (device == null) return const SizedBox.shrink();
-    final expert = isExpertMode(context);
+    final bool expert = isExpertMode(context);
 
     void edit(DeviceInput Function(DeviceInput) change) => ProjectScope.edit(
       context,
@@ -118,7 +119,7 @@ class DeviceEditorSheet extends StatelessWidget {
           icon: UiIcons.delete,
           label: t.deviceDelete,
           onPressed: () async {
-            final confirmed = await showUiConfirm(
+            final bool confirmed = await showUiConfirm(
               context,
               title: t.deviceDeleteTitle(device.name),
               message: t.deviceDeleteMessage,

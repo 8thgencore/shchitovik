@@ -13,11 +13,11 @@ import 'package:flutter/foundation.dart';
 ///
 /// To destroy the logger and release all resources, use the [destroy] method.
 /// {@endtemplate}
-base class Logger {
+base class Logger({List<LogObserver>? observers}) {
   /// Constructs an instance of [Logger].
   ///
   /// {@macro logger}
-  Logger({List<LogObserver>? observers}) {
+  this {
     _observers.addAll(observers ?? []);
   }
 
@@ -101,7 +101,7 @@ base class Logger {
 
   /// Notifies all observers about a new log message.
   void notifyObservers(LogMessage logMessage) {
-    for (final observer in _observers) {
+    for (final LogObserver observer in _observers) {
       observer.onLog(logMessage);
     }
   }
@@ -126,7 +126,7 @@ base class Logger {
 /// Log level, that describes the severity of the log message
 ///
 /// Index of the log level is used to determine the severity of the log message.
-enum LogLevel implements Comparable<LogLevel> {
+enum LogLevel._() implements Comparable<LogLevel> {
   /// A log level describing events showing step by step execution of your code
   /// that can be ignored during the standard operation,
   /// but may be useful during extended debugging sessions.
@@ -153,8 +153,6 @@ enum LogLevel implements Comparable<LogLevel> {
   /// and the whole system doesn’t fulfill the business functionalities.
   fatal._();
 
-  const LogLevel._();
-
   @override
   int compareTo(LogLevel other) => index - other.index;
 
@@ -179,7 +177,28 @@ mixin LogObserver {
 
 /// Represents a single log message with various details
 /// for debugging and information purposes.
-class LogMessage {
+class const LogMessage({
+  /// The main content of the log message.
+  required final String message,
+
+  /// The severity level of the log message.
+  required final LogLevel level,
+
+  /// The date and time when the log message was created.
+  required final DateTime timestamp,
+
+  /// Any error object associated with the log message.
+  ///
+  /// This is typically used when the log message is related
+  /// to an exception or error condition.
+  final Object? error,
+
+  /// The stack trace associated with the log message.
+  ///
+  /// This provides detailed information about the call stack leading
+  /// up to the log message, which is particularly useful when logging errors.
+  final StackTrace? stackTrace,
+}) {
   /// Constructs an instance of [LogMessage].
   ///
   /// - [message]: The main content of the log message.
@@ -189,32 +208,5 @@ class LogMessage {
   /// - [error]: Optional. Any error object associated with the log message.
   /// - [stackTrace]: Optional. The stack trace associated with the log message,
   ///   typically provided when logging errors.
-  const LogMessage({
-    required this.message,
-    required this.level,
-    required this.timestamp,
-    this.error,
-    this.stackTrace,
-  });
-
-  /// The main content of the log message.
-  final String message;
-
-  /// The severity level of the log message.
-  final LogLevel level;
-
-  /// The date and time when the log message was created.
-  final DateTime timestamp;
-
-  /// Any error object associated with the log message.
-  ///
-  /// This is typically used when the log message is related
-  /// to an exception or error condition.
-  final Object? error;
-
-  /// The stack trace associated with the log message.
-  ///
-  /// This provides detailed information about the call stack leading
-  /// up to the log message, which is particularly useful when logging errors.
-  final StackTrace? stackTrace;
+  this;
 }

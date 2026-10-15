@@ -20,12 +20,12 @@ Future<CompositionResult> composeDependencies({
   required AppConfig config,
   required Logger logger,
 }) async {
-  final stopwatch = clock.stopwatch()..start();
+  final Stopwatch stopwatch = clock.stopwatch()..start();
 
   logger.info('Initializing dependencies...');
 
   // Create the dependencies container using functions.
-  final dependencies = await createDependenciesContainer(config, logger);
+  final DependenciesContainer dependencies = await createDependenciesContainer(config, logger);
 
   stopwatch.stop();
   logger.info('Dependencies initialized successfully in ${stopwatch.elapsedMilliseconds} ms.');
@@ -36,12 +36,10 @@ Future<CompositionResult> composeDependencies({
   );
 }
 
-final class CompositionResult {
-  const CompositionResult({required this.dependencies, required this.millisecondsSpent});
-
-  final DependenciesContainer dependencies;
-  final int millisecondsSpent;
-
+final class const CompositionResult({
+  required final DependenciesContainer dependencies,
+  required final int millisecondsSpent,
+}) {
   @override
   String toString() =>
       'CompositionResult('
@@ -56,8 +54,10 @@ Future<DependenciesContainer> createDependenciesContainer(AppConfig config, Logg
   final sharedPreferences = SharedPreferencesAsync();
 
   // Get package info.
-  final packageInfo = await PackageInfo.fromPlatform();
-  final settingsContainer = await SettingsContainer.create(sharedPreferences: sharedPreferences);
+  final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  final SettingsContainer settingsContainer = await SettingsContainer.create(
+    sharedPreferences: sharedPreferences,
+  );
 
   // Local project storage (SQLite on mobile, sqlite3.wasm + OPFS/IndexedDB on the web).
   final database = AppDatabase.defaults(name: 'shchitovik');

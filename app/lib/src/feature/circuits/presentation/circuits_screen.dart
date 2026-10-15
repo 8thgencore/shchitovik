@@ -1,9 +1,9 @@
 import 'package:common_translations/common_translations.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:electrical_core/electrical_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/switchboard_view.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
@@ -17,9 +17,7 @@ import 'package:shchitovik/src/widget/form_fields.dart';
 ///
 /// Expanded layout shows the board above a table of circuits with the input beside it;
 /// compact layout switches between the board and the list and remembers the choice.
-class CircuitsScreen extends StatelessWidget {
-  const CircuitsScreen({super.key});
-
+class const CircuitsScreen({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ProjectBloc>().state as ProjectReady;
@@ -29,19 +27,15 @@ class CircuitsScreen extends StatelessWidget {
   }
 }
 
-class _ExpandedCircuits extends StatelessWidget {
-  const _ExpandedCircuits({required this.state});
-
-  final ProjectReady state;
-
+class const _ExpandedCircuits({required final ProjectReady state}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final result = state.result;
-    final side = [
+    final ProjectResult result = state.result;
+    final List<StatelessWidget> side = [
       _IncomerCard(result: result),
       if (result.issues.isNotEmpty || result.assumptions.isNotEmpty) _IssuesCard(result: result),
     ];
-    final circuits = result.circuits.isEmpty
+    final StatelessWidget circuits = result.circuits.isEmpty
         ? _NoCircuits(projectId: state.document.id)
         : UiCard(child: _CircuitsTable(state: state));
     return PageBody(
@@ -58,11 +52,7 @@ class _ExpandedCircuits extends StatelessWidget {
 }
 
 /// Blocks stacked with the section gap.
-class _Stack extends StatelessWidget {
-  const _Stack({required this.children});
-
-  final List<Widget> children;
-
+class const _Stack({required final List<Widget> children}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -75,17 +65,13 @@ class _Stack extends StatelessWidget {
   );
 }
 
-class _CompactCircuits extends StatelessWidget {
-  const _CompactCircuits({required this.state});
-
-  final ProjectReady state;
-
+class const _CompactCircuits({required final ProjectReady state}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final result = state.result;
+    final CommonTranslationsLocalizations t = context.translations;
+    final ProjectResult result = state.result;
     final showBoard = SettingsScope.of(context).general.circuitsView == CircuitsViewVO.board;
-    final details = [
+    final List<StatelessWidget> details = [
       _IncomerCard(result: result),
       if (result.issues.isNotEmpty || result.assumptions.isNotEmpty) _IssuesCard(result: result),
     ];
@@ -140,14 +126,10 @@ class _CompactCircuits extends StatelessWidget {
   }
 }
 
-class _NoCircuits extends StatelessWidget {
-  const _NoCircuits({required this.projectId});
-
-  final String projectId;
-
+class const _NoCircuits({required final String projectId}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     return UiCard(
       child: UiEmptyState(
         standalone: false,
@@ -168,18 +150,14 @@ class _NoCircuits extends StatelessWidget {
 
 String _kw(num watts) => formatNumber(watts / 1000, 2);
 
-class _IncomerCard extends StatelessWidget {
-  const _IncomerCard({required this.result});
-
-  final ProjectResult result;
-
+class const _IncomerCard({required final ProjectResult result}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
-    final incomer = result.incomer;
-    final balance = result.phaseBalance;
-    final fireRcd = result.fireRcd;
-    final issues = incomer.checks.where((c) => c.status != CheckStatus.passed).toList();
+    final CommonTranslationsLocalizations t = context.translations;
+    final IncomerResult incomer = result.incomer;
+    final PhaseBalanceResult? balance = result.phaseBalance;
+    final SharedRcdResult? fireRcd = result.fireRcd;
+    final List<Check> issues = incomer.checks.where((c) => c.status != CheckStatus.passed).toList();
     return UiCard(
       title: t.circuitsInput,
       trailing: StatusBadge(result.status),
@@ -256,14 +234,10 @@ class _IncomerCard extends StatelessWidget {
   }
 }
 
-class _IssuesCard extends StatelessWidget {
-  const _IssuesCard({required this.result});
-
-  final ProjectResult result;
-
+class const _IssuesCard({required final ProjectResult result}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     return UiCard(
       child: UiDisclosure(
         title: '${t.circuitsIssues} и ${t.circuitsAssumptions.toLowerCase()}',
@@ -287,15 +261,11 @@ String _circuitMeta(CircuitResult c) =>
     '${c.cable.lengthM == null ? '' : ' · ${formatNumber(c.cable.lengthM)} м'}'
     ' · ${c.phase?.label ?? '3ф'}';
 
-class _CircuitRow extends StatelessWidget {
-  const _CircuitRow({required this.projectId, required this.circuit});
-
-  final String projectId;
-  final CircuitResult circuit;
-
+class const _CircuitRow({required final String projectId, required final CircuitResult circuit})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final c = circuit;
+    final CircuitResult c = circuit;
     return UiListRow(
       number: '${c.number}',
       title: c.name,
@@ -308,14 +278,10 @@ class _CircuitRow extends StatelessWidget {
   }
 }
 
-class _CircuitsTable extends StatelessWidget {
-  const _CircuitsTable({required this.state});
-
-  final ProjectReady state;
-
+class const _CircuitsTable({required final ProjectReady state}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final t = context.translations;
+    final CommonTranslationsLocalizations t = context.translations;
     return UiTable(
       minWidth: 760,
       columns: [

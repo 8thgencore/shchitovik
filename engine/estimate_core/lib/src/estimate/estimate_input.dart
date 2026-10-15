@@ -5,7 +5,10 @@ import 'package:estimate_core/src/catalog/price.dart';
 import 'package:meta/meta.dart';
 
 /// Price scenario: selects the manufacturer segment for automatic selection.
-enum EstimateScenario {
+enum EstimateScenario(
+  /// Segment.
+  final Tier tier,
+) {
   /// Budget brands.
   economy(Tier.budget),
 
@@ -13,37 +16,30 @@ enum EstimateScenario {
   standard(Tier.mid),
 
   /// Premium brands.
-  premium(Tier.premium);
-
-  const EstimateScenario(this.tier);
-
-  /// Segment.
-  final Tier tier;
+  premium(Tier.premium),
 }
 
 /// Model chosen by the user for a slot; stored as a snapshot so that catalog updates do not
 /// change an existing estimate silently.
 @immutable
-final class ApparatusSelection {
-  const ApparatusSelection({required this.product, required this.catalogVersion, this.customPrice});
+final class const ApparatusSelection({
+  /// Snapshot of the model.
+  required final ApparatusProduct product,
 
+  /// Catalog version the snapshot was taken from.
+  required final String catalogVersion,
+
+  /// Price entered by the user (per unit).
+  final PriceRange? customPrice,
+}) {
   /// Parses JSON produced by [toJson].
-  factory ApparatusSelection.fromJson(Map<String, Object?> json) => ApparatusSelection(
+  factory fromJson(Map<String, Object?> json) => ApparatusSelection(
     product: ApparatusProduct.fromJson(json['product']! as Map<String, Object?>),
     catalogVersion: json['catalog_version']! as String,
     customPrice: json['custom_price'] == null
         ? null
         : PriceRange.fromJson(json['custom_price']! as Map<String, Object?>),
   );
-
-  /// Snapshot of the model.
-  final ApparatusProduct product;
-
-  /// Catalog version the snapshot was taken from.
-  final String catalogVersion;
-
-  /// Price entered by the user (per unit).
-  final PriceRange? customPrice;
 
   /// Serializes to JSON.
   Map<String, Object?> toJson() => {
@@ -55,21 +51,36 @@ final class ApparatusSelection {
 
 /// User choices for the estimate; persisted next to the project input.
 @immutable
-final class EstimateInput {
-  const EstimateInput({
-    this.scenario = EstimateScenario.standard,
-    this.cableMarkId,
-    this.cableReserveFactor = 1.1,
-    this.voltageRelay,
-    this.surgeProtection,
-    this.overheadSupply = false,
-    this.selections = const {},
-    this.cableCustomPrices = const {},
-    this.board = const BoardArrangement(),
-  });
+final class const EstimateInput({
+  /// Price scenario.
+  final EstimateScenario scenario = EstimateScenario.standard,
 
+  /// Copper cable mark; `null` — ВВГнг(А)-LS. Aluminium lines always use АВВГнг(А)-LS.
+  final String? cableMarkId,
+
+  /// Cable length reserve for routing and terminations (1,1 = +10 %).
+  final double cableReserveFactor = 1.1,
+
+  /// Voltage relay; `null` — recommended (included).
+  final bool? voltageRelay,
+
+  /// Surge protective device; `null` — included for houses and garages.
+  final bool? surgeProtection,
+
+  /// Overhead supply line: SPD type 1+2 instead of type 2.
+  final bool overheadSupply = false,
+
+  /// Chosen models by slot id.
+  final Map<String, ApparatusSelection> selections = const {},
+
+  /// Cable price per metre entered by the user, by circuit id (`incomer` for the incomer cable).
+  final Map<String, PriceRange> cableCustomPrices = const {},
+
+  /// Switchboard arrangement.
+  final BoardArrangement board = const BoardArrangement(),
+}) {
   /// Parses JSON produced by [toJson].
-  factory EstimateInput.fromJson(Map<String, Object?> json) => EstimateInput(
+  factory fromJson(Map<String, Object?> json) => EstimateInput(
     scenario: EstimateScenario.values.byName(json['scenario'] as String? ?? 'standard'),
     cableMarkId: json['cable_mark_id'] as String?,
     cableReserveFactor: (json['cable_reserve_factor'] as num?)?.toDouble() ?? 1.1,
@@ -88,33 +99,6 @@ final class EstimateInput {
         ? const BoardArrangement()
         : BoardArrangement.fromJson(json['board']! as Map<String, Object?>),
   );
-
-  /// Price scenario.
-  final EstimateScenario scenario;
-
-  /// Copper cable mark; `null` — ВВГнг(А)-LS. Aluminium lines always use АВВГнг(А)-LS.
-  final String? cableMarkId;
-
-  /// Cable length reserve for routing and terminations (1,1 = +10 %).
-  final double cableReserveFactor;
-
-  /// Voltage relay; `null` — recommended (included).
-  final bool? voltageRelay;
-
-  /// Surge protective device; `null` — included for houses and garages.
-  final bool? surgeProtection;
-
-  /// Overhead supply line: SPD type 1+2 instead of type 2.
-  final bool overheadSupply;
-
-  /// Chosen models by slot id.
-  final Map<String, ApparatusSelection> selections;
-
-  /// Cable price per metre entered by the user, by circuit id (`incomer` for the incomer cable).
-  final Map<String, PriceRange> cableCustomPrices;
-
-  /// Switchboard arrangement.
-  final BoardArrangement board;
 
   /// Returns a copy with the given fields replaced; pass `null` explicitly to clear an
   /// optional field.

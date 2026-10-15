@@ -2,10 +2,10 @@ import 'package:norms_data/norms_data.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final norms = NormsData.embedded;
+  final NormsData norms = NormsData.embedded;
 
   group('residential, СП 256 табл. 7.1–7.3', () {
-    final r = norms.residentialLoads;
+    final ResidentialLoads r = norms.residentialLoads;
     test('one apartment (column 1–5)', () {
       expect(r.specificLoadKwPerApartment(StoveType.naturalGas, 1), 4.5);
       expect(r.specificLoadKwPerApartment(StoveType.electric, 5), 10);
@@ -32,7 +32,7 @@ void main() {
   });
 
   group('public, СП 256 табл. 7.6–7.8', () {
-    final p = norms.publicLoads;
+    final PublicLoads p = norms.publicLoads;
     test('lighting demand factor with interpolation', () {
       expect(p.lightingDemandFactor(3, 5), 1.0);
       expect(p.lightingDemandFactor(3, 7.5), closeTo(0.975, 1e-9));

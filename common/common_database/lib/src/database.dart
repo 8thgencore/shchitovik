@@ -14,10 +14,10 @@ part 'database.g.dart';
 @DriftDatabase(tables: [Projects, CatalogCache])
 class AppDatabase extends _$AppDatabase {
   /// {@macro database}
-  AppDatabase(super.e);
+  new(super.e);
 
   /// {@macro database}
-  AppDatabase.defaults({required String name})
+  new defaults({required String name})
     : super(
         driftDatabase(
           name: name,
