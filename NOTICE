@@ -13,5 +13,7 @@ Reserved Font Name "Plex", are licensed under the SIL Open Font License,
 Version 1.1 (common/common_ui/assets/fonts/IBMPlexSans-OFL.txt,
 IBMPlexMono-OFL.txt).
 
-Icons come from Lucide (https://lucide.dev) via the lucide_icons_flutter
-package, licensed under the ISC License.
+Icons come from Lucide (https://lucide.dev): the 300 weight of the Lucide icon
+font built by the lucide_icons_flutter package
+(common/common_ui/assets/fonts/Lucide-300.ttf), licensed under the ISC License
+(common/common_ui/assets/fonts/Lucide-LICENSE.txt).

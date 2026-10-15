@@ -1,6 +1,7 @@
 import 'package:common_ui/src/tokens/ui_colors.dart';
 import 'package:common_ui/src/tokens/ui_metrics.dart';
 import 'package:common_ui/src/tokens/ui_text_styles.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 
 /// Light and dark [ThemeData] of the «Чертёж» design system.
@@ -95,6 +96,15 @@ abstract final class UiTheme() {
       dividerColor: c.border,
       // States are drawn by the widgets themselves: tints, not ripples.
       splashFactory: NoSplash.splashFactory,
+      // On the web pages switch instantly, like on any other site.
+      pageTransitionsTheme: kIsWeb
+          ? PageTransitionsTheme(
+              builders: {
+                for (final platform in TargetPlatform.values)
+                  platform: const _InstantPageTransitionsBuilder(),
+              },
+            )
+          : null,
       highlightColor: const Color(0x00000000),
       hoverColor: c.sunken,
       focusColor: c.accentSoft,
@@ -222,4 +232,19 @@ abstract final class UiTheme() {
 extension UiThemeContext on BuildContext {
   /// Colour roles of the current theme.
   UiColors get uiColors => UiColors.of(this);
+}
+
+/// Page transition without animation: the new page replaces the old one in a single frame.
+class const _InstantPageTransitionsBuilder() extends PageTransitionsBuilder {
+  @override
+  Duration get transitionDuration => Duration.zero;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) => child;
 }
