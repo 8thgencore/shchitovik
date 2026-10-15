@@ -1,0 +1,42 @@
+# static-web-server config of the web image; same headers as deploy/caddy/Caddyfile.
+# Layout in the image:
+#   /public/          — Flutter Web build (app/build/web)
+#   /public/catalog/  — price catalog (tools/catalog/publish_catalog.py)
+
+[general]
+host = "0.0.0.0"
+port = 8080
+root = "/public"
+log-level = "info"
+
+# Single-page app: unknown paths are routes of go_router.
+page-fallback = "/public/index.html"
+
+# GET /health for the container healthcheck.
+health = true
+
+compression = true
+ignore-hidden-files = true
+# Flutter Web file names carry no content hash, so the built-in one-year caching of .js
+# would pin an old build; every file is revalidated instead (see the headers below).
+cache-control-headers = false
+
+[advanced]
+
+[[advanced.headers]]
+source = "**"
+[advanced.headers.headers]
+Cache-Control = "no-cache"
+# Cross-origin isolation enables OPFS storage for drift (SharedArrayBuffer);
+# without it the app falls back to IndexedDB.
+Cross-Origin-Opener-Policy = "same-origin"
+Cross-Origin-Embedder-Policy = "require-corp"
+X-Content-Type-Options = "nosniff"
+Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Price catalog for the mobile apps and the web app.
+[[advanced.headers]]
+source = "/catalog/**"
+[advanced.headers.headers]
+Access-Control-Allow-Origin = "*"
+Cross-Origin-Resource-Policy = "cross-origin"

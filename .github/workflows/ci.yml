@@ -1,5 +1,5 @@
-# GitHub Actions variant of .gitlab-ci.yml: checks on every push and PR, builds on main.
-# Flutter jobs run in the same image as GitLab CI, so the toolchain matches exactly.
+# Checks on every push and PR; on main also builds the web image and the APK.
+# Flutter comes from .fvmrc: public Flutter images lag behind the pinned version.
 name: CI
 
 on:
@@ -21,9 +21,15 @@ jobs:
   check:
     name: Format, analyze, test
     runs-on: ubuntu-latest
-    container: ghcr.io/cirruslabs/flutter:3.47.6
     steps:
       - uses: actions/checkout@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          channel: stable
+          cache: true
       - run: bash scripts/bootstrap.bash
       - run: bash scripts/format.bash --check
       - run: bash scripts/analyze.bash
@@ -35,24 +41,49 @@ jobs:
           path: reports/
           retention-days: 7
 
-  build:
-    name: Build Web and APK
+  web-image:
+    name: Web image
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [data, check]
     runs-on: ubuntu-latest
-    container: ghcr.io/cirruslabs/flutter:3.47.6
-    env:
-      DEFINES: --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
     steps:
       - uses: actions/checkout@v7
-      - run: bash scripts/bootstrap.bash
-      - run: cd app && flutter build web --release $DEFINES
-      - run: cd app && flutter build apk --release $DEFINES
-      - uses: actions/upload-artifact@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
         with:
-          name: web
-          path: app/build/web/
-          retention-days: 7
+          context: .
+          file: deploy/docker/Dockerfile
+          build-args: |
+            FLUTTER_VERSION=${{ steps.fvm.outputs.flutter }}
+            APP_BASE_URL=${{ vars.APP_BASE_URL }}
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  apk:
+    name: APK
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [data, check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          channel: stable
+          cache: true
+      - run: bash scripts/bootstrap.bash
+      - run: >-
+          cd app && flutter build apk --release
+          --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
       - uses: actions/upload-artifact@v7
         with:
           name: apk
