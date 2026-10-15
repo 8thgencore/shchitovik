@@ -1,0 +1,7 @@
+# Site block for the host-wide Caddy when «Щитовик» runs in Docker (deploy/compose/prod.yaml).
+# The container serves the app, the catalog and all their headers; Caddy only terminates TLS.
+# Add this block to /etc/caddy/Caddyfile next to the other projects.
+
+shchitovik.ru {
+	reverse_proxy 127.0.0.1:8082
+}

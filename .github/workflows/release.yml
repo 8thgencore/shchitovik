@@ -1,4 +1,4 @@
-# Manual release tasks (Actions → Release → Run workflow), GitHub variant of the manual GitLab jobs.
+# Manual release tasks (Actions → Release → Run workflow).
 # Sentry stays off: no SENTRY_DSN define, the privacy policy promises no error reports.
 name: Release
 
@@ -8,19 +8,67 @@ on:
       target:
         description: What to do
         type: choice
-        options: [store-android, deploy-web, deploy-catalog]
-
-env:
-  DEFINES: --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
+        options: [deploy-web, store-android]
 
 jobs:
+  # Web app and price catalog: one Docker image (deploy/docker), run by compose on the VPS
+  # behind the host's Caddy. The image is small, so it travels over SSH without a registry.
+  deploy-web:
+    name: Deploy Web to VPS
+    if: inputs.target == 'deploy-web'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/docker/Dockerfile
+          build-args: |
+            FLUTTER_VERSION=${{ steps.fvm.outputs.flutter }}
+            APP_BASE_URL=${{ vars.APP_BASE_URL }}
+          tags: shchitovik-web:latest
+          load: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: SSH key
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Upload image and restart
+        env:
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+        run: |
+          docker save shchitovik-web:latest | gzip | ssh "$TARGET" 'gunzip | docker load'
+          ssh "$TARGET" 'mkdir -p ~/shchitovik'
+          scp deploy/compose/prod.yaml "$TARGET:shchitovik/prod.yaml"
+          ssh "$TARGET" 'docker compose -f ~/shchitovik/prod.yaml up -d --no-build --pull never --wait && docker image prune -f'
+
   store-android:
     name: Signed AAB and APK
     if: inputs.target == 'store-android'
     runs-on: ubuntu-latest
-    container: ghcr.io/cirruslabs/flutter:3.47.6
+    env:
+      DEFINES: --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
     steps:
       - uses: actions/checkout@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          channel: stable
+          cache: true
       - run: bash scripts/bootstrap.bash
       - name: Upload key
         env:
@@ -47,44 +95,3 @@ jobs:
             app/build/app/outputs/bundle/release/
             app/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
-
-  deploy-web:
-    name: Deploy Web to VPS
-    if: inputs.target == 'deploy-web'
-    runs-on: ubuntu-latest
-    container: ghcr.io/cirruslabs/flutter:3.47.6
-    steps:
-      - uses: actions/checkout@v7
-      - run: bash scripts/bootstrap.bash
-      - run: cd app && flutter build web --release $DEFINES
-      - run: apt-get update && apt-get install -y --no-install-recommends rsync openssh-client
-      - name: SSH key
-        env:
-          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-        run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
-          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-      - run: rsync -az --delete app/build/web/ "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/var/www/shchitovik/web/"
-
-  deploy-catalog:
-    name: Deploy price catalog to VPS
-    if: inputs.target == 'deploy-catalog'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.13"
-      - name: SSH key
-        env:
-          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-        run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
-          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-      - run: python3 -I tools/catalog/validate_catalogs.py
-      - run: python3 -I tools/catalog/publish_catalog.py out
-      - run: rsync -az --delete out/catalog/ "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/var/www/shchitovik/catalog/"
