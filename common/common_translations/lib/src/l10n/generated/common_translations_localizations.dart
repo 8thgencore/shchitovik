@@ -1548,6 +1548,24 @@ abstract class CommonTranslationsLocalizations {
   /// In ru, this message translates to:
   /// **'Сначала недавно изменённые'**
   String get projectsSorted;
+
+  /// No description provided for @circuitsReviewTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count, plural, one{{count} линия требует проверки} few{{count} линии требуют проверки} many{{count} линий требуют проверки} other{{count} линии требуют проверки}}'**
+  String circuitsReviewTitle(int count);
+
+  /// No description provided for @circuitReviewTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Ток КЗ посчитан по принятому сопротивлению сети'**
+  String get circuitReviewTitle;
+
+  /// No description provided for @circuitsReviewAction.
+  ///
+  /// In ru, this message translates to:
+  /// **'Указать сопротивление петли'**
+  String get circuitsReviewAction;
 }
 
 class _CommonTranslationsLocalizationsDelegate

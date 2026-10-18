@@ -4,6 +4,7 @@ import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/review_notice.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/switchboard_view.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
@@ -40,6 +41,7 @@ class const _ExpandedCircuits({required final ProjectReady state}) extends State
         : UiCard(child: _CircuitsTable(state: state));
     return PageBody(
       children: [
+        if (LoopReviewNotice.shows(state)) LoopReviewNotice(state: state),
         UiCard(
           padding: const EdgeInsets.all(UiSpace.l),
           child: SwitchboardView(state: state),
@@ -99,6 +101,7 @@ class const _CompactCircuits({required final ProjectReady state}) extends Statel
           child: PageBody(
             children: showBoard
                 ? [
+                    if (LoopReviewNotice.shows(state)) LoopReviewNotice(state: state),
                     UiCard(
                       padding: const EdgeInsets.all(UiSpace.l),
                       child: SwitchboardView(state: state),
@@ -106,6 +109,7 @@ class const _CompactCircuits({required final ProjectReady state}) extends Statel
                     ...details,
                   ]
                 : [
+                    if (LoopReviewNotice.shows(state)) LoopReviewNotice(state: state),
                     ...details,
                     if (result.circuits.isEmpty)
                       _NoCircuits(projectId: state.document.id)
@@ -257,7 +261,7 @@ class const _IssuesCard({required final ProjectResult result}) extends Stateless
 }
 
 String _circuitMeta(CircuitResult c) =>
-    '${c.protection.description} · ${c.cable.label} мм²'
+    '${c.protection.label} · ${c.cable.label} мм²'
     '${c.cable.lengthM == null ? '' : ' · ${formatNumber(c.cable.lengthM)} м'}'
     ' · ${c.phase?.label ?? '3ф'}';
 
@@ -270,9 +274,12 @@ class const _CircuitRow({required final String projectId, required final Circuit
       number: '${c.number}',
       title: c.name,
       subtitle: _circuitMeta(c),
-      trailing: Text('${formatNumber(c.designCurrentA)} А'),
+      trailing: UiQuantity(formatNumber(c.designCurrentA), unit: 'А'),
       stripe: statusStripe(c.status),
-      below: c.status == CalculationStatus.passed ? null : StatusBadge(c.status),
+      // «Requires review» is explained once above the list; the stripe marks the rows.
+      below: c.status == CalculationStatus.passed || c.status == CalculationStatus.requiresReview
+          ? null
+          : StatusBadge(c.status),
       onTap: () => context.go(AppRoutes.circuit(projectId, c.id)),
     );
   }
@@ -282,35 +289,62 @@ class const _CircuitsTable({required final ProjectReady state}) extends Stateles
   @override
   Widget build(BuildContext context) {
     final CommonTranslationsLocalizations t = context.translations;
+    final Map<String, String> roomNames = {
+      for (final r in state.document.input.rooms) r.id: r.name,
+    };
+    final Color muted = context.uiColors.textMuted;
     return UiTable(
       minWidth: 760,
       columns: [
         UiTableColumn(label: t.columnNumber, width: 48, numeric: true),
         UiTableColumn(label: t.columnCircuit, flex: 3),
         UiTableColumn(label: t.columnProtection, flex: 3),
-        UiTableColumn(label: t.columnCable, width: 104),
-        UiTableColumn(label: t.columnLength, width: 88, numeric: true),
+        UiTableColumn(label: t.columnCable, width: 112),
         UiTableColumn(label: t.columnPhase, width: 64),
         UiTableColumn(label: t.columnCurrent, width: 80, numeric: true),
-        UiTableColumn(label: t.circuitStatus, width: 156),
+        UiTableColumn(label: t.circuitStatus, width: 80),
       ],
       rows: [
-        for (final c in state.result.circuits)
+        for (final (c, problem) in [for (final c in state.result.circuits) (c, _problem(c))])
           UiTableRow(
             stripe: statusStripe(c.status),
             onTap: () => context.go(AppRoutes.circuit(state.document.id, c.id)),
             cells: [
-              Text('${c.number}'),
-              UiTableCell(c.name),
-              UiTableCell(c.protection.description, muted: true),
-              Text(c.cable.label, style: UiTextStyles.value),
-              Text(c.cable.lengthM == null ? '—' : formatNumber(c.cable.lengthM)),
+              Text('${c.number}', style: TextStyle(color: muted)),
+              UiTableCell(
+                c.name,
+                strong: true,
+                // A failed or doubtful check is what the row is about; rooms otherwise.
+                detail:
+                    problem?.message ??
+                    (c.roomIds.isEmpty
+                        ? null
+                        : [for (final id in c.roomIds) ?roomNames[id]].join(', ')),
+                detailColor: problem == null
+                    ? null
+                    : (problem.status == CheckStatus.failed ? UiTone.danger : UiTone.warning).color(
+                        context.uiColors,
+                      ),
+              ),
+              UiTableDetail(
+                detail: c.protection.deviceSummary,
+                child: Text(c.protection.label, style: UiTextStyles.valueStrong),
+              ),
+              UiTableDetail(
+                detail: c.cable.lengthM == null ? null : '${formatNumber(c.cable.lengthM)} м',
+                child: Text(c.cable.label, style: UiTextStyles.value),
+              ),
               Text(c.phase?.label ?? '3ф', style: UiTextStyles.value),
               Text(formatNumber(c.designCurrentA)),
-              Align(alignment: Alignment.centerLeft, child: StatusBadge(c.status)),
+              Align(alignment: Alignment.centerLeft, child: StatusIcon(c.status)),
             ],
           ),
       ],
     );
   }
 }
+
+/// First failed check of the circuit, or else the first warning.
+Check? _problem(CircuitResult c) =>
+    c.allChecks.where((x) => x.status == CheckStatus.failed).firstOrNull ??
+    c.allChecks.where((x) => x.status == CheckStatus.warning).firstOrNull;

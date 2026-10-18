@@ -21,12 +21,19 @@ class const UiCard({
 
   /// Padding around [child].
   final EdgeInsetsGeometry padding = EdgeInsets.zero,
+
+  /// Header on a recessed band with a larger title: a group the eye should find in a list of
+  /// cards (a room with its devices).
+  final bool banded = false,
   super.key,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UiColors c = context.uiColors;
     final bool hasHeader = title != null || eyebrow != null || trailing != null;
+    final Widget? header = hasHeader
+        ? _CardHeader(title: title, eyebrow: eyebrow, trailing: trailing, large: banded)
+        : null;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface,
@@ -39,44 +46,65 @@ class const UiCard({
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (hasHeader)
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                  UiSpace.l,
-                  UiSpace.m,
-                  // An icon button brings its own inner space.
-                  trailing is UiIconButton ? UiSpace.xs : UiSpace.l,
-                  UiSpace.m,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 32),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (eyebrow != null) UiLabel(eyebrow!),
-                            if (title != null)
-                              Text(
-                                title!,
-                                style: UiTextStyles.heading.copyWith(color: c.text),
-                              ),
-                          ],
-                        ),
-                      ),
-                      if (trailing != null) ...[const SizedBox(width: UiSpace.s), trailing!],
-                    ],
+            if (header != null)
+              if (banded)
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: c.sunken,
+                    border: Border(bottom: BorderSide(color: c.border)),
                   ),
-                ),
-              ),
+                  child: header,
+                )
+              else
+                header,
             Padding(padding: padding, child: child),
           ],
         ),
       ),
     );
   }
+}
+
+class const _CardHeader({
+  required final String? title,
+  required final String? eyebrow,
+  required final Widget? trailing,
+  required final bool large,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: EdgeInsets.fromLTRB(
+      UiSpace.l,
+      UiSpace.m,
+      // An icon button brings its own inner space.
+      trailing is UiIconButton ? UiSpace.xs : UiSpace.l,
+      UiSpace.m,
+    ),
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 32),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (eyebrow != null) UiLabel(eyebrow!),
+                if (title != null)
+                  Text(
+                    title!,
+                    style: (large ? UiTextStyles.title : UiTextStyles.heading).copyWith(
+                      color: context.uiColors.text,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (trailing != null) ...[const SizedBox(width: UiSpace.s), trailing!],
+        ],
+      ),
+    ),
+  );
 }
 
 /// Upper-case mono label, like the text in a drawing stamp: groups and value names.

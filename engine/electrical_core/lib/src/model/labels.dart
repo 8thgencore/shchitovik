@@ -69,6 +69,18 @@ extension ProtectionLabel on ProtectionResult {
       ProtectionDevice.mcbUnderGroupRcd => 'Автомат $breaker (УЗО ${rcd?.groupId ?? 'группы'})',
     };
   }
+
+  /// What protects the line besides the [label] rating, like `Дифавтомат · 30 мА, тип A`.
+  String get deviceSummary {
+    final RcdResult? rcd = this.rcd;
+    return switch (device) {
+      ProtectionDevice.mcb => 'Автомат',
+      ProtectionDevice.rcbo => 'Дифавтомат · ${_n(rcd!.residualMa)} мА, тип ${rcd.type}',
+      ProtectionDevice.mcbAndRcd =>
+        'Автомат + УЗО ${_n(rcd!.ratedA ?? breakerA)} А · ${_n(rcd.residualMa)} мА, тип ${rcd.type}',
+      ProtectionDevice.mcbUnderGroupRcd => 'Автомат · УЗО ${rcd?.groupId ?? 'группы'}',
+    };
+  }
 }
 
 /// Russian labels.
