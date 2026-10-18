@@ -54,7 +54,9 @@ final class ProjectsService({
     ProjectDocument Function(ProjectDocument) transform,
   ) async {
     final ProjectDocument? current = await _repository.getProject(id);
-    if (current == null) throw StateError('Project $id not found');
+    if (current == null) {
+      throw StateError('Project $id not found');
+    }
     final ProjectDocument updated = transform(current)
         .copyWith(id: id, createdAt: current.createdAt, updatedAt: clock.now().toUtc());
     await _repository.save(updated);
@@ -64,8 +66,10 @@ final class ProjectsService({
   /// Copies the project under a new id and name.
   Future<ProjectDocument> duplicate(String id) async {
     final ProjectDocument? source = await _repository.getProject(id);
-    if (source == null) throw StateError('Project $id not found');
-    return _store(source.copyWith(name: '${source.name} (копия)'));
+    if (source == null) {
+      throw StateError('Project $id not found');
+    }
+    return await _store(source.copyWith(name: '${source.name} (копия)'));
   }
 
   /// Deletes the project.
@@ -74,7 +78,9 @@ final class ProjectsService({
   /// Contents of the `.shchitovik` file for the project.
   Future<String> export(String id) async {
     final ProjectDocument? document = await _repository.getProject(id);
-    if (document == null) throw StateError('Project $id not found');
+    if (document == null) {
+      throw StateError('Project $id not found');
+    }
     return ProjectFileCodec.encode(document, appVersion: appVersion, exportedAt: clock.now());
   }
 

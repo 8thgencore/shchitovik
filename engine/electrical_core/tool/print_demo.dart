@@ -10,14 +10,15 @@ void main() {
     ('Дом', DemoProjects.house()),
   ]) {
     final ProjectResult r = calculateProject(input);
-    stdout.writeln('== $name: ${r.status.name}');
-    stdout.writeln(
-      '   ввод: Pуст=${(r.incomer.installedPowerW / 1000).toStringAsFixed(1)} кВт, '
-      'по приборам=${(r.incomer.demandByDevicesW / 1000).toStringAsFixed(1)} кВт, '
-      'по СП 256=${(r.incomer.demandNormativeW / 1000).toStringAsFixed(1)} кВт, '
-      'Iр=${r.incomer.designCurrentA.toStringAsFixed(1)} А, In=${r.incomer.breakerA}',
-    );
-    stdout.writeln('   ${r.incomer.normativeMethod}');
+    stdout
+      ..writeln('== $name: ${r.status.name}')
+      ..writeln(
+        '   ввод: Pуст=${(r.incomer.installedPowerW / 1000).toStringAsFixed(1)} кВт, '
+        'по приборам=${(r.incomer.demandByDevicesW / 1000).toStringAsFixed(1)} кВт, '
+        'по СП 256=${(r.incomer.demandNormativeW / 1000).toStringAsFixed(1)} кВт, '
+        'Iр=${r.incomer.designCurrentA.toStringAsFixed(1)} А, In=${r.incomer.breakerA}',
+      )
+      ..writeln('   ${r.incomer.normativeMethod}');
     if (r.phaseBalance != null) {
       stdout.writeln(
         '   фазы: ${r.phaseBalance!.loadsA.map((k, v) => MapEntry(k.name, v.toStringAsFixed(1)))} '

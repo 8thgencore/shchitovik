@@ -194,8 +194,12 @@ final class PublicLoads._({
   double? powerDemandFactor(int item, int receivers) {
     final ({int item, String loads, double? over5, String? reference, double? upTo3}) row =
         powerRows.firstWhere((r) => r.item == item);
-    if (row.upTo3 == null || row.over5 == null) return null;
-    if (receivers <= 1) return 1;
+    if (row.upTo3 == null || row.over5 == null) {
+      return null;
+    }
+    if (receivers <= 1) {
+      return 1;
+    }
     return interpolateLinear(const [3, 5], [row.upTo3, row.over5], receivers);
   }
 }

@@ -24,6 +24,46 @@ final class const UiMetric({
   final bool symbol = false,
 });
 
+/// Mono value with a muted unit: the number is what the eye looks for.
+///
+/// A prefix like «2 ×» is muted too. Large styles keep the unit at [UiTextStyles.value] size.
+class const UiQuantity(
+  /// Value without the unit.
+  final String value, {
+
+  /// Unit after the value.
+  final String? unit,
+
+  /// Multiplier or other text before the value.
+  final String? prefix,
+
+  /// Style of the value; mono.
+  final TextStyle style = UiTextStyles.value,
+
+  /// Colour of the value; defaults to the text colour.
+  final Color? color,
+  super.key,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final UiColors c = context.uiColors;
+    final TextStyle small = (style.fontSize ?? 0) > (UiTextStyles.value.fontSize ?? 0)
+        ? UiTextStyles.value
+        : style.copyWith(fontWeight: UiTextStyles.value.fontWeight);
+    final TextStyle muted = small.copyWith(color: c.textMuted);
+    return Text.rich(
+      TextSpan(
+        children: [
+          if (prefix != null) TextSpan(text: '$prefix ', style: muted),
+          TextSpan(text: value),
+          if (unit != null) TextSpan(text: ' $unit', style: muted),
+        ],
+      ),
+      style: style.copyWith(color: color ?? c.text),
+    );
+  }
+}
+
 /// Grid of readings separated by hairlines: 2 columns on phones, 4 on wide cards.
 class const UiMetricGrid({
   /// Readings.
@@ -82,7 +122,6 @@ class const UiMetricGrid({
 class const _MetricCell({required final UiMetric metric}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final UiColors c = context.uiColors;
     return Padding(
       padding: const EdgeInsets.fromLTRB(UiSpace.l, UiSpace.m, UiSpace.m, UiSpace.m),
       child: Column(
@@ -90,18 +129,11 @@ class const _MetricCell({required final UiMetric metric}) extends StatelessWidge
         children: [
           UiLabel(metric.label, symbol: metric.symbol),
           const SizedBox(height: 2),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: metric.value),
-                if (metric.unit != null)
-                  TextSpan(
-                    text: ' ${metric.unit}',
-                    style: UiTextStyles.value.copyWith(color: c.textMuted),
-                  ),
-              ],
-            ),
-            style: UiTextStyles.reading.copyWith(color: metric.emphasis ?? c.text),
+          UiQuantity(
+            metric.value,
+            unit: metric.unit,
+            style: UiTextStyles.reading,
+            color: metric.emphasis,
           ),
         ],
       ),

@@ -79,7 +79,9 @@ class const UiEmptyState({
         ),
       ),
     );
-    if (!standalone) return content;
+    if (!standalone) {
+      return content;
+    }
     return Center(child: SingleChildScrollView(child: content));
   }
 }

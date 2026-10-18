@@ -449,5 +449,15 @@
     }
   },
   "projectsSearchReset": "Сбросить поиск",
-  "projectsSorted": "Сначала недавно изменённые"
+  "projectsSorted": "Сначала недавно изменённые",
+  "circuitsReviewTitle": "{count, plural, one{{count} линия требует проверки} few{{count} линии требуют проверки} many{{count} линий требуют проверки} other{{count} линии требуют проверки}}",
+  "@circuitsReviewTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "circuitReviewTitle": "Ток КЗ посчитан по принятому сопротивлению сети",
+  "circuitsReviewAction": "Указать сопротивление петли"
 }

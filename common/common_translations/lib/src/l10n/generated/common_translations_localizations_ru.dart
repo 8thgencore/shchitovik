@@ -793,4 +793,23 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String get projectsSorted => 'Сначала недавно изменённые';
+
+  @override
+  String circuitsReviewTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count линии требуют проверки',
+      many: '$count линий требуют проверки',
+      few: '$count линии требуют проверки',
+      one: '$count линия требует проверки',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get circuitReviewTitle => 'Ток КЗ посчитан по принятому сопротивлению сети';
+
+  @override
+  String get circuitsReviewAction => 'Указать сопротивление петли';
 }

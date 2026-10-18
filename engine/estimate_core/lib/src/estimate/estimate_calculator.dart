@@ -36,9 +36,13 @@ List<({ApparatusProduct product, Compatibility compatibility})> compatibleProduc
       (catalog.manufacturers[p.manufacturerId]?.name ?? p.manufacturerId).toLowerCase();
   result.sort((a, b) {
     final int byStatus = a.compatibility.status.index.compareTo(b.compatibility.status.index);
-    if (byStatus != 0) return byStatus;
+    if (byStatus != 0) {
+      return byStatus;
+    }
     final int byManufacturer = manufacturer(a.product).compareTo(manufacturer(b.product));
-    if (byManufacturer != 0) return byManufacturer;
+    if (byManufacturer != 0) {
+      return byManufacturer;
+    }
     final int bySeries = a.product.series.toLowerCase().compareTo(b.product.series.toLowerCase());
     return bySeries != 0 ? bySeries : a.product.id.compareTo(b.product.id);
   });
@@ -157,7 +161,9 @@ final class _Estimate(
       final List<ApparatusSlot> functionSlots = slots
           .where((s) => s.requirement.function == function)
           .toList();
-      if (functionSlots.isEmpty) continue;
+      if (functionSlots.isEmpty) {
+        continue;
+      }
       final bySeries = <String, ({int covered, int price})>{};
       final Set<String> seriesKeys = {
         for (final p in catalog.products)
@@ -184,11 +190,15 @@ final class _Estimate(
       final List<MapEntry<String, ({int covered, int price})>> ranked =
           bySeries.entries.where((e) => e.value.covered > 0).toList()..sort((a, b) {
             final int byCovered = b.value.covered.compareTo(a.value.covered);
-            if (byCovered != 0) return byCovered;
+            if (byCovered != 0) {
+              return byCovered;
+            }
             final int byPrice = a.value.price.compareTo(b.value.price);
             return byPrice != 0 ? byPrice : a.key.compareTo(b.key);
           });
-      if (ranked.isNotEmpty) result[function] = ranked.first.key;
+      if (ranked.isNotEmpty) {
+        result[function] = ranked.first.key;
+      }
     }
     return result;
   }
@@ -201,9 +211,13 @@ final class _Estimate(
     ApparatusProduct? best;
     CompatibilityStatus? bestStatus;
     for (final ApparatusProduct p in catalog.products) {
-      if (!p.active || p.function != requirement.function || !filter(p)) continue;
+      if (!p.active || p.function != requirement.function || !filter(p)) {
+        continue;
+      }
       final CompatibilityStatus status = checkCompatibility(p, requirement).status;
-      if (status == CompatibilityStatus.incompatible) continue;
+      if (status == CompatibilityStatus.incompatible) {
+        continue;
+      }
       final bool better =
           best == null ||
           status.index < bestStatus!.index ||
@@ -424,7 +438,11 @@ String _lines(int n) => _plural(n, 'линия', 'линии', 'линий');
 String _plural(int n, String one, String few, String many) {
   final int mod10 = n % 10;
   final int mod100 = n % 100;
-  if (mod10 == 1 && mod100 != 11) return one;
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return few;
+  if (mod10 == 1 && mod100 != 11) {
+    return one;
+  }
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
+    return few;
+  }
   return many;
 }

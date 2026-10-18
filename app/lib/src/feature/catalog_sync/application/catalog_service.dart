@@ -40,11 +40,15 @@ final class CatalogService({
   /// replaced in one transaction, so a partial download never becomes active.
   Future<CatalogUpdateStatus> checkForUpdates() async {
     final CatalogRemoteSource? remote = _remote;
-    if (remote == null) return CatalogUpdateStatus.disabled;
+    if (remote == null) {
+      return CatalogUpdateStatus.disabled;
+    }
     try {
       final CatalogManifest manifest = await remote.manifest();
       final EstimateCatalog active = await current();
-      if (manifest.catalogVersion == active.catalogVersion) return CatalogUpdateStatus.upToDate;
+      if (manifest.catalogVersion == active.catalogVersion) {
+        return CatalogUpdateStatus.upToDate;
+      }
 
       final contents = <String, String>{};
       for (final MapEntry(key: dataset, value: file) in manifest.files.entries) {
@@ -78,7 +82,9 @@ final class CatalogService({
   Future<EstimateCatalog?> _loadCached() async {
     final List<CatalogCacheRow> rows = await _database.getCatalogCache();
     final Map<String, String> contents = {for (final r in rows) r.dataset: r.content};
-    if (!catalogDatasets.every(contents.containsKey)) return null;
+    if (!catalogDatasets.every(contents.containsKey)) {
+      return null;
+    }
     try {
       return EstimateCatalog.fromJsonStrings(contents);
     } on Object {

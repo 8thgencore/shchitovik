@@ -339,7 +339,9 @@ class const UiSegmented<T>({
         ),
       ),
     );
-    if (label == null) return track;
+    if (label == null) {
+      return track;
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,

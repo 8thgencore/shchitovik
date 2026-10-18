@@ -109,7 +109,9 @@ class UiButton extends StatelessWidget {
       onPressed: onPressed == null
           ? null
           : () {
-              if (!busy) onPressed!();
+              if (!busy) {
+                onPressed!();
+              }
             },
       autofocus: autofocus,
       builder: (context, state) {
@@ -235,7 +237,9 @@ class _UiIconButtonState() extends State<UiIconButton> {
         onPressed: onPressed == null
             ? null
             : () {
-                if (!widget.busy) onPressed();
+                if (!widget.busy) {
+                  onPressed();
+                }
               },
         semanticLabel: widget.tooltip,
         onFocusHighlight: (focused) {

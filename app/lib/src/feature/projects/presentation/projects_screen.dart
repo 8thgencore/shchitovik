@@ -29,7 +29,9 @@ class const ProjectsScreen({super.key}) extends StatelessWidget {
 class const _ProjectsView() extends StatelessWidget {
   Future<void> _create(BuildContext context) async {
     final NewProjectParams? params = await CreateProjectSheet.show(context);
-    if (params == null || !context.mounted) return;
+    if (params == null || !context.mounted) {
+      return;
+    }
     final created = Completer<String>();
     context.read<ProjectsListBloc>().add(
       ProjectCreateRequested(
@@ -40,26 +42,36 @@ class const _ProjectsView() extends StatelessWidget {
       ),
     );
     final String id = await created.future;
-    if (context.mounted) context.go(AppRoutes.projectSetup(id));
+    if (context.mounted) {
+      context.go(AppRoutes.projectSetup(id));
+    }
   }
 
   Future<void> _import(BuildContext context) async {
     final CommonTranslationsLocalizations t = context.translations;
     final String? contents = await ProjectFiles.pickProjectFile();
-    if (contents == null || !context.mounted) return;
+    if (contents == null || !context.mounted) {
+      return;
+    }
     final imported = Completer<ProjectDocument>();
     context.read<ProjectsListBloc>().add(ProjectImportRequested(contents, imported));
     try {
       final ProjectDocument document = await imported.future;
-      if (context.mounted) showUiToast(context, message: t.projectsImported(document.name));
+      if (context.mounted) {
+        showUiToast(context, message: t.projectsImported(document.name));
+      }
     } on ProjectFormatException catch (e) {
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        return;
+      }
       showUiToast(
         context,
         message: t.projectsImportFailed(e.message),
         actionLabel: t.projectsImportPickAnother,
         onAction: () {
-          if (context.mounted) unawaited(_import(context));
+          if (context.mounted) {
+            unawaited(_import(context));
+          }
         },
       );
     }
@@ -165,7 +177,9 @@ class const _EmptyProjects({required final VoidCallback onCreate}) extends State
     final created = Completer<String>();
     context.read<ProjectsListBloc>().add(ProjectDemoRequested(kind, created));
     final String id = await created.future;
-    if (context.mounted) context.go(AppRoutes.projectCircuits(id));
+    if (context.mounted) {
+      context.go(AppRoutes.projectCircuits(id));
+    }
   }
 
   @override
@@ -218,7 +232,9 @@ class const _ProjectTile({required final ProjectSummary project}) extends Statel
       confirmLabel: t.projectDeleteConfirm,
       cancelLabel: t.cancel,
     );
-    if (confirmed) bloc.add(ProjectDeleteRequested(project.id));
+    if (confirmed) {
+      bloc.add(ProjectDeleteRequested(project.id));
+    }
   }
 
   @override

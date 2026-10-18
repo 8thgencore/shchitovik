@@ -48,7 +48,9 @@ final class VoltageDropLimits._({
   /// Limit for a wiring of [lengthM] from the building input, %.
   double limitPercent({required bool lighting, required double lengthM}) {
     final double base = lighting ? lightingPercent : otherPercent;
-    if (lengthM <= longLineThresholdM) return base;
+    if (lengthM <= longLineThresholdM) {
+      return base;
+    }
     final double extra = (lengthM - longLineThresholdM) * longLinePercentPerM;
     return base + (extra > longLineMaxExtraPercent ? longLineMaxExtraPercent : extra);
   }

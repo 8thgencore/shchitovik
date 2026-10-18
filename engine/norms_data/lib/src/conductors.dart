@@ -45,7 +45,9 @@ final class ConductorData._({
   /// Resistance at [temperatureC], Ом/км: R20 · (1 + α·(T − 20)).
   double? resistanceOhmPerKm(ConductorMaterial material, double sectionMm2, double temperatureC) {
     final double? r20 = resistance20OhmPerKm(material, sectionMm2);
-    if (r20 == null) return null;
+    if (r20 == null) {
+      return null;
+    }
     return r20 * (1 + alpha20(material) * (temperatureC - 20));
   }
 
@@ -71,8 +73,12 @@ final class ProtectiveConductorData._(final Map<(Insulation, ConductorMaterial),
   /// Minimum PE section of the same material as the line conductor, табл. 54.2:
   /// S ≤ 16 → S; 16 < S ≤ 35 → 16; S > 35 → S/2 (the caller rounds up to a standard section).
   double minSectionMm2(double phaseSectionMm2) {
-    if (phaseSectionMm2 <= 16) return phaseSectionMm2;
-    if (phaseSectionMm2 <= 35) return 16;
+    if (phaseSectionMm2 <= 16) {
+      return phaseSectionMm2;
+    }
+    if (phaseSectionMm2 <= 35) {
+      return 16;
+    }
     return phaseSectionMm2 / 2;
   }
 

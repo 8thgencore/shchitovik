@@ -21,7 +21,9 @@ final class const SettingsRepositoryImpl({required final SharedPreferencesAsync 
   @override
   Future<Settings> read() async {
     final Map<String, Object?>? settingsMap = await _column.read();
-    if (settingsMap == null) return const Settings();
+    if (settingsMap == null) {
+      return const Settings();
+    }
 
     return Settings.fromJson(settingsMap);
   }

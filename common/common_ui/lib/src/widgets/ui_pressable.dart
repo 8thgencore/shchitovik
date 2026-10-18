@@ -68,7 +68,9 @@ class _UiPressableState() extends State<UiPressable> {
   };
 
   void _setPressed(bool value) {
-    if (_pressed != value) setState(() => _pressed = value);
+    if (_pressed != value) {
+      setState(() => _pressed = value);
+    }
   }
 
   @override
