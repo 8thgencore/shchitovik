@@ -53,30 +53,33 @@ const reportDisclaimer =
 /// Sections: title, initial data, input load, circuits, notes on checks, phase balance,
 /// specification and estimate, switchboard, assumptions and exclusions.
 Future<Uint8List> buildProjectReport(ProjectReportData data, ReportFonts fonts) {
-  final document = pw.Document(
-    title: data.projectName,
-    author: 'Щитовик',
-    creator: 'Щитовик ${data.appVersion}',
-    theme: pw.ThemeData.withFont(base: pw.Font.ttf(fonts.regular), bold: pw.Font.ttf(fonts.bold)),
-  );
-  document.addPage(
-    pw.MultiPage(
-      pageFormat: PdfPageFormat.a4.landscape,
-      margin: const pw.EdgeInsets.fromLTRB(28, 28, 28, 32),
-      footer: (context) => _footer(context, data),
-      build: (context) => [
-        ..._title(data),
-        ..._initialData(data),
-        ..._incomer(data),
-        ..._circuits(data),
-        ..._notes(data),
-        ..._phaseBalance(data),
-        if (data.estimate != null) ..._estimate(data.estimate!),
-        if (data.board != null) ..._switchboard(data, data.board!),
-        ..._assumptions(data),
-      ],
-    ),
-  );
+  final document =
+      pw.Document(
+        title: data.projectName,
+        author: 'Щитовик',
+        creator: 'Щитовик ${data.appVersion}',
+        theme: pw.ThemeData.withFont(
+          base: pw.Font.ttf(fonts.regular),
+          bold: pw.Font.ttf(fonts.bold),
+        ),
+      )..addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4.landscape,
+          margin: const pw.EdgeInsets.fromLTRB(28, 28, 28, 32),
+          footer: (context) => _footer(context, data),
+          build: (context) => [
+            ..._title(data),
+            ..._initialData(data),
+            ..._incomer(data),
+            ..._circuits(data),
+            ..._notes(data),
+            ..._phaseBalance(data),
+            if (data.estimate != null) ..._estimate(data.estimate!),
+            if (data.board != null) ..._switchboard(data, data.board!),
+            ..._assumptions(data),
+          ],
+        ),
+      );
   return document.save();
 }
 
@@ -88,9 +91,13 @@ const _grey = PdfColor.fromInt(0xFF666666);
 const _headerFill = PdfColor.fromInt(0xFFE8EEF5);
 
 String _num(double? v, [int digits = 1]) {
-  if (v == null) return '—';
+  if (v == null) {
+    return '—';
+  }
   String s = v.toStringAsFixed(digits);
-  if (s.contains('.')) s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+  if (s.contains('.')) {
+    s = s.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+  }
   return s.replaceAll('.', ',');
 }
 
@@ -98,7 +105,9 @@ String _rub(int kopecks) {
   final rubles = (kopecks / 100).round().toString();
   final buffer = StringBuffer();
   for (var i = 0; i < rubles.length; i++) {
-    if (i > 0 && (rubles.length - i) % 3 == 0) buffer.write(' ');
+    if (i > 0 && (rubles.length - i) % 3 == 0) {
+      buffer.write(' ');
+    }
     buffer.write(rubles[i]);
   }
   return '$buffer ₽';
@@ -321,7 +330,9 @@ List<pw.Widget> _notes(ProjectReportData data) {
       }
     }
     final RcdResult? rcd = c.protection.rcd;
-    if (rcd != null) rows.add(['№${c.number}', 'УЗО', rcd.reasons.join('; '), '']);
+    if (rcd != null) {
+      rows.add(['№${c.number}', 'УЗО', rcd.reasons.join('; '), '']);
+    }
   }
   final List<pw.Widget> issues = [
     for (final i in data.result.issues) _paragraph('• ${i.message}', size: _small),
@@ -346,7 +357,9 @@ List<pw.Widget> _notes(ProjectReportData data) {
 
 List<pw.Widget> _phaseBalance(ProjectReportData data) {
   final PhaseBalanceResult? balance = data.result.phaseBalance;
-  if (balance == null) return const [];
+  if (balance == null) {
+    return const [];
+  }
   return [
     _heading('5. Распределение по фазам'),
     _table(

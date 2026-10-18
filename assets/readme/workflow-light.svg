@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">Как считает Щитовик</title>
+  <desc id="desc">Пять шагов: объект, помещения, линии, щит, смета и PDF. Результаты каждого шага пересчитываются из ввода.</desc>
+
+  <rect width="1200" height="280" rx="12" fill="#F4F4F4"/>
+  <text x="48" y="48" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1.5" fill="#525252">ВВОД ПОЛЬЗОВАТЕЛЯ → РАСЧЁТ ЯДРА → РЕЗУЛЬТАТ</text>
+  
+    <g transform="translate(48 72)">
+      <rect width="204" height="168" rx="4" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1"/>
+      <text x="20" y="36" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1" fill="#525252">01</text>
+      <text x="20" y="70" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="600" fill="#0A0A0A">Объект</text>
+      <text x="20" y="108" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">ввод, фазы,</text><text x="20" y="136" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">мощность</text>
+    </g><path d="M255 156.0 H269 M263 151.0 L269 156.0 L263 161.0" stroke="#808080" fill="none" stroke-width="1.5"/>
+    <g transform="translate(272 72)">
+      <rect width="204" height="168" rx="4" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1"/>
+      <text x="20" y="36" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1" fill="#525252">02</text>
+      <text x="20" y="70" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="600" fill="#0A0A0A">Помещения</text>
+      <text x="20" y="108" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">комнаты</text><text x="20" y="136" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">и приборы</text>
+    </g><path d="M479 156.0 H493 M487 151.0 L493 156.0 L487 161.0" stroke="#808080" fill="none" stroke-width="1.5"/>
+    <g transform="translate(496 72)">
+      <rect width="204" height="168" rx="4" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1"/>
+      <text x="20" y="36" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1" fill="#525252">03</text>
+      <text x="20" y="70" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="600" fill="#0A0A0A">Линии</text>
+      <text x="20" y="108" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">автоматы,</text><text x="20" y="136" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">УЗО, кабель</text>
+    </g><path d="M703 156.0 H717 M711 151.0 L717 156.0 L711 161.0" stroke="#808080" fill="none" stroke-width="1.5"/>
+    <g transform="translate(720 72)">
+      <rect width="204" height="168" rx="4" fill="#FFFFFF" stroke="#D9D9D9" stroke-width="1"/>
+      <text x="20" y="36" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1" fill="#525252">04</text>
+      <text x="20" y="70" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="600" fill="#0A0A0A">Щит</text>
+      <text x="20" y="108" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">DIN-рейки</text><text x="20" y="136" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">и корпус</text>
+    </g><path d="M927 156.0 H941 M935 151.0 L941 156.0 L935 161.0" stroke="#808080" fill="none" stroke-width="1.5"/>
+    <g transform="translate(944 72)">
+      <rect width="204" height="168" rx="4" fill="#FFFFFF" stroke="#D9480F" stroke-width="2"/>
+      <text x="20" y="36" font-family="'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" letter-spacing="1" fill="#B03A0B">05</text>
+      <text x="20" y="70" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="600" fill="#0A0A0A">Смета и PDF</text>
+      <text x="20" y="108" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">модели</text><text x="20" y="136" font-family="'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#525252">и три цены</text>
+    </g>
+</svg>

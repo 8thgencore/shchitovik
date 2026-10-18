@@ -18,7 +18,9 @@ final class TemperatureFactors._(final _Steps _air, final _Steps _ground) {
   double? factor(CableEnvironment environment, Insulation insulation, double temperatureC) {
     final _Steps steps = environment == CableEnvironment.air ? _air : _ground;
     final int? index = indexOfStepAtOrAbove(steps.temperatures, temperatureC);
-    if (index == null) return null;
+    if (index == null) {
+      return null;
+    }
     return steps.values[insulation]![index];
   }
 }
@@ -48,7 +50,9 @@ final class SoilResistivityFactors._(
   double? factor(ReferenceMethod method, double kMPerW) {
     assert(method.isInGround, 'Soil correction applies to D1/D2 only');
     final int? index = indexOfStepAtOrAbove(_resistivity, kMPerW);
-    if (index == null) return null;
+    if (index == null) {
+      return null;
+    }
     return (method == ReferenceMethod.d1 ? _inDuct : _direct)[index];
   }
 }
@@ -126,9 +130,13 @@ final class GroupingFactors._(
   ///
   /// Between columns the next larger number of circuits is used (conservative).
   double? air(AirGroupingArrangement arrangement, int circuits) {
-    if (circuits <= 1 && arrangement != AirGroupingArrangement.singleLayerUnderCeiling) return 1;
+    if (circuits <= 1 && arrangement != AirGroupingArrangement.singleLayerUnderCeiling) {
+      return 1;
+    }
     final int? index = indexOfStepAtOrAbove(_airCounts, circuits);
-    if (index == null) return null;
+    if (index == null) {
+      return null;
+    }
     return _air[arrangement]![index];
   }
 
@@ -151,10 +159,14 @@ final class _GroundTable(
   );
 
   double? factor(int circuits, GroundSpacing spacing) {
-    if (circuits <= 1) return 1;
+    if (circuits <= 1) {
+      return 1;
+    }
     final int column = spacings.indexOf(spacing);
     final int? row = indexOfStepAtOrAbove(counts, circuits);
-    if (column < 0 || row == null) return null;
+    if (column < 0 || row == null) {
+      return null;
+    }
     return factors[row][column];
   }
 }

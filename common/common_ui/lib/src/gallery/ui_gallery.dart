@@ -152,15 +152,15 @@ class _UiGalleryState() extends State<UiGallery> {
               UiListRow(
                 number: '1',
                 title: 'Освещение комнат',
-                subtitle: 'Автомат B10 · 3×1,5 мм² · 22 м',
-                trailing: const Text('2,1 А'),
+                subtitle: 'B10 · 3×1,5 мм² · 22 м',
+                trailing: const UiQuantity('2,1', unit: 'А'),
                 onTap: () {},
               ),
               UiListRow(
                 number: '8',
                 title: 'Кондиционер',
-                subtitle: 'Автомат C20 · 3×2,5 мм² · 46 м',
-                trailing: const Text('9,8 А'),
+                subtitle: 'C20 · 3×2,5 мм² · 46 м',
+                trailing: const UiQuantity('9,8', unit: 'А'),
                 stripe: UiTone.danger,
                 below: const UiBadge(label: 'Не проходит', tone: UiTone.danger),
                 onTap: () {},
@@ -215,33 +215,101 @@ class _UiGalleryState() extends State<UiGallery> {
         ),
       ),
       (
+        'Помещение',
+        UiCard(
+          banded: true,
+          eyebrow: 'Кухня · 3',
+          title: 'Кухня-гостиная',
+          trailing: const UiQuantity('7,90', unit: 'кВт', style: UiTextStyles.reading),
+          child: UiDivided(
+            children: [
+              for (final (name, count, kw) in const [
+                ('Варочная панель', 1, '7,00'),
+                ('Розетки рабочей зоны', 4, '0,20'),
+                ('Освещение', 1, '0,10'),
+              ])
+                UiListRow(
+                  dense: true,
+                  title: name,
+                  trailing: UiQuantity(kw, unit: 'кВт', prefix: count > 1 ? '$count ×' : null),
+                  onTap: () {},
+                ),
+            ],
+          ),
+        ),
+      ),
+      (
         'Таблица',
         UiCard(
           child: UiTable(
             columns: const [
               UiTableColumn(label: '№', width: 48, numeric: true),
               UiTableColumn(label: 'Линия', flex: 3),
-              UiTableColumn(label: 'Кабель, мм²', width: 104),
-              UiTableColumn(label: 'Ток, А', width: 80, numeric: true),
+              UiTableColumn(label: 'Защита', flex: 2),
+              UiTableColumn(label: 'Кабель', width: 112),
+              UiTableColumn(label: 'Ток', width: 80, numeric: true),
               UiTableColumn(label: 'Статус', width: 156),
             ],
             rows: [
-              for (final (n, name, cable, amps, tone, status) in const [
-                ('1', 'Освещение комнат', '3×1,5', '2,1', UiTone.success, 'Проверено'),
-                ('7', 'Тёплый пол, ванная', '3×1,5', '7,5', UiTone.warning, 'Требует проверки'),
-                ('8', 'Кондиционер', '3×2,5', '9,8', UiTone.danger, 'Не проходит'),
-              ])
+              for (final (n, name, rooms, breaker, device, cable, length, amps, tone, status)
+                  in const [
+                    (
+                      '1',
+                      'Освещение комнат',
+                      'Спальня, детская',
+                      'B10',
+                      'Автомат',
+                      '3×1,5',
+                      '22 м',
+                      '2,1',
+                      UiTone.success,
+                      'Проверено',
+                    ),
+                    (
+                      '7',
+                      'Тёплый пол',
+                      'Ванная',
+                      'C16',
+                      'Дифавтомат · 30 мА, тип A',
+                      '3×1,5',
+                      '9 м',
+                      '7,5',
+                      UiTone.warning,
+                      'Требует проверки',
+                    ),
+                    (
+                      '8',
+                      'Кондиционер',
+                      'Гостиная',
+                      'C20',
+                      'Автомат',
+                      '3×2,5',
+                      '46 м',
+                      '9,8',
+                      UiTone.danger,
+                      'Не проходит',
+                    ),
+                  ])
                 UiTableRow(
                   onTap: () {},
                   stripe: tone == UiTone.success ? null : tone,
                   cells: [
-                    Text(n),
-                    UiTableCell(name),
-                    Text(cable, style: UiTextStyles.value),
-                    Text(amps),
+                    Text(n, style: TextStyle(color: c.textMuted)),
+                    UiTableCell(name, detail: rooms, strong: true),
+                    UiTableDetail(
+                      detail: device,
+                      child: Text(breaker, style: UiTextStyles.valueStrong),
+                    ),
+                    UiTableDetail(
+                      detail: length,
+                      child: UiQuantity(cable, unit: 'мм²'),
+                    ),
+                    UiQuantity(amps, unit: 'А'),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: UiBadge(label: status, tone: tone),
+                      child: tone == UiTone.success
+                          ? UiStatusIcon(tone: tone, label: status)
+                          : UiBadge(label: status, tone: tone),
                     ),
                   ],
                 ),

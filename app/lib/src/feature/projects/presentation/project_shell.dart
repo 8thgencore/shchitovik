@@ -408,7 +408,9 @@ class _ReportButtonState() extends State<_ReportButton> {
   var _busy = false;
 
   Future<void> _report() async {
-    if (_busy) return;
+    if (_busy) {
+      return;
+    }
     final CommonTranslationsLocalizations t = context.translations;
     final BuildContext toastContext = context;
     final ProjectDocument document = widget.state.document;
@@ -431,7 +433,9 @@ class _ReportButtonState() extends State<_ReportButton> {
         );
       }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 

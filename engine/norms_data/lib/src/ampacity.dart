@@ -53,7 +53,9 @@ final class AmpacityTable._(
           method: method,
         )];
     final int index = sections.indexOf(sectionMm2);
-    if (column == null || index < 0) return null;
+    if (column == null || index < 0) {
+      return null;
+    }
     return column[index];
   }
 }

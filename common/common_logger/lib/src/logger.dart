@@ -28,7 +28,9 @@ base class Logger({List<LogObserver>? observers}) {
   /// Must call super that notifies all observers about a new log message.
   @mustCallSuper
   void log(LogMessage logMessage) {
-    if (destroyed) return;
+    if (destroyed) {
+      return;
+    }
 
     notifyObservers(logMessage);
   }
@@ -116,7 +118,9 @@ base class Logger({List<LogObserver>? observers}) {
   @mustCallSuper
   // ignore: avoid-unnecessary-futures
   Future<void> destroy() async {
-    if (_destroyed) return;
+    if (_destroyed) {
+      return;
+    }
 
     _destroyed = true;
     _observers.clear();
