@@ -38,7 +38,7 @@ enum CheckCode() {
   /// Aluminium conductors are allowed for this circuit (СП 256 табл. 15.3, п. 15.3).
   conductorMaterial,
 
-  /// Thermal withstand of conductors under short circuit (ГОСТ Р 50571.4.43, 434.5.2).
+  /// Thermal withstand of conductors under short circuit (ГОСТ Р 50571.4.43, 434.5.2, 435.1).
   shortCircuitThermal,
 
   /// Demand within allowed power / incomer breaker.
