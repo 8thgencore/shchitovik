@@ -101,7 +101,7 @@ final class const SharedPreferencesColumnJson({
       return null;
     }
 
-    final decoded = jsonDecode(jsonString);
+    final Object? decoded = jsonDecode(jsonString);
 
     if (decoded is Map<String, Object?>) {
       return decoded;

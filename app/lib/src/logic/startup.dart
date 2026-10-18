@@ -66,7 +66,9 @@ Future<void> startup() async {
 
 /// Creates the [ErrorReporter] instance: Sentry when a DSN is configured, no-op otherwise.
 Future<ErrorReporter> createErrorReporter(AppConfig config) async {
-  if (!config.enableSentry) return const NoopErrorReporter();
+  if (!config.enableSentry) {
+    return const NoopErrorReporter();
+  }
 
   final reporter = SentryErrorReporter(
     dsn: config.sentryDsn,

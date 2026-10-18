@@ -76,7 +76,9 @@ BoardArrangement moveBoardItem(
 ) {
   final List<List<String>> rails = _ids(layout);
   final (int r, int i) = _find(rails, id) ?? (-1, -1);
-  if (r < 0) return arrangement;
+  if (r < 0) {
+    return arrangement;
+  }
   final List<String> rail = rails[r];
   switch (move) {
     case BoardMove.left when i > 0:
@@ -94,12 +96,14 @@ BoardArrangement moveBoardItem(
       var index = 0;
       var position = 0;
       for (final BoardItem item in layout.rails[target].items) {
-        if (position >= offset) break;
+        if (position >= offset) {
+          break;
+        }
         position += item.units;
         index++;
       }
       rails[target].insert(index, rail.removeAt(i));
-    default:
+    case BoardMove.left || BoardMove.right || BoardMove.up || BoardMove.down:
       return arrangement;
   }
   return arrangement.copyWith(rails: rails);
@@ -116,7 +120,9 @@ BoardArrangement placeBoardItem(
 ) {
   final List<List<String>> rails = _ids(layout);
   final (int, int)? source = _find(rails, id);
-  if (source == null || rail < 0 || rail >= rails.length) return arrangement;
+  if (source == null || rail < 0 || rail >= rails.length) {
+    return arrangement;
+  }
   final (int r, int i) = source;
   rails[r].removeAt(i);
   final int target = r == rail && i < index ? index - 1 : index;
@@ -131,7 +137,9 @@ List<List<String>> _ids(SwitchboardLayout layout) => [
 (int, int)? _find(List<List<String>> rails, String id) {
   for (var r = 0; r < rails.length; r++) {
     final int i = rails[r].indexOf(id);
-    if (i >= 0) return (r, i);
+    if (i >= 0) {
+      return (r, i);
+    }
   }
   return null;
 }

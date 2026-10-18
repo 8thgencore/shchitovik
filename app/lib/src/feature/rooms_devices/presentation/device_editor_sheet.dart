@@ -30,11 +30,15 @@ class const DeviceEditorSheet({
   Widget build(BuildContext context) {
     final CommonTranslationsLocalizations t = context.translations;
     final ProjectState state = context.watch<ProjectBloc>().state;
-    if (state is! ProjectReady) return const SizedBox.shrink();
+    if (state is! ProjectReady) {
+      return const SizedBox.shrink();
+    }
     final DeviceInput? device = state.document.input.devices
         .where((d) => d.id == deviceId)
         .firstOrNull;
-    if (device == null) return const SizedBox.shrink();
+    if (device == null) {
+      return const SizedBox.shrink();
+    }
     final bool expert = isExpertMode(context);
 
     void edit(DeviceInput Function(DeviceInput) change) => ProjectScope.edit(
@@ -126,7 +130,9 @@ class const DeviceEditorSheet({
               confirmLabel: t.deviceDelete,
               cancelLabel: t.cancel,
             );
-            if (!confirmed || !context.mounted) return;
+            if (!confirmed || !context.mounted) {
+              return;
+            }
             ProjectScope.edit(
               context,
               (d) => d.copyWith(

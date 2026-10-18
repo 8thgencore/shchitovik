@@ -73,6 +73,6 @@ final class ProjectsListBloc({required final ProjectsService _service})
   @override
   Future<void> close() async {
     await _subscription.cancel();
-    return super.close();
+    await super.close();
   }
 }

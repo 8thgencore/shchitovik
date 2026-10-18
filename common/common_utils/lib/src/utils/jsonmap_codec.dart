@@ -10,7 +10,7 @@ abstract class const JsonMapCodec<T>() extends Codec<T, Map<String, Object?>> {
   ({T? decoded, Object? error, StackTrace? stackTrace}) tryDecode(Map<String, Object?> input) {
     try {
       return (decoded: $decode(input), error: null, stackTrace: null);
-    } catch (e, stackTrace) {
+    } on Object catch (e, stackTrace) {
       return (decoded: null, error: e, stackTrace: stackTrace);
     }
   }

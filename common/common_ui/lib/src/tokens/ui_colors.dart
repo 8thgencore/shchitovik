@@ -123,7 +123,9 @@ final class const UiColors({
 
   @override
   UiColors lerp(UiColors? other, double t) {
-    if (other == null) return this;
+    if (other == null) {
+      return this;
+    }
     final a = this;
     final UiColors b = other;
     Color l(Color Function(UiColors) f) => Color.lerp(f(a), f(b), t)!;

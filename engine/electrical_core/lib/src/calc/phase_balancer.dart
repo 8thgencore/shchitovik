@@ -96,9 +96,13 @@ Map<String, Phase> balancePhases(List<PhaseLoad> loads, {Map<Phase, double> base
         }
       }
       for (final b in movable) {
-        if (b.id.compareTo(a.id) <= 0) continue;
+        if (b.id.compareTo(a.id) <= 0) {
+          continue;
+        }
         final Phase pb = assignment[b.id]!;
-        if (pa == pb) continue;
+        if (pa == pb) {
+          continue;
+        }
         final double delta = a.currentA - byId[b.id]!.currentA;
         final Map<Phase, double> trial = {...total, pa: total[pa]! - delta, pb: total[pb]! + delta};
         final double gain = current - spread(trial);
@@ -114,7 +118,9 @@ Map<String, Phase> balancePhases(List<PhaseLoad> loads, {Map<Phase, double> base
         }
       }
     }
-    if (bestMove == null) break;
+    if (bestMove == null) {
+      break;
+    }
     bestMove();
   }
   return assignment;

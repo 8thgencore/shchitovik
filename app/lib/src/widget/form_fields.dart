@@ -47,7 +47,9 @@ class _CommitTextFieldState() extends State<CommitTextField> {
   void initState() {
     super.initState();
     _focus.addListener(() {
-      if (!_focus.hasFocus) _commit();
+      if (!_focus.hasFocus) {
+        _commit();
+      }
     });
   }
 
@@ -61,8 +63,12 @@ class _CommitTextFieldState() extends State<CommitTextField> {
 
   void _commit() {
     final String? error = widget.validator?.call(_controller.text);
-    if (error != _error) setState(() => _error = error);
-    if (error == null && _controller.text != widget.value) widget.onCommitted(_controller.text);
+    if (error != _error) {
+      setState(() => _error = error);
+    }
+    if (error == null && _controller.text != widget.value) {
+      widget.onCommitted(_controller.text);
+    }
   }
 
   @override
@@ -81,7 +87,9 @@ class _CommitTextFieldState() extends State<CommitTextField> {
     error: _error,
     numeric: widget.numeric,
     onChanged: (_) {
-      if (_error != null) setState(() => _error = null);
+      if (_error != null) {
+        setState(() => _error = null);
+      }
     },
     onSubmitted: (_) => _commit(),
   );
@@ -116,7 +124,9 @@ class const DecimalField({
     numeric: true,
     validator: (text) {
       final double? parsed = parseDecimal(text);
-      if (text.trim().isNotEmpty && parsed == null) return context.translations.fieldNumber;
+      if (text.trim().isNotEmpty && parsed == null) {
+        return context.translations.fieldNumber;
+      }
       return validator?.call(parsed);
     },
     onCommitted: (text) => onChanged(parseDecimal(text)),

@@ -11,7 +11,9 @@ library;
 /// temperature or number of grouped circuits: taking the next step up is conservative.
 int? indexOfStepAtOrAbove(List<num> steps, num value) {
   for (var i = 0; i < steps.length; i++) {
-    if (steps[i] >= value) return i;
+    if (steps[i] >= value) {
+      return i;
+    }
   }
   return null;
 }
@@ -25,9 +27,15 @@ double interpolateLinear(List<num> xs, List<num?> ys, num x) {
     for (var i = 0; i < xs.length; i++)
       if (ys[i] != null) (xs[i].toDouble(), ys[i]!.toDouble()),
   ];
-  if (points.isEmpty) throw ArgumentError('No data points');
-  if (x <= points.first.$1) return points.first.$2;
-  if (x >= points.last.$1) return points.last.$2;
+  if (points.isEmpty) {
+    throw ArgumentError('No data points');
+  }
+  if (x <= points.first.$1) {
+    return points.first.$2;
+  }
+  if (x >= points.last.$1) {
+    return points.last.$2;
+  }
   for (var i = 1; i < points.length; i++) {
     final (double x1, double y1) = points[i];
     if (x <= x1) {

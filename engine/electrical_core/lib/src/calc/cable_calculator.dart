@@ -113,43 +113,43 @@ final class CableCalculator(
     final bool covered = tabulated != null && kt != null && kg != null && ks != null;
     final double? iz = covered ? tabulated * kt * kg * ks : null;
 
-    checks.add(
-      covered
-          ? Check(
-              code: CheckCode.datasetCoverage,
-              status: CheckStatus.passed,
-              message:
-                  'Iтабл = ${fmt(tabulated)} А (метод ${method.key}), kt = ${fmt(kt, 2)}, '
-                  'kгр = ${fmt(kg, 2)}${method.isInGround ? ', kгрунт = ${fmt(ks, 2)}' : ''}',
-              reference: 'ГОСТ Р 50571.5.52, табл. B.52.2–B.52.19',
-            )
-          : Check(
-              code: CheckCode.datasetCoverage,
-              status: CheckStatus.failed,
-              message: _coverageMessage(tabulated, kt, kg, ks, sectionMm2),
-              reference: 'ГОСТ Р 50571.5.52, приложение B',
-            ),
-    );
-
-    checks.add(
-      iz == null
-          ? const Check(
-              code: CheckCode.breakerVsAmpacity,
-              status: CheckStatus.notEvaluated,
-              message: 'Допустимый ток не определён',
-              reference: 'ГОСТ Р 50571.4.43, 433.1',
-            )
-          : Check(
-              code: CheckCode.breakerVsAmpacity,
-              status: lessOrEqual(spec.breakerA, iz) ? CheckStatus.passed : CheckStatus.failed,
-              message: lessOrEqual(spec.breakerA, iz)
-                  ? 'In = ${fmt(spec.breakerA, 0)} А ≤ Iz = ${fmt(iz)} А'
-                  : 'Автомат ${fmt(spec.breakerA, 0)} А не защищает кабель: Iz = ${fmt(iz)} А',
-              value: spec.breakerA,
-              limit: iz,
-              reference: 'ГОСТ Р 50571.4.43, 433.1 (I2 = 1,45 In)',
-            ),
-    );
+    checks
+      ..add(
+        covered
+            ? Check(
+                code: CheckCode.datasetCoverage,
+                status: CheckStatus.passed,
+                message:
+                    'Iтабл = ${fmt(tabulated)} А (метод ${method.key}), kt = ${fmt(kt, 2)}, '
+                    'kгр = ${fmt(kg, 2)}${method.isInGround ? ', kгрунт = ${fmt(ks, 2)}' : ''}',
+                reference: 'ГОСТ Р 50571.5.52, табл. B.52.2–B.52.19',
+              )
+            : Check(
+                code: CheckCode.datasetCoverage,
+                status: CheckStatus.failed,
+                message: _coverageMessage(tabulated, kt, kg, ks, sectionMm2),
+                reference: 'ГОСТ Р 50571.5.52, приложение B',
+              ),
+      )
+      ..add(
+        iz == null
+            ? const Check(
+                code: CheckCode.breakerVsAmpacity,
+                status: CheckStatus.notEvaluated,
+                message: 'Допустимый ток не определён',
+                reference: 'ГОСТ Р 50571.4.43, 433.1',
+              )
+            : Check(
+                code: CheckCode.breakerVsAmpacity,
+                status: lessOrEqual(spec.breakerA, iz) ? CheckStatus.passed : CheckStatus.failed,
+                message: lessOrEqual(spec.breakerA, iz)
+                    ? 'In = ${fmt(spec.breakerA, 0)} А ≤ Iz = ${fmt(iz)} А'
+                    : 'Автомат ${fmt(spec.breakerA, 0)} А не защищает кабель: Iz = ${fmt(iz)} А',
+                value: spec.breakerA,
+                limit: iz,
+                reference: 'ГОСТ Р 50571.4.43, 433.1 (I2 = 1,45 In)',
+              ),
+      );
 
     final bool minOk = sectionMm2 + epsilon >= spec.minSectionMm2;
     checks.add(
@@ -303,10 +303,14 @@ final class CableCalculator(
   ) {
     ({CableEvaluation evaluation, BreakerCurve curve})? fallback;
     for (final double section in norms.constants.standardSections) {
-      if (section + epsilon < spec.minSectionMm2) continue;
+      if (section + epsilon < spec.minSectionMm2) {
+        continue;
+      }
       for (final curve in curves) {
         final CableEvaluation evaluation = evaluate(spec, sectionMm2: section, curve: curve);
-        if (evaluation.mandatoryPassed) return (evaluation: evaluation, curve: curve);
+        if (evaluation.mandatoryPassed) {
+          return (evaluation: evaluation, curve: curve);
+        }
         final coverage = evaluation.check(CheckCode.datasetCoverage).status == CheckStatus.passed;
         final ampacityOk =
             evaluation.check(CheckCode.breakerVsAmpacity).status == CheckStatus.passed;
@@ -315,7 +319,9 @@ final class CableCalculator(
         }
       }
     }
-    if (fallback != null) return fallback;
+    if (fallback != null) {
+      return fallback;
+    }
     final double largest = norms.constants.standardSections.lastWhere(
       (s) =>
           norms.ampacity.currentA(
@@ -359,7 +365,9 @@ final class CableCalculator(
     final double temperature = c.maxOperatingTemperatureC(spec.insulation);
     final double? rPhase = c.resistanceOhmPerKm(spec.material, sectionMm2, temperature);
     final double? rPe = c.resistanceOhmPerKm(spec.material, peMm2, temperature);
-    if (rPhase == null || rPe == null) return null;
+    if (rPhase == null || rPe == null) {
+      return null;
+    }
     final double r = (rPhase + rPe) * lengthM / 1000;
     final double x = 2 * c.reactanceOhmPerKm * lengthM / 1000;
     return math.sqrt(r * r + x * x);
@@ -382,9 +390,15 @@ final class CableCalculator(
       norms.constants.standardSections.firstWhere((s) => s + epsilon >= section);
 
   String _coverageMessage(double? tabulated, double? kt, double? kg, double? ks, double section) {
-    if (tabulated == null) return 'В таблицах нет допустимого тока для сечения ${fmt(section)} мм²';
-    if (kt == null) return 'Температура среды вне диапазона таблицы поправочных коэффициентов';
-    if (kg == null) return 'Число совместно проложенных цепей вне диапазона таблицы';
+    if (tabulated == null) {
+      return 'В таблицах нет допустимого тока для сечения ${fmt(section)} мм²';
+    }
+    if (kt == null) {
+      return 'Температура среды вне диапазона таблицы поправочных коэффициентов';
+    }
+    if (kg == null) {
+      return 'Число совместно проложенных цепей вне диапазона таблицы';
+    }
     return 'Тепловое сопротивление грунта вне диапазона таблицы';
   }
 }

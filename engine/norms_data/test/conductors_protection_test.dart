@@ -27,15 +27,21 @@ void main() {
         double? previous;
         for (final double s in c.sections) {
           final double? r = c.resistance20OhmPerKm(m, s);
-          if (r == null) continue;
-          if (previous != null) expect(r, lessThan(previous), reason: '$m $s');
+          if (r == null) {
+            continue;
+          }
+          if (previous != null) {
+            expect(r, lessThan(previous), reason: '$m $s');
+          }
           previous = r;
         }
       }
       for (final double s in c.sections) {
         final double cu = c.resistance20OhmPerKm(ConductorMaterial.copper, s)!;
         final double? al = c.resistance20OhmPerKm(ConductorMaterial.aluminium, s);
-        if (al != null) expect(al / cu, inInclusiveRange(1.55, 1.70), reason: '$s');
+        if (al != null) {
+          expect(al / cu, inInclusiveRange(1.55, 1.70), reason: '$s');
+        }
       }
     });
     test('operating temperatures', () {

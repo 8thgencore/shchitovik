@@ -90,7 +90,7 @@ final class ProjectBloc({
   @override
   Future<void> close() async {
     await _subscription.cancel();
-    return super.close();
+    await super.close();
   }
 }
 

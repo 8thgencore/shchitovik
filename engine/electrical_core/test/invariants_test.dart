@@ -19,7 +19,9 @@ void main() {
   test('IB ≤ In ≤ Iz, ΔU ≤ limit, Iк ≥ Ia for every non-failed circuit', () {
     for (final input in inputs) {
       for (final CircuitResult c in calculateProject(input).circuits) {
-        if (c.status == CalculationStatus.failed) continue;
+        if (c.status == CalculationStatus.failed) {
+          continue;
+        }
         expect(c.designCurrentA, lessThanOrEqualTo(c.protection.breakerA + 1e-9), reason: c.id);
         expect(c.protection.breakerA, lessThanOrEqualTo(c.cable.ampacityA! + 1e-9), reason: c.id);
         if (c.cable.lengthM != null) {
@@ -42,10 +44,14 @@ void main() {
       var checked = 0;
       for (final input in inputs) {
         for (final CircuitResult c in calculateProject(input).circuits) {
-          if (c.status == CalculationStatus.failed) continue;
+          if (c.status == CalculationStatus.failed) {
+            continue;
+          }
           final List<double> sections = norms.constants.standardSections;
           final int index = sections.indexOf(c.cable.sectionMm2);
-          if (index == 0) continue;
+          if (index == 0) {
+            continue;
+          }
           final double smaller = sections[index - 1];
           final List<BreakerCurve> curves = c.protection.curve == BreakerCurve.d
               ? const [BreakerCurve.d]

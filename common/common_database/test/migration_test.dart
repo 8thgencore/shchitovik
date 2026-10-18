@@ -18,8 +18,9 @@ void main() {
     final db = AppDatabase(
       NativeDatabase.memory(
         setup: (raw) {
-          raw.execute(_schemaV1);
-          raw.userVersion = 1;
+          raw
+            ..execute(_schemaV1)
+            ..userVersion = 1;
         },
       ),
     );

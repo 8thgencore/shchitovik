@@ -71,7 +71,8 @@ Map<String, Object?> circuitVectors() {
   ];
 
   for (var i = 0; i < 400; i++) {
-    final (String, int, int, double, double, DeviceConnection, DedicatedLine, int) load = choice.pick(loads);
+    final (String, int, int, double, double, DeviceConnection, DedicatedLine, int) load = choice
+        .pick(loads);
     final (kind, power, phases, cos, inrush, connection, dedicated, quantity) = load;
     final ConductorMaterial material = choice.pick(ConductorMaterial.values);
     final RoomKind roomKind = choice.pick(roomKinds);

@@ -190,7 +190,9 @@ class const UiNotice({
         ),
       ],
     );
-    if (!boxed) return content;
+    if (!boxed) {
+      return content;
+    }
     return DecoratedBox(
       decoration: BoxDecoration(
         color: tone.soft(c),
