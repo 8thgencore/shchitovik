@@ -98,12 +98,18 @@ void main() {
     await settle(tester);
     expect(find.byType(UiListRow), findsWidgets);
 
+    // The review notice of the assumed loop impedance sits above the list.
+    expect(find.text('15 линий требуют проверки'), findsOneWidget);
+    await tester.ensureVisible(find.textContaining('Освещение').first);
+    await settle(tester);
     await tester.tap(find.textContaining('Освещение').first);
     await settle(tester);
-    expect(find.text('Приборы'), findsOneWidget);
     final Finder page = find
         .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
         .first;
+    expect(find.text('Ток КЗ посчитан по принятому сопротивлению сети'), findsOneWidget);
+    await tester.scrollUntilVisible(find.text('Приборы'), 300, scrollable: page);
+    expect(find.text('Приборы'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Проверки'), 300, scrollable: page);
     expect(find.text('Проверки'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Параметры линии'), 300, scrollable: page);

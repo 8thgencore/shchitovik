@@ -41,17 +41,66 @@ class const UiTableCell(
   /// Text.
   final String text, {
 
+  /// Muted second line: what the main value is made of.
+  final String? detail,
+
+  /// Colour of [detail]: a status tone when it explains a problem.
+  final Color? detailColor,
+
   /// Secondary colour.
   final bool muted = false,
+
+  /// The cell the eye looks for in the row: medium weight.
+  final bool strong = false,
   super.key,
 }) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Text(
-    text,
-    maxLines: 2,
-    overflow: TextOverflow.ellipsis,
-    style: TextStyle(color: muted ? context.uiColors.textMuted : null),
+  Widget build(BuildContext context) => UiTableDetail(
+    detail: detail,
+    detailColor: detailColor,
+    child: Text(
+      text,
+      maxLines: detail == null ? 2 : 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        color: muted ? context.uiColors.textMuted : null,
+        fontWeight: strong ? FontWeight.w500 : null,
+      ),
+    ),
   );
+}
+
+/// Cell content with a muted caption line under it.
+class const UiTableDetail({
+  /// Main value.
+  required final Widget child,
+
+  /// Second line; the cell is a single line without it.
+  final String? detail,
+
+  /// Colour of [detail]; muted by default.
+  final Color? detailColor,
+  super.key,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    if (detail == null) {
+      return child;
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        child,
+        Text(
+          detail!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: UiTextStyles.caption.copyWith(color: detailColor ?? context.uiColors.textMuted),
+        ),
+      ],
+    );
+  }
 }
 
 /// Data table for wide screens: stamp-label header, hairline rows, hover and tap per row.
@@ -82,7 +131,9 @@ class const UiTable({
           ],
         ),
       );
-      if (width == constraints.maxWidth) return table;
+      if (width == constraints.maxWidth) {
+        return table;
+      }
       return SingleChildScrollView(scrollDirection: Axis.horizontal, child: table);
     },
   );
@@ -139,7 +190,7 @@ class const _Row({required final List<UiTableColumn> columns, required final UiT
           style: UiTextStyles.bodySmall.copyWith(color: c.text),
           child: _Cells(
             columns: columns,
-            vertical: UiSpace.m - 1,
+            vertical: UiSpace.m,
             leftInset: -3,
             children: [
               for (var i = 0; i < columns.length; i++)
@@ -158,7 +209,9 @@ class const _Row({required final List<UiTableColumn> columns, required final UiT
         ),
       ),
     );
-    if (row.onTap == null) return body(null);
+    if (row.onTap == null) {
+      return body(null);
+    }
     return UiPressable(onPressed: row.onTap, builder: (context, s) => body(s));
   }
 }

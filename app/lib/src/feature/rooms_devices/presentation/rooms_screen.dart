@@ -18,7 +18,9 @@ const _uuid = Uuid();
 class const RoomsScreen({super.key}) extends StatelessWidget {
   Future<void> _addRoom(BuildContext context) async {
     final RoomTemplate? template = await RoomTemplatePicker.show(context);
-    if (template == null || !context.mounted) return;
+    if (template == null || !context.mounted) {
+      return;
+    }
     final String roomId = _uuid.v4();
     ProjectScope.edit(context, (d) {
       final ProjectInput input = d.input;
@@ -81,13 +83,13 @@ class const RoomsScreen({super.key}) extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 for (var col = 0; col < columns; col++) ...[
-                  if (col > 0) const SizedBox(width: UiSpace.l),
+                  if (col > 0) const SizedBox(width: UiSpace.xl),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         for (var i = col; i < cards.length; i += columns) ...[
-                          if (i >= columns) const SizedBox(height: UiSpace.l),
+                          if (i >= columns) const SizedBox(height: UiSpace.xl),
                           cards[i],
                         ],
                       ],
@@ -107,7 +109,9 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
     extends StatelessWidget {
   Future<void> _addDevice(BuildContext context) async {
     final Object? template = await DeviceTemplatePicker.show(context);
-    if (!context.mounted || template == null) return;
+    if (!context.mounted || template == null) {
+      return;
+    }
     final DeviceInput device = switch (template) {
       DeviceTemplate() => DeviceInput.fromTemplate(template, id: _uuid.v4(), roomId: room.id),
       _ => DeviceInput(
@@ -122,12 +126,16 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
       context,
       (d) => d.copyWith(input: d.input.copyWith(devices: [...d.input.devices, device])),
     );
-    if (template is! DeviceTemplate) await DeviceEditorSheet.show(context, deviceId: device.id);
+    if (template is! DeviceTemplate) {
+      await DeviceEditorSheet.show(context, deviceId: device.id);
+    }
   }
 
   Future<void> _rename(BuildContext context) async {
     final RoomInput? result = await RoomEditorSheet.show(context, room);
-    if (result == null || !context.mounted) return;
+    if (result == null || !context.mounted) {
+      return;
+    }
     ProjectScope.edit(
       context,
       (d) => d.copyWith(
@@ -147,7 +155,9 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
       confirmLabel: t.roomDeleteConfirm,
       cancelLabel: t.cancel,
     );
-    if (!confirmed || !context.mounted) return;
+    if (!confirmed || !context.mounted) {
+      return;
+    }
     ProjectScope.edit(
       context,
       (d) => d.copyWith(
@@ -171,15 +181,16 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
     final List<DeviceInput> devices = input.devices.where((d) => d.roomId == room.id).toList();
     final int total = devices.fold<int>(0, (s, d) => s + d.totalPowerW);
     return UiCard(
-      eyebrow: roomKindLabel(context, room.kind),
+      banded: true,
+      eyebrow: [
+        roomKindLabel(context, room.kind),
+        if (devices.isNotEmpty) '${devices.length}',
+      ].join(' · '),
       title: room.name,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            '${formatNumber(total / 1000, 2)} кВт',
-            style: UiTextStyles.valueStrong.copyWith(color: context.uiColors.text),
-          ),
+          UiQuantity(formatNumber(total / 1000, 2), unit: 'кВт', style: UiTextStyles.reading),
           UiMenuButton(
             tooltip: t.moreActions,
             entries: [
@@ -199,15 +210,16 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
         ],
       ),
       child: UiDivided(
-        topBorder: true,
         children: [
           for (final d in devices)
             UiListRow(
               dense: true,
               title: d.name,
               subtitle: d.phases == 3 ? '3ф' : null,
-              trailing: Text(
-                '${d.quantity > 1 ? '${d.quantity} × ' : ''}${formatNumber(d.powerW / 1000, 2)} кВт',
+              trailing: UiQuantity(
+                formatNumber(d.powerW / 1000, 2),
+                unit: 'кВт',
+                prefix: d.quantity > 1 ? '${d.quantity} ×' : null,
               ),
               onTap: () => DeviceEditorSheet.show(context, deviceId: d.id),
             ),

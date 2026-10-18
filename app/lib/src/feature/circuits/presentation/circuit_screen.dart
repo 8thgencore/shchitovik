@@ -4,6 +4,7 @@ import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:norms_data/norms_data.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/review_notice.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
@@ -100,15 +101,33 @@ class const CircuitScreen({
       ),
     );
 
+    final bool loopAssumed = LoopReviewNotice.shows(state, circuit: circuit);
+    // The fault-loop check passes only on the assumed impedance: that is what needs review.
+    CheckStatus shown(Check check) =>
+        loopAssumed &&
+            check.code == CheckCode.faultDisconnection &&
+            check.status == CheckStatus.passed
+        ? CheckStatus.warning
+        : check.status;
+    // Problems first, in order of severity; passed checks keep their order below.
+    const List<CheckStatus> order = [
+      CheckStatus.failed,
+      CheckStatus.warning,
+      CheckStatus.notEvaluated,
+      CheckStatus.passed,
+    ];
+    final List<Check> sortedChecks = [
+      for (final status in order) ...circuit.allChecks.where((c) => shown(c) == status),
+    ];
     final checks = UiCard(
       title: t.circuitChecks,
       child: UiDivided(
         topBorder: true,
         children: [
-          for (final check in circuit.allChecks)
+          for (final check in sortedChecks)
             UiListRow(
               dense: true,
-              leading: CheckStatusIcon(check.status),
+              leading: CheckStatusIcon(shown(check)),
               title: check.message,
               subtitle: check.reference,
             ),
@@ -257,6 +276,7 @@ class const CircuitScreen({
       return PageBody(
         children: [
           header,
+          if (loopAssumed) LoopReviewNotice(state: state, circuit: circuit),
           devicesCard,
           valuesCard,
           checks,
@@ -269,6 +289,7 @@ class const CircuitScreen({
     return PageBody(
       children: [
         header,
+        if (loopAssumed) LoopReviewNotice(state: state, circuit: circuit),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
