@@ -245,12 +245,19 @@ final class CableCalculator(
       );
     }
 
+    // Short-circuit thermal withstand: ГОСТ Р 50571.4.43, 435.1 — a breaker protecting the
+    // cable against overload (433.1) with breaking capacity not below the prospective fault
+    // current (4,5 кА, VERIFICATION E5) also protects it against short circuit, so the
+    // I²t check of 434.5.2 is not needed.
+    final bool overloadProtected = iz != null && lessOrEqual(spec.breakerA, iz);
     checks.add(
-      const Check(
+      Check(
         code: CheckCode.shortCircuitThermal,
-        status: CheckStatus.notEvaluated,
-        message: 'Нужна характеристика I²t автомата',
-        reference: 'ГОСТ Р 50571.4.43, 434.5.2',
+        status: overloadProtected ? CheckStatus.passed : CheckStatus.notEvaluated,
+        message: overloadProtected
+            ? 'Автомат защищает кабель от перегрузки, поэтому защищает и от КЗ'
+            : 'Автомат не защищает кабель от перегрузки: нужна характеристика I²t',
+        reference: overloadProtected ? 'ГОСТ Р 50571.4.43, 435.1' : 'ГОСТ Р 50571.4.43, 434.5.2',
       ),
     );
 
