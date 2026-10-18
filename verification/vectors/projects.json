@@ -1,6 +1,6 @@
 {
  "description": "Demo projects.",
- "algorithm_version": "0.2.1",
+ "algorithm_version": "0.2.2",
  "vectors": [
   {
    "id": "one_room_apartment",
@@ -465,7 +465,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -500,7 +500,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -536,7 +536,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -573,7 +573,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -609,7 +609,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -645,7 +645,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -680,7 +680,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -715,7 +715,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -750,7 +750,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -783,7 +783,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -816,7 +816,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -851,7 +851,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -886,7 +886,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -920,7 +920,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -953,7 +953,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      }
     ]
@@ -1551,7 +1551,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1588,7 +1588,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1624,7 +1624,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1661,7 +1661,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1697,7 +1697,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1733,7 +1733,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1768,7 +1768,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1804,7 +1804,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1839,7 +1839,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1874,7 +1874,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1909,7 +1909,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1942,7 +1942,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -1975,7 +1975,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -2010,7 +2010,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -2045,7 +2045,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -2079,7 +2079,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -2112,7 +2112,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -2145,7 +2145,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      }
     ]
@@ -2959,7 +2959,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -2997,7 +2997,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3031,7 +3031,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3067,7 +3067,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3104,7 +3104,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3140,7 +3140,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3176,7 +3176,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3211,7 +3211,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3246,7 +3246,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3282,7 +3282,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3317,7 +3317,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3353,7 +3353,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3390,7 +3390,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3425,7 +3425,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3460,7 +3460,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3493,7 +3493,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3526,7 +3526,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3561,7 +3561,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3596,7 +3596,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3630,7 +3630,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3663,7 +3663,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3696,7 +3696,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3729,7 +3729,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3762,7 +3762,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3795,7 +3795,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      },
      {
@@ -3829,7 +3829,7 @@
        "voltageDrop": "passed",
        "protectiveConductor": "passed",
        "faultDisconnection": "passed",
-       "shortCircuitThermal": "notEvaluated"
+       "shortCircuitThermal": "passed"
       }
      }
     ]

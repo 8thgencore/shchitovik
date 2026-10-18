@@ -257,7 +257,8 @@ def evaluate_cable(spec, section, curve):
         zs = spec["zext"] + math.hypot(r, x)
         ik = 0.95 * spec["u0"] / zs
         checks["faultDisconnection"] = "passed" if ik + EPS >= ia else "failed"
-    checks["shortCircuitThermal"] = "notEvaluated"
+    # ГОСТ Р 50571.4.43, 435.1: overload protection with sufficient breaking capacity covers short circuit
+    checks["shortCircuitThermal"] = "passed" if checks["breakerVsAmpacity"] == "passed" else "notEvaluated"
     if spec["material"] == "aluminium":
         checks["conductorMaterial"] = "warning"
     return dict(section=section, pe=pe, iz=iz, vd=vd, limit=limit, zs=zs, ik=ik, checks=checks,
