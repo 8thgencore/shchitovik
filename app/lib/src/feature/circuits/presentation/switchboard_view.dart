@@ -42,7 +42,9 @@ class _SwitchboardViewState() extends State<SwitchboardView> {
 
   void _move(SwitchboardLayout layout, BoardMove move) {
     final String? id = _selected;
-    if (id != null) _edit((b) => moveBoardItem(b, layout, id, move));
+    if (id != null) {
+      _edit((b) => moveBoardItem(b, layout, id, move));
+    }
   }
 
   void _toggleEditing() => setState(() {
@@ -273,7 +275,9 @@ class const _Rail({
     var start = 0;
     for (var i = 0; i < rail.items.length; i++) {
       final int units = rail.items[i].units;
-      if (x < (start + units / 2) * _moduleWidth) return i;
+      if (x < (start + units / 2) * _moduleWidth) {
+        return i;
+      }
       start += units;
     }
     return rail.items.length;
@@ -449,7 +453,9 @@ class const _BoardItemModule({
       frame: selected ? c.primary : face.frame,
       underline: item.groupId == null ? null : c.primary,
     );
-    if (onPressed == null) return module;
+    if (onPressed == null) {
+      return module;
+    }
     Widget pressable = UiPressable(
       onPressed: onPressed,
       selected: editing ? selected : null,
@@ -477,7 +483,9 @@ class const _BoardItemModule({
         child: pressable,
       );
     }
-    if (!draggable) return pressable;
+    if (!draggable) {
+      return pressable;
+    }
     return Draggable<String>(
       data: item.id,
       feedback: Opacity(opacity: .85, child: module),

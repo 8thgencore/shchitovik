@@ -64,7 +64,9 @@ void main() {
               double? previous;
               for (final s in sections) {
                 final double? value = current(i, m, loaded, method, s);
-                if (value == null) continue;
+                if (value == null) {
+                  continue;
+                }
                 if (previous != null) {
                   expect(value, greaterThanOrEqualTo(previous), reason: '$i $m $loaded $method $s');
                 }

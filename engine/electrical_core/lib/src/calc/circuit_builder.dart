@@ -140,7 +140,9 @@ List<CircuitDraft> buildCircuits({
       final binRooms = <RoomInput>[];
       for (final d in binDevices) {
         final RoomInput r = roomById[d.roomId]!;
-        if (!binRooms.contains(r)) binRooms.add(r);
+        if (!binRooms.contains(r)) {
+          binRooms.add(r);
+        }
       }
       binRooms.sort((a, b) => roomIndex[a.id]!.compareTo(roomIndex[b.id]!));
       drafts.add(

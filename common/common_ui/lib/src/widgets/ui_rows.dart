@@ -135,7 +135,9 @@ class const UiListRow({
       );
     }
 
-    if (onTap == null) return body(null);
+    if (onTap == null) {
+      return body(null);
+    }
     return UiPressable(onPressed: onTap, selected: selected, builder: (context, s) => body(s));
   }
 }

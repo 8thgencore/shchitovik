@@ -220,7 +220,9 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
       } else {
         final Phase? manual = input.circuitSettings[s.draft.id]?.phase;
         loads.add(PhaseLoad(id: s.draft.id, currentA: s.demandA, fixedPhase: manual));
-        if (manual != null) s.phaseSource = ValueSource.manual;
+        if (manual != null) {
+          s.phaseSource = ValueSource.manual;
+        }
       }
     }
     final Map<String, Phase> assignment = balancePhases(loads, base: base);
@@ -282,7 +284,9 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
     final double largestCircuit = states.isEmpty
         ? 0.0
         : states.map((s) => s.designA).reduce(math.max);
-    if (largestCircuit > design) design = largestCircuit;
+    if (largestCircuit > design) {
+      design = largestCircuit;
+    }
 
     final checks = <Check>[];
     final double? existing = input.supply.incomerBreakerA;
@@ -438,7 +442,9 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
     final InstallationMethod? method = norms.installationMethods
         .where((m) => m.id == id)
         .firstOrNull;
-    if (method != null) return method;
+    if (method != null) {
+      return method;
+    }
     issues.add(
       Issue(
         severity: IssueSeverity.warning,
@@ -568,7 +574,9 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
     final List<_CircuitState> grouped = states
         .where((s) => s.device == ProtectionDevice.mcbUnderGroupRcd)
         .toList();
-    if (grouped.isEmpty) return const [];
+    if (grouped.isEmpty) {
+      return const [];
+    }
     const double limitMa = additionalProtectionResidualMa / 3;
     const maxRatedA = 63.0;
     final buckets = <String, List<_CircuitState>>{};
@@ -629,7 +637,9 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
     final bool enabled =
         input.fireRcdAtInput ??
         (input.objectType == ObjectType.house || input.objectType == ObjectType.garageWorkshop);
-    if (!enabled || incomer.breakerA == null) return null;
+    if (!enabled || incomer.breakerA == null) {
+      return null;
+    }
     final double rated = norms.breakers.rcdRatedCurrents.firstWhere(
       (r) => r + epsilon >= incomer.breakerA!,
       orElse: () => norms.breakers.rcdRatedCurrents.last,
@@ -714,17 +724,23 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
 /// Any failed → failed; voltage drop or fault loop not evaluated (no length) → preliminary;
 /// assumed upstream impedance → requires review; any warning → warning; otherwise passed.
 CalculationStatus statusOf(Iterable<Check> checks, {required bool assumedZext}) {
-  if (checks.any((c) => c.status == CheckStatus.failed)) return CalculationStatus.failed;
+  if (checks.any((c) => c.status == CheckStatus.failed)) {
+    return CalculationStatus.failed;
+  }
   final bool lengthMissing = checks.any(
     (c) =>
         (c.code == CheckCode.voltageDrop || c.code == CheckCode.faultDisconnection) &&
         c.status == CheckStatus.notEvaluated,
   );
-  if (lengthMissing) return CalculationStatus.preliminary;
+  if (lengthMissing) {
+    return CalculationStatus.preliminary;
+  }
   if (assumedZext && checks.any((c) => c.code == CheckCode.faultDisconnection)) {
     return CalculationStatus.requiresReview;
   }
-  if (checks.any((c) => c.status == CheckStatus.warning)) return CalculationStatus.warning;
+  if (checks.any((c) => c.status == CheckStatus.warning)) {
+    return CalculationStatus.warning;
+  }
   return CalculationStatus.passed;
 }
 

@@ -32,7 +32,9 @@ class const SlotScreen({
       ProjectScope.edit(context, (d) {
         final Map<String, ApparatusSelection> selections = {...d.estimate.selections}
           ..remove(slotId);
-        if (value != null) selections[slotId] = value;
+        if (value != null) {
+          selections[slotId] = value;
+        }
         return d.copyWith(estimate: d.estimate.copyWith(selections: selections));
       });
     }

@@ -103,13 +103,17 @@ final class const SwitchboardLayout({
     for (var r = 0; r < rails.length; r++) {
       for (var i = 0; i < rails[r].items.length; i++) {
         final String? groupId = rails[r].items[i].groupId;
-        if (groupId != null) (groups[groupId] ??= []).add((r, i));
+        if (groupId != null) {
+          (groups[groupId] ??= []).add((r, i));
+        }
       }
     }
     bool split(List<(int, int)> places) {
       final (int rail, int first) = places.first;
       for (var k = 1; k < places.length; k++) {
-        if (places[k] != (rail, first + k)) return true;
+        if (places[k] != (rail, first + k)) {
+          return true;
+        }
       }
       return false;
     }
@@ -211,9 +215,13 @@ int _typicalCircuitWidth(CircuitResult c) {
 SwitchboardLayout layoutSwitchboard(List<BoardItem> items) {
   final int occupied = items.fold(0, (s, i) => s + i.units);
   for (final (rails, perRail) in typicalEnclosures) {
-    if (occupied > (1 - enclosureReserveShare) * rails * perRail) continue;
+    if (occupied > (1 - enclosureReserveShare) * rails * perRail) {
+      continue;
+    }
     final List<List<BoardItem>>? packed = _packBalanced(items, rails, perRail);
-    if (packed != null) return _layout(packed, rails, perRail);
+    if (packed != null) {
+      return _layout(packed, rails, perRail);
+    }
   }
   const perRail = 24;
   final List<List<BoardItem>> packed = _pack(items, perRail);
@@ -227,7 +235,9 @@ SwitchboardLayout layoutSwitchboard(List<BoardItem> items) {
 /// mounting order, to the first rail with room, or to an extra rail. Rails that do not fit
 /// the enclosure are kept and reported in [SwitchboardLayout.warnings].
 SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arrangement) {
-  if (arrangement.isAuto) return layoutSwitchboard(items);
+  if (arrangement.isAuto) {
+    return layoutSwitchboard(items);
+  }
   final (int rails, int perRail) = arrangement.enclosure ?? _autoEnclosure(items);
   final List<List<String>>? stored = arrangement.rails;
   if (stored == null) {
@@ -252,7 +262,9 @@ SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arr
   }
   int used(List<BoardItem> rail) => rail.fold(0, (s, i) => s + i.units);
   for (final item in items) {
-    if (placed.contains(item.id)) continue;
+    if (placed.contains(item.id)) {
+      continue;
+    }
     final List<BoardItem>? rail = packed.where((r) => used(r) + item.units <= perRail).firstOrNull;
     if (rail != null) {
       rail.add(item);
@@ -284,7 +296,9 @@ List<List<BoardItem>>? _packBalanced(List<BoardItem> items, int rails, int perRa
   final int occupied = items.fold(0, (s, i) => s + i.units);
   for (int limit = (occupied / rails).ceil(); limit <= perRail; limit++) {
     final List<List<BoardItem>> packed = _pack(items, limit);
-    if (packed.length <= rails) return packed;
+    if (packed.length <= rails) {
+      return packed;
+    }
   }
   return null;
 }
@@ -305,15 +319,21 @@ List<List<BoardItem>> _pack(List<BoardItem> items, int limit) {
   for (final chunk in chunks) {
     final int size = chunk.fold(0, (s, i) => s + i.units);
     if (size <= limit) {
-      if (used(rails.last) + size > limit) rails.add([]);
+      if (used(rails.last) + size > limit) {
+        rails.add([]);
+      }
       rails.last.addAll(chunk);
     } else {
       for (final item in chunk) {
-        if (used(rails.last) + item.units > limit && rails.last.isNotEmpty) rails.add([]);
+        if (used(rails.last) + item.units > limit && rails.last.isNotEmpty) {
+          rails.add([]);
+        }
         rails.last.add(item);
       }
     }
   }
-  if (rails.length > 1 && rails.last.isEmpty) rails.removeLast();
+  if (rails.length > 1 && rails.last.isEmpty) {
+    rails.removeLast();
+  }
   return rails;
 }

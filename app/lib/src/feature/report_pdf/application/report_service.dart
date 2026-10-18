@@ -24,7 +24,7 @@ final class ReportService({
       document.estimate,
       catalog: catalog,
     );
-    return buildProjectReport(
+    return await buildProjectReport(
       ProjectReportData(
         projectName: document.name,
         generatedAt: clock.now(),

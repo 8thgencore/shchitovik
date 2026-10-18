@@ -44,7 +44,9 @@ void main() {
         }
         final String dataset = name.replaceAll('.json', '');
         final String? body = files[dataset];
-        if (body == null) return http.Response('', 404);
+        if (body == null) {
+          return http.Response('', 404);
+        }
         return http.Response.bytes(utf8.encode(corrupt ? '${body}x' : body), 200);
       });
 

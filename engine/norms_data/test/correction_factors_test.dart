@@ -32,8 +32,12 @@ void main() {
           double? previous;
           for (var temp = 10.0; temp <= 80; temp += 5) {
             final double? f = t.factor(env, ins, temp);
-            if (f == null) break;
-            if (previous != null) expect(f, lessThanOrEqualTo(previous), reason: '$env $ins $temp');
+            if (f == null) {
+              break;
+            }
+            if (previous != null) {
+              expect(f, lessThanOrEqualTo(previous), reason: '$env $ins $temp');
+            }
             previous = f;
           }
         }
@@ -67,8 +71,12 @@ void main() {
         double? previous;
         for (var n = 1; n <= 20; n++) {
           final double? f = g.air(a, n);
-          if (f == null) break;
-          if (previous != null) expect(f, lessThanOrEqualTo(previous), reason: '$a $n');
+          if (f == null) {
+            break;
+          }
+          if (previous != null) {
+            expect(f, lessThanOrEqualTo(previous), reason: '$a $n');
+          }
           previous = f;
         }
       }

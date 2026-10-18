@@ -51,7 +51,9 @@ final class BreakerData._({
   /// Smallest rated current not less than [currentA], or `null` above the range.
   double? ratedCurrentAtOrAbove(double currentA) {
     for (final double r in ratedCurrents) {
-      if (r >= currentA) return r;
+      if (r >= currentA) {
+        return r;
+      }
     }
     return null;
   }
@@ -89,7 +91,9 @@ final class DisconnectionTimes._({
     required bool hasSockets,
     required double ratedCurrentA,
   }) {
-    if (!isFinalCircuit) return distributionCircuitS;
+    if (!isFinalCircuit) {
+      return distributionCircuitS;
+    }
     final double limit = hasSockets ? finalWithSocketsLimitA : finalFixedOnlyLimitA;
     return ratedCurrentA <= limit ? finalCircuitS : distributionCircuitS;
   }

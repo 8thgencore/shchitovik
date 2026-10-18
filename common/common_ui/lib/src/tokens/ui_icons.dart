@@ -139,4 +139,3 @@ abstract final class UiIcons() {
   /// Move down.
   static const IconData moveDown = IconData(0xe042, fontFamily: _family, fontPackage: _package);
 }
-

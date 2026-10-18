@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:common_logger/common_logger.dart';
+import 'package:flutter/foundation.dart' show immutable;
 
 /// {@template error_reporter}
 /// An interface for reporting errors.
@@ -28,15 +29,18 @@ final class const ErrorReporterLogObserver(
   @override
   void onLog(LogMessage logMessage) {
     if (logMessage.level.index >= LogLevel.error.index) {
-      _errorReporter.captureException(
-        throwable: logMessage.error ?? ReportedMessageException(logMessage.message),
-        stackTrace: logMessage.stackTrace ?? StackTrace.current,
+      unawaited(
+        _errorReporter.captureException(
+          throwable: logMessage.error ?? ReportedMessageException(logMessage.message),
+          stackTrace: logMessage.stackTrace ?? StackTrace.current,
+        ),
       );
     }
   }
 }
 
 /// An exception used for error logs without an exception, only a message.
+@immutable
 class const ReportedMessageException(
   /// The message that was reported.
   final String message,
@@ -49,7 +53,9 @@ class const ReportedMessageException(
 
   @override
   bool operator ==(Object other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other is ReportedMessageException && other.message == message;
   }

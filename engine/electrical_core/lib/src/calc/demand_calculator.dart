@@ -118,7 +118,9 @@ NormativeDemand _publicDemand(
   double powerKc(List<DeviceInput> group, String label) {
     final int count = group.fold<int>(0, (s, d) => s + d.quantity);
     final double groupPower = group.fold<double>(0, (s, d) => s + d.totalPowerW);
-    if (count == 0) return 0;
+    if (count == 0) {
+      return 0;
+    }
     double kc;
     String source;
     switch (profile) {

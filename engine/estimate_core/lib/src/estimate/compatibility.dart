@@ -1,6 +1,6 @@
 import 'package:estimate_core/src/catalog/catalog.dart';
 import 'package:estimate_core/src/estimate/requirements.dart';
-import 'package:norms_data/src/protection.dart';
+import 'package:norms_data/norms_data.dart';
 
 /// How well a model matches a requirement.
 enum CompatibilityStatus() {
@@ -57,9 +57,15 @@ Compatibility checkCompatibility(ApparatusProduct product, ApparatusRequirement 
   final differences = <CompatibilityReason>[];
   final ApparatusSpec spec = product.spec;
 
-  if (!product.active) differences.add(CompatibilityReason.archived);
-  if (product.function != requirement.function) blocking.add(CompatibilityReason.functionMismatch);
-  if (spec.poles != requirement.poles) blocking.add(CompatibilityReason.polesMismatch);
+  if (!product.active) {
+    differences.add(CompatibilityReason.archived);
+  }
+  if (product.function != requirement.function) {
+    blocking.add(CompatibilityReason.functionMismatch);
+  }
+  if (spec.poles != requirement.poles) {
+    blocking.add(CompatibilityReason.polesMismatch);
+  }
 
   if (requirement.function == ApparatusFunction.rcd) {
     if (spec.ratedCurrentA < requirement.ratedCurrentA) {
@@ -101,7 +107,9 @@ Compatibility checkCompatibility(ApparatusProduct product, ApparatusRequirement 
     blocking.add(CompatibilityReason.selectivityMismatch);
   }
 
-  if (blocking.isNotEmpty) return Compatibility(CompatibilityStatus.incompatible, blocking);
+  if (blocking.isNotEmpty) {
+    return Compatibility(CompatibilityStatus.incompatible, blocking);
+  }
   if (differences.isNotEmpty) {
     return Compatibility(CompatibilityStatus.compatibleWithDifferences, differences);
   }

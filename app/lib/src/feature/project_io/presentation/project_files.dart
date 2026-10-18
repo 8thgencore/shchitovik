@@ -21,7 +21,9 @@ abstract final class ProjectFiles() {
   /// contents are validated by `ProjectFileCodec` instead.
   static Future<String?> pickProjectFile() async {
     final PlatformFile? file = await FilePicker.pickFile();
-    if (file == null) return null;
+    if (file == null) {
+      return null;
+    }
     return utf8.decode(await file.readAsBytes(), allowMalformed: true);
   }
 }

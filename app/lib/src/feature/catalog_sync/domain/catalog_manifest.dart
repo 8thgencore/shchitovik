@@ -28,7 +28,9 @@ final class const CatalogManifest({
       throw FormatException('Unsupported manifest schema ${json['schema_version']}');
     }
     final Object? files = json['files'];
-    if (files is! Map<String, Object?>) throw const FormatException('No files in the manifest');
+    if (files is! Map<String, Object?>) {
+      throw const FormatException('No files in the manifest');
+    }
     final parsed = <String, ({String path, String sha256})>{};
     for (final String dataset in catalogDatasets) {
       final Object? file = files[dataset];
@@ -41,7 +43,9 @@ final class const CatalogManifest({
       );
     }
     final Object? version = json['catalog_version'];
-    if (version is! String || version.isEmpty) throw const FormatException('No catalog version');
+    if (version is! String || version.isEmpty) {
+      throw const FormatException('No catalog version');
+    }
     return CatalogManifest(catalogVersion: version, files: parsed);
   }
 
