@@ -18,7 +18,7 @@
 | Щит | Ширина аппаратов — из моделей сметы; корпус — наименьший типовой с резервом ≥ 20 % (допущение, VERIFICATION E9); на телефоне прокрутка. Раскладка — в `estimate_core`; ручная перестановка (режим «Переставить»: стрелки, клавиатура, на широком экране перетаскивание) и выбор корпуса хранятся в `EstimateInput.board`; разрыв группы УЗО разрешён с предупреждением. |
 | Идентификатор | `ru.shchitovik.app`, домен `shchitovik.ru`. |
 | Ошибки | Sentry в релизах выключен (политика: данные не собираются). |
-| Инфраструктура | CI: GitHub Actions (`.github/workflows`, Flutter по `.fvmrc`) или gitlab.com + свой runner (`.gitlab-ci.yml`); Web и каталог — Docker-образ за Caddy на своём VPS (или nginx/Caddy без Docker); iOS собирается на Mac владельца. |
+| Инфраструктура | CI/CD: GitHub Actions (`.github/workflows`, Flutter по `.fvmrc`): проверки на runner'ах GitHub, релиз по тегу `vX.Y.Z` — подписанные AAB/APK и черновик GitHub Release; Web и каталог — Docker-образ за Caddy на своём VPS (или nginx/Caddy без Docker); iOS собирается на Mac владельца (вручную или как self-hosted runner `macos`). |
 | Тесты | Табличные на фиксированных сетках, без property-based и `bloc_test`. |
 
 Стек: Flutter 3.47.6 (FVM), flutter_bloc, go_router, drift, freezed, pdf/printing, gen-l10n (ru).

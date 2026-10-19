@@ -1,7 +1,6 @@
 # Build context of deploy/docker/Dockerfile: sources only, everything is rebuilt in the image.
 .git
 .github
-.gitlab-ci.yml
 .fvm
 .claude
 .idea

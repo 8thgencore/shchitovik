@@ -1,14 +1,17 @@
-# Manual release tasks (Actions → Release → Run workflow).
+# Releases: a `vX.Y.Z` tag builds signed AAB/APK and drafts a GitHub Release; manual tasks are in
+# Actions → Release → Run workflow. See docs/RELEASE.md.
 # Sentry stays off: no SENTRY_DSN define, the privacy policy promises no error reports.
 name: Release
 
 on:
+  push:
+    tags: ["v*"]
   workflow_dispatch:
     inputs:
       target:
         description: What to do
         type: choice
-        options: [deploy-web, store-android]
+        options: [deploy-web, deploy-files, store-android, ios]
 
 jobs:
   # Web app and price catalog: one Docker image (deploy/docker), run by compose on the VPS
@@ -50,14 +53,65 @@ jobs:
           scp deploy/compose/prod.yaml "$TARGET:shchitovik/prod.yaml"
           ssh "$TARGET" 'docker compose -f ~/shchitovik/prod.yaml up -d --no-build --pull never --wait && docker image prune -f'
 
+  # The same site without Docker: files into /var/www/shchitovik/{web,catalog} served by nginx or
+  # Caddy (deploy/README.md, «Без Docker»).
+  deploy-files:
+    name: Deploy Web files to VPS
+    if: inputs.target == 'deploy-files'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          channel: stable
+          cache: true
+      - run: bash scripts/bootstrap.bash
+      - run: >-
+          cd app && flutter build web --release --no-web-resources-cdn
+          --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
+      - run: |
+          python3 -I tools/catalog/validate_catalogs.py
+          python3 -I tools/catalog/publish_catalog.py out
+      - name: SSH key
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Upload files
+        env:
+          TARGET: ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}
+        run: |
+          rsync -az --delete app/build/web/ "$TARGET:/var/www/shchitovik/web/"
+          rsync -az --delete out/catalog/ "$TARGET:/var/www/shchitovik/catalog/"
+
   store-android:
     name: Signed AAB and APK
-    if: inputs.target == 'store-android'
+    if: github.event_name == 'push' || inputs.target == 'store-android'
     runs-on: ubuntu-latest
     env:
       DEFINES: --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
+      - id: version
+        name: Version from pubspec (must match the tag)
+        run: |
+          version=$(sed -n 's/^version: *\([^+]*\).*/\1/p' app/pubspec.yaml)
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Тег $GITHUB_REF_NAME не совпадает с версией $version в app/pubspec.yaml"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
       - id: fvm
         run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-java@v6
@@ -88,10 +142,61 @@ jobs:
       - run: cd app && flutter build apk --release --build-number=${{ github.run_number }} $DEFINES
       - run: rm -f app/android/key.properties "$RUNNER_TEMP/upload.jks"
         if: always()
+      - name: Name files by version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir dist
+          cp app/build/app/outputs/bundle/release/app-release.aab "dist/shchitovik-$VERSION.aab"
+          cp app/build/app/outputs/flutter-apk/app-release.apk "dist/shchitovik-$VERSION.apk"
       - uses: actions/upload-artifact@v7
         with:
           name: store-android
-          path: |
-            app/build/app/outputs/bundle/release/
-            app/build/app/outputs/flutter-apk/app-release.apk
+          path: dist/
+          retention-days: 30
+
+  # Draft release with the store files; the owner checks the notes and publishes it.
+  github-release:
+    name: GitHub Release
+    if: github.event_name == 'push'
+    needs: [store-android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: store-android
+          path: dist
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.store-android.outputs.version }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME" dist/*
+          --repo "$GITHUB_REPOSITORY" --verify-tag --draft --generate-notes
+          --title "Щитовик $VERSION"
+
+  # IPA on the owner's Mac registered as a self-hosted runner with the `macos` label; signing comes
+  # from Xcode (team, certificates in the login keychain). Upload via Transporter.
+  ios:
+    name: IPA (self-hosted Mac)
+    if: inputs.target == 'ios'
+    runs-on: [self-hosted, macos]
+    steps:
+      - uses: actions/checkout@v7
+      - id: fvm
+        run: echo "flutter=$(jq -r .flutter .fvmrc)" >> "$GITHUB_OUTPUT"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ steps.fvm.outputs.flutter }}
+          channel: stable
+          cache: true
+      - run: bash scripts/bootstrap.bash
+      - run: >-
+          cd app && flutter build ipa --release --build-number=${{ github.run_number }}
+          --dart-define=ENVIRONMENT=prod --dart-define=CATALOG_URL=${{ vars.APP_BASE_URL }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ios
+          path: app/build/ios/ipa/*.ipa
           retention-days: 30
