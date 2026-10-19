@@ -71,8 +71,8 @@ curl https://shchitovik.ru/catalog/manifest.json      # актуальная cat
 
 nginx (`deploy/nginx/shchitovik.conf`, сертификат через certbot) или Caddy
 (`deploy/caddy/Caddyfile`) раздаёт `/var/www/shchitovik/{web,catalog}`; заголовки те же. Файлы
-выкладывают задачи `deploy_web` и `deploy_catalog` в GitLab CI (rsync от пользователя `deploy`,
-владельца `/var/www/shchitovik`).
+выкладывает Actions → Release → `deploy-files` (rsync от пользователя `deploy`, владельца
+`/var/www/shchitovik`; секреты и переменные — те же, что для `deploy-web`).
 
 ```bash
 sudo cp deploy/nginx/shchitovik.conf /etc/nginx/sites-available/
