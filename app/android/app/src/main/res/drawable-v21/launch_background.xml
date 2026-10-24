@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Modify this file to customize your launch splash screen -->
+<!-- Splash before Android 12: the launcher icon as Android 12 draws it, the mark on an accent
+     circle of 160dp (values-v31/styles.xml takes over from Android 12). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="?android:colorBackground" />
-
-    <!-- You can insert your own image assets here -->
-    <!-- <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/launch_image" />
-    </item> -->
+    <item android:drawable="@color/splash_background" />
+    <item
+        android:width="160dp"
+        android:height="160dp"
+        android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="@color/ic_launcher_background" />
+        </shape>
+    </item>
+    <item
+        android:width="240dp"
+        android:height="240dp"
+        android:drawable="@drawable/ic_splash"
+        android:gravity="center" />
 </layer-list>
