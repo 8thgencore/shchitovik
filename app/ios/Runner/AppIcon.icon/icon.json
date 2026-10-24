@@ -1,0 +1,40 @@
+{
+    "fill": {
+        "solid": "display-p3:0.85098,0.28235,0.05882,1.00000"
+    },
+    "groups": [
+        {
+            "blur-material": 0.5,
+            "layers": [
+                {
+                    "glass": true,
+                    "hidden": false,
+                    "name": "mark",
+                    "position": {
+                        "scale": 1.0,
+                        "translation-in-points": [
+                            0.0,
+                            0.0
+                        ]
+                    },
+                    "image-name": "mark.svg"
+                }
+            ],
+            "shadow": {
+                "kind": "neutral",
+                "opacity": 0.5
+            },
+            "specular": true,
+            "translucency": {
+                "enabled": true,
+                "value": 0.5
+            }
+        }
+    ],
+    "supported-platforms": {
+        "circles": [
+            "watchOS"
+        ],
+        "squares": "shared"
+    }
+}
