@@ -11,7 +11,8 @@ GitHub Release, выкладка Web, IPA на своём Mac), политика
 - [ ] Зарегистрировать `shchitovik.ru`, настроить сервер — [deploy/README.md](../deploy/README.md).
 - [ ] Заполнить `⟨…⟩` в `app/web/privacy.html` (разработчик, e-mail, срок хранения журналов),
       выложить веб-версию, проверить `https://shchitovik.ru/privacy.html`.
-- [ ] Иконка (сейчас стандартная Flutter) и скриншоты: телефон, iPad 13″.
+- [x] Иконка и сплэш.
+- [ ] Скриншоты: телефон, iPad 13″.
 - [ ] Версия `1.0.0` в `app/pubspec.yaml`.
 
 ## 2. Ключ Android
