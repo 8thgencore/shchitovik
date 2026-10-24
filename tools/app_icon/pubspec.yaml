@@ -1,0 +1,9 @@
+name: app_icon
+description: "Runs launcher_icons for app/; standalone: launcher_icons pins xml ^6, printing needs xml 7."
+publish_to: none
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+
+dev_dependencies:
+  launcher_icons: ^0.16.0

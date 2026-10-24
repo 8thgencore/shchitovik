@@ -20,17 +20,23 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Щитовик — расчёт электрощита и смета">
 
+  <!-- Link previews; crawlers need absolute URLs. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Щитовик">
+  <meta property="og:title" content="Щитовик — расчёт электрощита и смета">
+  <meta property="og:description" content="Автоматы, УЗО, кабели и смета на щит квартиры или дома.">
+  <meta property="og:url" content="https://shchitovik.ru/">
+  <meta property="og:image" content="https://shchitovik.ru/opengraph.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Щитовик">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>Щитовик</title>
-  <link rel="manifest" href="manifest.json">
 
   <!-- Loading indicator until the first frame; colours follow UiColors.canvas and accent. -->
   <style>
@@ -45,13 +51,24 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (prefers-color-scheme: dark) {
-      html, body { background: #0A0A0A; }
+      /* Outranks the light background of the launcher_icons block below. */
+      html:root, html body { background: #0A0A0A; }
       #loading div { border-color: #262626; border-top-color: #FF7B36; }
     }
     @media (prefers-reduced-motion: reduce) {
       #loading div { animation-duration: 2.4s; }
     }
   </style>
+  <!--LI-->
+  <link rel="icon" type="image/x-icon" sizes="any" href="favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png"/>
+  <link rel="manifest" href="manifest.json"/>
+  <style>html, body { background-color: #F4F4F4; }</style>
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FFFFFF"/>
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141414"/>
+  <!--LIEND-->
 </head>
 <body>
   <div id="loading" role="progressbar" aria-label="Загрузка"><div></div></div>
