@@ -14,6 +14,15 @@ launcher_icons:
     generate: true
     remove_alpha: true
     background_color: "#D9480F"
+    # iOS 18+ appearances of the PNG catalog.
+    image_path_dark_transparent: "assets/icon/dark.png"
+    image_path_tinted_grayscale: "assets/icon/tinted.png"
+    # iOS 26 Liquid Glass: the white mark as one glass layer over the accent canvas; white in
+    # every appearance, the dark PNG (accent mark) would vanish on the accent fill.
+    liquid_glass_layers:
+      - image_path: "assets/icon/mark.svg"
+        image_path_dark: "assets/icon/mark.svg"
+        image_path_tinted: "assets/icon/mark.svg"
   web:
     generate: true
     image_path: "assets/icon/favicon.png"
