@@ -5,7 +5,7 @@
 # TLS, the domain and the ports 80/443 belong to the edge proxy on the host (deploy/caddy).
 
 # Keep in sync with .fvmrc; CI passes the version from there.
-ARG FLUTTER_VERSION=3.47.6
+ARG FLUTTER_VERSION=3.47.8
 ARG SWS_VERSION=2.44.0
 ARG BUSYBOX_VERSION=1.37.0
 
