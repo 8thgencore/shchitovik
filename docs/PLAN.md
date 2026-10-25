@@ -21,7 +21,7 @@
 | Инфраструктура | CI/CD: GitHub Actions (`.github/workflows`, Flutter по `.fvmrc`): проверки на runner'ах GitHub, релиз по тегу `vX.Y.Z` — подписанные AAB/APK и черновик GitHub Release; Web и каталог — Docker-образ за Caddy на своём VPS (или nginx/Caddy без Docker); iOS собирается на Mac владельца (вручную или как self-hosted runner `macos`). |
 | Тесты | Табличные на фиксированных сетках, без property-based и `bloc_test`. |
 
-Стек: Flutter 3.47.6 (FVM), flutter_bloc, go_router, drift, freezed, pdf/printing, gen-l10n (ru).
+Стек: Flutter 3.47.8 (FVM), flutter_bloc, go_router, drift, freezed, pdf/printing, gen-l10n (ru).
 Структура и правила кода — [AGENTS.md](../AGENTS.md).
 
 ## Сделано
