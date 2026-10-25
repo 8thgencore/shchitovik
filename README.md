@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/8thgencore/shchitovik/actions/workflows/ci.yml"><img src="https://github.com/8thgencore/shchitovik/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
-  <img src="https://img.shields.io/badge/Flutter-3.47.6-0A0A0A?logo=flutter&logoColor=white" alt="Flutter 3.47.6">
+  <img src="https://img.shields.io/badge/Flutter-3.47.8-0A0A0A?logo=flutter&logoColor=white" alt="Flutter 3.47.8">
   <img src="https://img.shields.io/badge/Android%20·%20iOS%20·%20Web-0A0A0A" alt="Android, iOS, Web">
   <img src="https://img.shields.io/badge/оракул-403%20вектора%20·%200%20расхождений-D9480F" alt="Оракул: 403 вектора, 0 расхождений">
 </p>
@@ -78,7 +78,7 @@
 ## Быстрый старт
 
 ```bash
-dart pub global activate fvm && fvm install   # Flutter 3.47.6 из .fvmrc
+dart pub global activate fvm && fvm install   # Flutter 3.47.8 из .fvmrc
 make bootstrap                                # зависимости и кодогенерация
 make analyze && make test
 cd app && fvm flutter run --dart-define-from-file=env/.dev.env

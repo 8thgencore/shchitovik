@@ -15,7 +15,7 @@ Plan, decisions and what is left: [docs/PLAN.md](docs/PLAN.md). Publishing waits
 
 ## Toolchain
 
-Flutter 3.47.6 pinned via FVM (`.fvmrc`). `make bootstrap` → `make format` → `make analyze` → `make test`.
+Flutter 3.47.8 pinned via FVM (`.fvmrc`). `make bootstrap` → `make format` → `make analyze` → `make test`.
 
 ## Architecture
 
