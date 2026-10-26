@@ -4,6 +4,7 @@ import 'package:common_database/common_database.dart';
 import 'package:common_logger/common_logger.dart';
 import 'package:common_ui/common_ui.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -254,6 +255,102 @@ void main() {
     await tester.tap(find.text('Сбросить раскладку'));
     await settle(tester);
     expect(find.text('Раскладка вручную'), findsNothing);
+
+    await closeDatabase(tester);
+  });
+
+  /// Opens the app and creates an empty single-phase project with a kitchen from the template.
+  Future<void> newProjectWithKitchen(WidgetTester tester) async {
+    final DependenciesContainer? deps = await tester.runAsync(dependencies);
+    await tester.pumpWidget(
+      RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
+    );
+    await settle(tester);
+    await tester.tap(find.text('Создать проект'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'Квартира');
+    await tester.tap(find.text('Создать'));
+    await settle(tester);
+    await tester.tap(find.text('Помещения').first);
+    await settle(tester);
+    await tester.tap(find.text('Добавить помещение'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Кухня').last);
+    await settle(tester);
+  }
+
+  testWidgets('single-phase supply: no three-phase devices offered, existing ones are flagged', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.5;
+    addTearDown(tester.view.reset);
+    await newProjectWithKitchen(tester);
+
+    await tester.ensureVisible(find.text('Добавить прибор').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Добавить прибор').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'проточный');
+    await tester.pumpAndSettle();
+    expect(find.text('Водонагреватель проточный (однофазный)'), findsOneWidget);
+    expect(find.text('Водонагреватель проточный (трёхфазный)'), findsNothing);
+    await tester.tap(find.text('Водонагреватель проточный (однофазный)'));
+    await settle(tester);
+
+    // A three-phase device left from a three-phase project.
+    tester
+        .element(find.text('Кухня').first)
+        .read<ProjectBloc>()
+        .add(
+          ProjectEdited(
+            (d) => d.copyWith(
+              input: d.input.copyWith(
+                devices: [
+                  for (final x in d.input.devices)
+                    if (x.kind == 'water_heater') x.copyWith(phases: 3) else x,
+                ],
+              ),
+            ),
+          ),
+        );
+    await settle(tester);
+    const warning = 'Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт';
+    expect(find.text(warning), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Водонагреватель проточный (однофазный)'));
+    await tester.tap(find.text('Водонагреватель проточный (однофазный)'));
+    await settle(tester);
+    expect(find.text(warning), findsNWidgets(2));
+    expect(find.text('Неотключаемая линия'), findsOneWidget);
+
+    await closeDatabase(tester);
+  });
+
+  testWidgets('circuits without a length: notice, one length for all of them', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.5;
+    addTearDown(tester.view.reset);
+    await newProjectWithKitchen(tester);
+
+    await tester.tap(find.text('Линии').first);
+    await settle(tester);
+    await tester.tap(find.text('Список'));
+    await settle(tester);
+    expect(find.textContaining('без длины — падение напряжения'), findsOneWidget);
+    expect(find.textContaining('длина не задана'), findsWidgets);
+
+    await tester.tap(find.text('Задать длину'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, '12');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pump();
+    await tester.tap(find.text('Применить'));
+    await settle(tester);
+
+    expect(find.textContaining('без длины — падение напряжения'), findsNothing);
+    expect(find.textContaining('длина не задана'), findsNothing);
+    expect(find.textContaining('12 м'), findsWidgets);
 
     await closeDatabase(tester);
   });
