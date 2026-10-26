@@ -1,6 +1,7 @@
 import 'package:electrical_core/electrical_core.dart';
 import 'package:estimate_core/src/board/board_arrangement.dart';
 import 'package:estimate_core/src/estimate/estimate_result.dart';
+import 'package:estimate_core/src/estimate/requirements.dart';
 import 'package:meta/meta.dart';
 
 /// What a piece of the switchboard is.
@@ -138,8 +139,13 @@ const typicalEnclosures = [(1, 12), (1, 18), (2, 12), (2, 18), (3, 18), (4, 18),
 /// (verification/VERIFICATION.md, E9).
 const enclosureReserveShare = 0.2;
 
-/// Lists the switchboard items in mounting order: incomer, fire RCD, auxiliary devices,
-/// shared RCD groups with their circuits, the remaining circuits.
+/// Lists the switchboard items in mounting order: incomer, SPD, DIN-rail socket with its
+/// RCBO, fire RCD, voltage relay, non-switchable circuits (with their shared RCDs), load
+/// switch, the remaining shared RCD groups with their circuits, the remaining circuits.
+///
+/// The SPD comes right after the incomer so it also protects the voltage relay; the
+/// non-switchable circuits are fed from the relay but bypass the load switch.
+/// ASSUMPTION: installation practice, not a norm clause (verification/VERIFICATION.md, E10).
 ///
 /// Widths come from the models in [estimate]; when a line has no width, a typical width
 /// for the device is used.
@@ -154,6 +160,12 @@ List<BoardItem> switchboardItems(
     return units > 0 ? units : typical;
   }
 
+  Iterable<BoardItem> auxiliary(String id) => [
+    for (final line in estimate.lines)
+      if (line.id == id && line.moduleUnits > 0)
+        BoardItem(kind: BoardItemKind.auxiliary, id: line.id, units: line.moduleUnits),
+  ];
+
   BoardItem circuit(CircuitResult c, [String? groupId]) {
     final int units = estimate.lines
         .where((l) => l.circuitId == c.id && l.category == EstimateCategory.apparatus)
@@ -167,6 +179,22 @@ List<BoardItem> switchboardItems(
   }
 
   final Set<String> grouped = {for (final r in result.sharedRcds) ...r.circuitIds};
+  Iterable<BoardItem> circuits({required bool alwaysOn}) => [
+    for (final rcd in result.sharedRcds)
+      if (result.circuits.any((c) => rcd.circuitIds.contains(c.id) && c.alwaysOn == alwaysOn)) ...[
+        BoardItem(
+          kind: BoardItemKind.groupRcd,
+          id: rcd.id,
+          units: lineWidth(rcd.id, rcd.poles),
+          groupId: rcd.id,
+        ),
+        for (final c in result.circuits)
+          if (rcd.circuitIds.contains(c.id)) circuit(c, rcd.id),
+      ],
+    for (final c in result.circuits)
+      if (!grouped.contains(c.id) && c.alwaysOn == alwaysOn) circuit(c),
+  ];
+
   return [
     if (result.incomer.breakerA != null)
       BoardItem(
@@ -174,27 +202,24 @@ List<BoardItem> switchboardItems(
         id: 'incomer/mcb',
         units: lineWidth('incomer/mcb', three ? 3 : 2),
       ),
+    ...auxiliary('aux/spd'),
+    if (estimate.lines.any((l) => l.id == dinSocketRcboId))
+      BoardItem(
+        kind: BoardItemKind.auxiliary,
+        id: dinSocketRcboId,
+        units: lineWidth(dinSocketRcboId, 2),
+      ),
+    ...auxiliary('aux/din_socket'),
     if (result.fireRcd != null)
       BoardItem(
         kind: BoardItemKind.fireRcd,
         id: 'incomer/rcd',
         units: lineWidth('incomer/rcd', result.fireRcd!.poles),
       ),
-    for (final line in estimate.lines)
-      if (line.category == EstimateCategory.auxiliary && line.moduleUnits > 0)
-        BoardItem(kind: BoardItemKind.auxiliary, id: line.id, units: line.moduleUnits),
-    for (final rcd in result.sharedRcds) ...[
-      BoardItem(
-        kind: BoardItemKind.groupRcd,
-        id: rcd.id,
-        units: lineWidth(rcd.id, rcd.poles),
-        groupId: rcd.id,
-      ),
-      for (final c in result.circuits)
-        if (rcd.circuitIds.contains(c.id)) circuit(c, rcd.id),
-    ],
-    for (final c in result.circuits)
-      if (!grouped.contains(c.id)) circuit(c),
+    ...auxiliary('aux/voltage_relay'),
+    ...circuits(alwaysOn: true),
+    ...auxiliary('aux/load_switch'),
+    ...circuits(alwaysOn: false),
   ];
 }
 
@@ -231,8 +256,9 @@ SwitchboardLayout layoutSwitchboard(List<BoardItem> items) {
 /// Places [items] by [arrangement]: the chosen enclosure or the automatic one, the stored
 /// order of items or the mounting order.
 ///
-/// Stored ids missing from [items] are skipped; items missing from the arrangement go, in
-/// mounting order, to the first rail with room, or to an extra rail. Rails that do not fit
+/// Stored ids missing from [items] are skipped; items missing from the arrangement go right
+/// after the item before them in mounting order when its rail has room, otherwise to the
+/// first rail with room, or to an extra rail. Rails that do not fit
 /// the enclosure are kept and reported in [SwitchboardLayout.warnings].
 SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arrangement) {
   if (arrangement.isAuto) {
@@ -261,9 +287,19 @@ SwitchboardLayout arrangeSwitchboard(List<BoardItem> items, BoardArrangement arr
     packed.add([]);
   }
   int used(List<BoardItem> rail) => rail.fold(0, (s, i) => s + i.units);
-  for (final item in items) {
-    if (placed.contains(item.id)) {
+  // A device added later (e.g. the load switch) takes its place instead of the board's end.
+  for (var i = 0; i < items.length; i++) {
+    final BoardItem item = items[i];
+    if (!placed.add(item.id)) {
       continue;
+    }
+    if (i > 0) {
+      final BoardItem previous = items[i - 1];
+      final List<BoardItem> previousRail = packed.firstWhere((r) => r.contains(previous));
+      if (used(previousRail) + item.units <= perRail) {
+        previousRail.insert(previousRail.indexOf(previous) + 1, item);
+        continue;
+      }
     }
     final List<BoardItem>? rail = packed.where((r) => used(r) + item.units <= perRail).firstOrNull;
     if (rail != null) {

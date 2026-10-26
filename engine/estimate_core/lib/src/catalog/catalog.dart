@@ -205,13 +205,13 @@ final class const CableItem({
   required final PriceRange pricePerM,
 });
 
-/// Auxiliary panel device (voltage relay, SPD).
+/// Auxiliary panel device (voltage relay, SPD, load switch, DIN-rail socket).
 @immutable
 final class const AuxiliaryDevice({
   /// Id.
   required final String id,
 
-  /// `voltage_relay`, `spd`, `spd_type1`.
+  /// `voltage_relay`, `spd`, `spd_type1`, `load_switch`, `din_socket`.
   required final String kind,
 
   /// Poles.

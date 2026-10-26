@@ -817,6 +817,24 @@ abstract class CommonTranslationsLocalizations {
   /// **'Отдельная линия'**
   String get deviceDedicated;
 
+  /// No description provided for @deviceAlwaysOn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неотключаемая линия'**
+  String get deviceAlwaysOn;
+
+  /// No description provided for @deviceAlwaysOnHint.
+  ///
+  /// In ru, this message translates to:
+  /// **'Не отключается выключателем нагрузки: холодильник, защита от протечек'**
+  String get deviceAlwaysOnHint;
+
+  /// No description provided for @deviceThreePhaseOnSingle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт'**
+  String get deviceThreePhaseOnSingle;
+
   /// No description provided for @dedicatedRequired.
   ///
   /// In ru, this message translates to:
@@ -948,6 +966,42 @@ abstract class CommonTranslationsLocalizations {
   /// In ru, this message translates to:
   /// **'Длина, м'**
   String get circuitLength;
+
+  /// No description provided for @circuitAlwaysOn.
+  ///
+  /// In ru, this message translates to:
+  /// **'Неотключаемая линия: стоит до выключателя нагрузки'**
+  String get circuitAlwaysOn;
+
+  /// No description provided for @circuitLengthMissing.
+  ///
+  /// In ru, this message translates to:
+  /// **'длина не задана'**
+  String get circuitLengthMissing;
+
+  /// No description provided for @circuitsLengthMissing.
+  ///
+  /// In ru, this message translates to:
+  /// **'{count, plural, one{{count} линия без длины} few{{count} линии без длины} other{{count} линий без длины}} — падение напряжения и петля «фаза–ноль» не проверены'**
+  String circuitsLengthMissing(int count);
+
+  /// No description provided for @circuitsSetLength.
+  ///
+  /// In ru, this message translates to:
+  /// **'Задать длину'**
+  String get circuitsSetLength;
+
+  /// No description provided for @circuitsSetLengthTitle.
+  ///
+  /// In ru, this message translates to:
+  /// **'Длина линий без длины'**
+  String get circuitsSetLengthTitle;
+
+  /// No description provided for @circuitsSetLengthApply.
+  ///
+  /// In ru, this message translates to:
+  /// **'Применить'**
+  String get circuitsSetLengthApply;
 
   /// No description provided for @circuitSection.
   ///
@@ -1092,6 +1146,18 @@ abstract class CommonTranslationsLocalizations {
   /// In ru, this message translates to:
   /// **'УЗИП'**
   String get estimateSpd;
+
+  /// No description provided for @estimateLoadSwitch.
+  ///
+  /// In ru, this message translates to:
+  /// **'Выключатель нагрузки (кроме неотключаемых линий)'**
+  String get estimateLoadSwitch;
+
+  /// No description provided for @estimateDinSocket.
+  ///
+  /// In ru, this message translates to:
+  /// **'Розетка на DIN-рейку с дифавтоматом'**
+  String get estimateDinSocket;
 
   /// No description provided for @estimateOverhead.
   ///

@@ -102,6 +102,74 @@ void main() {
         );
         expect(items.first.kind, BoardItemKind.incomer);
       });
+
+      test('$name: mounting order — protection devices, non-switchable lines, load switch', () {
+        final ProjectResult result = calculateProject(input);
+        final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
+        final List<String> ids = [
+          for (final i in switchboardItems(input, result, estimate)) i.id,
+        ];
+        const List<String> sequence = [
+          'incomer/mcb',
+          'aux/spd',
+          dinSocketRcboId,
+          'aux/din_socket',
+          'incomer/rcd',
+          'aux/voltage_relay',
+          'aux/load_switch',
+        ];
+        final List<String> present = [
+          for (final id in sequence)
+            if (ids.contains(id)) id,
+        ];
+        expect(ids.where(sequence.contains).toList(), present);
+        expect(present, containsAll(['incomer/mcb', dinSocketRcboId, 'aux/load_switch']));
+
+        final int loadSwitch = ids.indexOf('aux/load_switch');
+        for (final CircuitResult c in result.circuits) {
+          final Matcher side = c.alwaysOn ? lessThan(loadSwitch) : greaterThan(loadSwitch);
+          expect(ids.indexOf(c.id), side, reason: c.id);
+          expect(ids.indexOf(c.id), greaterThan(ids.indexOf('aux/voltage_relay')), reason: c.id);
+        }
+      });
     }
+
+    test('apartments have a non-switchable line', () {
+      final ProjectInput input = DemoProjects.threeRoomApartment();
+      expect(calculateProject(input).circuits.where((c) => c.alwaysOn), isNotEmpty);
+    });
+
+    test('without switchable circuits there is no load switch', () {
+      final ProjectInput input = DemoProjects.oneRoomApartment();
+      final ProjectInput fridgeOnly = input.copyWith(
+        devices: [
+          for (final d in input.devices)
+            if (d.alwaysOn) d,
+        ],
+      );
+      final EstimateResult estimate = calculateEstimate(
+        fridgeOnly,
+        calculateProject(fridgeOnly),
+        const EstimateInput(),
+      );
+      expect(estimate.lines.map((l) => l.id), isNot(contains('aux/load_switch')));
+    });
+
+    test('a device without a catalog model keeps a typical width (relay for 80 A)', () {
+      final ProjectInput base = DemoProjects.oneRoomApartment();
+      final ProjectInput input = base.copyWith(supply: const SupplyInput(incomerBreakerA: 80));
+      final ProjectResult result = calculateProject(input);
+      final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
+      final EstimateLine relay = estimate.lines.firstWhere((l) => l.id == 'aux/voltage_relay');
+      expect(relay.missing, isNotEmpty);
+      final EstimateLine loadSwitch = estimate.lines.firstWhere((l) => l.id == 'aux/load_switch');
+      expect(loadSwitch.description, 'Выключатель нагрузки 2P 100 А');
+      final BoardItem item = switchboardItems(
+        input,
+        result,
+        estimate,
+      ).firstWhere((i) => i.id == 'aux/voltage_relay');
+      expect(item.units, 2);
+    });
   });
 }

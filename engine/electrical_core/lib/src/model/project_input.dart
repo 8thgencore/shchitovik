@@ -310,6 +310,9 @@ final class const RoomInput({
   Json toJson() => {'id': id, 'name': name, 'kind': kind.name};
 }
 
+/// Catalog kinds that are always on in files written before [DeviceInput.alwaysOn] existed.
+const alwaysOnDeviceKinds = {'refrigeration', 'leak_protection'};
+
 /// Electrical receiver (or several identical ones, see [quantity]).
 @immutable
 final class const DeviceInput({
@@ -348,6 +351,9 @@ final class const DeviceInput({
 
   /// Dedicated circuit policy.
   final DedicatedLine dedicatedLine = DedicatedLine.no,
+
+  /// Whether the device stays powered when the load switch is off (a non-switchable line).
+  final bool alwaysOn = false,
 }) {
   /// Creates a device from a catalog template.
   factory fromTemplate(
@@ -368,6 +374,7 @@ final class const DeviceInput({
     inrushMultiple: t.inrushMultiple,
     connection: t.connection,
     dedicatedLine: t.dedicatedLine,
+    alwaysOn: t.alwaysOn,
   );
 
   /// Parses JSON produced by [toJson].
@@ -386,6 +393,7 @@ final class const DeviceInput({
         enumByNameOrNull(DeviceConnection.values, json['connection']) ?? DeviceConnection.socket,
     dedicatedLine:
         enumByNameOrNull(DedicatedLine.values, json['dedicated_line']) ?? DedicatedLine.no,
+    alwaysOn: json['always_on'] as bool? ?? alwaysOnDeviceKinds.contains(json['kind']),
   );
 
   /// Total rated power of all units, Вт.
@@ -406,6 +414,7 @@ final class const DeviceInput({
     double? inrushMultiple,
     DeviceConnection? connection,
     DedicatedLine? dedicatedLine,
+    bool? alwaysOn,
   }) => DeviceInput(
     id: id ?? this.id,
     roomId: roomId ?? this.roomId,
@@ -419,6 +428,7 @@ final class const DeviceInput({
     inrushMultiple: inrushMultiple ?? this.inrushMultiple,
     connection: connection ?? this.connection,
     dedicatedLine: dedicatedLine ?? this.dedicatedLine,
+    alwaysOn: alwaysOn ?? this.alwaysOn,
   );
 
   /// Serializes to JSON.
@@ -435,6 +445,7 @@ final class const DeviceInput({
     'inrush_multiple': inrushMultiple,
     'connection': connection.name,
     'dedicated_line': dedicatedLine.name,
+    'always_on': alwaysOn,
   };
 }
 

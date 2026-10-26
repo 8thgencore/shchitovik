@@ -63,10 +63,17 @@ class const RoomTemplatePicker({super.key}) extends StatelessWidget {
 }
 
 /// Choice of a catalog device or a custom one (returns `Object()` for custom).
-class const DeviceTemplatePicker({super.key}) extends StatefulWidget {
+class const DeviceTemplatePicker({
+  /// Single-phase supply: three-phase devices are not offered.
+  final bool singlePhase = false,
+  super.key,
+}) extends StatefulWidget {
   /// Shows the picker: [DeviceTemplate], a non-template object for «свой прибор», or `null`.
-  static Future<Object?> show(BuildContext context) =>
-      showUiSheet<Object>(context, builder: (_) => const DeviceTemplatePicker());
+  static Future<Object?> show(BuildContext context, {bool singlePhase = false}) =>
+      showUiSheet<Object>(
+        context,
+        builder: (_) => DeviceTemplatePicker(singlePhase: singlePhase),
+      );
 
   @override
   State<DeviceTemplatePicker> createState() => _DeviceTemplatePickerState();
@@ -91,6 +98,7 @@ class _DeviceTemplatePickerState() extends State<DeviceTemplatePicker> {
   Widget build(BuildContext context) {
     final CommonTranslationsLocalizations t = context.translations;
     final List<DeviceTemplate> devices = NormsData.embedded.devices
+        .where((d) => !widget.singlePhase || d.phases == 1)
         .where((d) => d.name.toLowerCase().contains(_query.toLowerCase()))
         .toList();
     return UiSheet(

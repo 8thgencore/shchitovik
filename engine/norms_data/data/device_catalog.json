@@ -1,6 +1,6 @@
 {
  "dataset": "device_catalog",
- "dataset_version": "2026.10-1",
+ "dataset_version": "2026.10-2",
  "description": "Справочник типовых электроприёмников для быстрого ввода.",
  "source": {
   "documents": [
@@ -16,7 +16,8 @@
   "usage_factor (ku) используется только для оценки нагрузки ввода «по приборам»; групповые линии считаются с Kс = 1 (СП 256, 7.2.2 и табл. 7.7).",
   "inrush_multiple — кратность пускового тока к номинальному (для выбора характеристики B/C/D).",
   "dedicated_line: required — всегда отдельная линия; recommended — по умолчанию отдельная, можно объединить; no — общая группа.",
-  "socket_point — условная нагрузка розетки; нагрузка розеточной группы ограничивается её автоматом."
+  "socket_point — условная нагрузка розетки; нагрузка розеточной группы ограничивается её автоматом.",
+  "always_on: true — неотключаемая линия: приёмник остаётся под напряжением при отключении выключателя нагрузки (холодильники, защита от протечек); инженерная практика, не пункт нормы."
  ],
  "kinds": [
   "air_conditioner",
@@ -30,6 +31,7 @@
   "heater",
   "heating_boiler",
   "kitchen_appliance",
+  "leak_protection",
   "lighting",
   "motor",
   "oven",
@@ -247,7 +249,8 @@
    "usage_factor": 0.5,
    "inrush_multiple": 5,
    "connection": "socket",
-   "dedicated_line": "no"
+   "dedicated_line": "no",
+   "always_on": true
   },
   {
    "id": "freezer",
@@ -259,7 +262,8 @@
    "usage_factor": 0.5,
    "inrush_multiple": 5,
    "connection": "socket",
-   "dedicated_line": "no"
+   "dedicated_line": "no",
+   "always_on": true
   },
   {
    "id": "display_fridge",
@@ -271,7 +275,8 @@
    "usage_factor": 0.7,
    "inrush_multiple": 5,
    "connection": "fixed",
-   "dedicated_line": "recommended"
+   "dedicated_line": "recommended",
+   "always_on": true
   },
   {
    "id": "dishwasher",
@@ -500,6 +505,19 @@
    "inrush_multiple": 2,
    "connection": "fixed",
    "dedicated_line": "no"
+  },
+  {
+   "id": "leak_protection",
+   "name": "Система защиты от протечек",
+   "kind": "leak_protection",
+   "power_w": 10,
+   "phases": 1,
+   "cos_phi": 0.9,
+   "usage_factor": 1.0,
+   "inrush_multiple": 1,
+   "connection": "fixed",
+   "dedicated_line": "no",
+   "always_on": true
   },
   {
    "id": "sauna_heater",

@@ -75,7 +75,11 @@ final class _Estimate(
   Tier get tier => estimate.scenario.tier;
 
   EstimateResult run() {
-    final List<ApparatusSlot> slots = slotsFor(input, result);
+    final List<ApparatusSlot> slots = slotsFor(
+      input,
+      result,
+      dinSocket: estimate.dinSocket ?? true,
+    );
     final Map<ApparatusFunction, String> preferred = _preferredSeries(slots);
     final List<EstimateLine> apparatus = [
       for (final slot in slots) _apparatusLine(slot, preferred),
@@ -330,47 +334,81 @@ final class _Estimate(
     return candidates.where((f) => f.selective == r.selective).firstOrNull;
   }
 
+  /// Auxiliary devices in mounting order: SPD, DIN-rail socket, voltage relay, load switch.
   List<EstimateLine> _auxiliaryLines() {
     final lines = <EstimateLine>[];
     final three = input.supplyPhases == SupplyPhases.three;
     final double incomerA = result.incomer.breakerA ?? 0;
-
-    final bool relay = estimate.voltageRelay ?? true;
-    if (relay) {
-      final poles = three ? 4 : 2;
-      final AuxiliaryDevice? device = catalog.auxiliaryDevices
-          .where((d) => d.kind == 'voltage_relay' && d.poles == poles && d.tier == tier)
-          .where((d) => (d.ratedCurrentA ?? 0) >= incomerA)
-          .firstOrNull;
-      lines.add(
-        _auxLine(
-          'aux/voltage_relay',
-          'Реле напряжения',
-          device,
-          'реле на ${incomerA.toStringAsFixed(0)} А',
-        ),
-      );
-    }
+    AuxiliaryDevice? find(String kind, int poles, {double? atLeastA}) => catalog.auxiliaryDevices
+        .where((d) => d.kind == kind && d.poles == poles && d.tier == tier)
+        .where((d) => atLeastA == null || (d.ratedCurrentA ?? 0) >= atLeastA)
+        .firstOrNull;
 
     final bool spd =
         estimate.surgeProtection ??
         (input.objectType == ObjectType.house || input.objectType == ObjectType.garageWorkshop);
     if (spd) {
-      final kind = estimate.overheadSupply ? 'spd_type1' : 'spd';
-      final AuxiliaryDevice? device = catalog.auxiliaryDevices
-          .where((d) => d.kind == kind && d.poles == (three ? 4 : 2) && d.tier == tier)
-          .firstOrNull;
-      lines.add(_auxLine('aux/spd', 'УЗИП', device, 'УЗИП'));
+      final bool type1 = estimate.overheadSupply;
+      lines.add(
+        _auxLine(
+          'aux/spd',
+          'УЗИП',
+          find(type1 ? 'spd_type1' : 'spd', three ? 4 : 2),
+          'УЗИП',
+          typicalUnits: (type1 ? 4 : 2) * (three ? 2 : 1),
+        ),
+      );
+    }
+
+    if (estimate.dinSocket ?? true) {
+      lines.add(
+        _auxLine(
+          'aux/din_socket',
+          'Розетка на DIN-рейку',
+          find('din_socket', 2),
+          'розетка на DIN-рейку 16 А',
+          typicalUnits: 3,
+        ),
+      );
+    }
+
+    if (estimate.voltageRelay ?? true) {
+      lines.add(
+        _auxLine(
+          'aux/voltage_relay',
+          'Реле напряжения',
+          find('voltage_relay', three ? 4 : 2, atLeastA: incomerA),
+          'реле на ${incomerA.toStringAsFixed(0)} А',
+          typicalUnits: three ? 6 : 2,
+        ),
+      );
+    }
+
+    // ASSUMPTION: design practice, not a norm clause (verification/VERIFICATION.md, E10).
+    final bool switchable = result.circuits.any((c) => !c.alwaysOn);
+    if ((estimate.loadSwitch ?? true) && switchable) {
+      lines.add(
+        _auxLine(
+          'aux/load_switch',
+          'Выключатель нагрузки',
+          find('load_switch', three ? 4 : 2, atLeastA: incomerA),
+          'выключатель нагрузки на ${incomerA.toStringAsFixed(0)} А',
+          typicalUnits: three ? 4 : 2,
+        ),
+      );
     }
     return lines;
   }
 
+  /// When the catalog has no model, the line keeps [typicalUnits] so the device still takes
+  /// its place on the switchboard.
   EstimateLine _auxLine(
     String id,
     String title,
     AuxiliaryDevice? device,
-    String fallbackDescription,
-  ) => EstimateLine(
+    String fallbackDescription, {
+    required int typicalUnits,
+  }) => EstimateLine(
     id: id,
     category: EstimateCategory.auxiliary,
     title: title,
@@ -380,7 +418,7 @@ final class _Estimate(
     unitPrice: device?.price ?? PriceRange.zero,
     total: device?.price ?? PriceRange.zero,
     source: PriceSource.automatic,
-    moduleUnits: device?.moduleUnits ?? 0,
+    moduleUnits: device?.moduleUnits ?? typicalUnits,
     missing: device == null ? const ['модель в каталоге'] : const [],
   );
 

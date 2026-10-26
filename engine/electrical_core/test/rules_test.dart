@@ -6,6 +6,79 @@ import 'helpers.dart';
 
 void main() {
   group('grouping', () {
+    test('always-on devices from different rooms share the non-switchable line', () {
+      const kitchen = RoomInput(id: 'k', name: 'Кухня', kind: RoomKind.kitchen);
+      const hall = RoomInput(id: 'h', name: 'Прихожая', kind: RoomKind.standard);
+      final ProjectResult result = calculateProject(
+        ProjectInput(
+          objectType: ObjectType.apartment,
+          supplyPhases: SupplyPhases.single,
+          rooms: const [kitchen, hall],
+          devices: [
+            for (final (id, room, kind, alwaysOn) in [
+              ('fridge', 'k', 'refrigeration', true),
+              ('kettle', 'k', 'kitchen_appliance', false),
+              ('leak', 'h', 'leak_protection', true),
+            ])
+              DeviceInput(
+                id: id,
+                roomId: room,
+                name: id,
+                kind: kind,
+                powerW: 300,
+                alwaysOn: alwaysOn,
+              ),
+          ],
+        ),
+      );
+      final CircuitResult line = result.circuits.firstWhere((c) => c.id == 'always-on-1');
+      expect(line.alwaysOn, isTrue);
+      expect(line.deviceIds, ['fridge', 'leak']);
+      expect(
+        result.circuits.where((c) => c.id != 'always-on-1').map((c) => c.alwaysOn),
+        everyElement(isFalse),
+      );
+    });
+
+    test('always-on falls back to the device kind in older files', () {
+      final cases = {'refrigeration': true, 'leak_protection': true, 'oven': false};
+      for (final MapEntry(key: kind, value: expected) in cases.entries) {
+        final Map<String, Object> json = {
+          'id': 'd',
+          'room_id': 'r',
+          'name': 'd',
+          'kind': kind,
+          'power_w': 100,
+        };
+        expect(DeviceInput.fromJson(json).alwaysOn, expected, reason: kind);
+      }
+    });
+
+    test('a shared RCD never mixes always-on and switchable circuits', () {
+      final ProjectResult result = calculateProject(
+        singleRoomProject(
+          [
+            device('fridge', powerW: 300, connection: DeviceConnection.socket).copyWith(
+              alwaysOn: true,
+              dedicatedLine: DedicatedLine.no,
+            ),
+            device('tv', powerW: 300, connection: DeviceConnection.socket).copyWith(
+              dedicatedLine: DedicatedLine.no,
+            ),
+          ],
+          rcdStrategy: RcdStrategy.groupedRcd,
+        ),
+      );
+      expect(result.sharedRcds, hasLength(2));
+      for (final SharedRcdResult rcd in result.sharedRcds) {
+        final Set<bool> sides = {
+          for (final c in result.circuits)
+            if (rcd.circuitIds.contains(c.id)) c.alwaysOn,
+        };
+        expect(sides, hasLength(1));
+      }
+    });
+
     test('lighting is pooled across rooms, sockets are per room', () {
       const kitchen = RoomInput(id: 'k', name: 'Кухня', kind: RoomKind.kitchen);
       const bedroom = RoomInput(id: 'b', name: 'Спальня', kind: RoomKind.standard);
@@ -120,9 +193,9 @@ void main() {
         singleRoomProject(
           [
             device(
-              'wm',
+              'oven',
               powerW: 2200,
-              kind: 'washing_machine',
+              kind: 'oven',
               connection: DeviceConnection.socket,
             ),
           ],
@@ -131,6 +204,27 @@ void main() {
       ).circuits.single;
       expect(c.protection.device, ProtectionDevice.mcbAndRcd);
       expect(c.protection.rcd!.ratedA, greaterThanOrEqualTo(c.protection.breakerA));
+    });
+
+    group('wet zones get an RCBO under every strategy', () {
+      const bathroom = RoomInput(id: 'room', name: 'Ванная', kind: RoomKind.bathroom);
+      final cases = <(String, DeviceInput, RoomInput)>[
+        ('washing machine', device('wm', powerW: 2200, kind: 'washing_machine'), standardRoom),
+        ('dishwasher', device('dw', powerW: 2100, kind: 'dishwasher'), standardRoom),
+        ('water heater', device('wh', powerW: 2000, kind: 'water_heater'), standardRoom),
+        ('heater in a bathroom', device('h', powerW: 1000, kind: 'heater'), bathroom),
+      ];
+      for (final (name, d, room) in cases) {
+        for (final RcdStrategy strategy in RcdStrategy.values) {
+          test('$name, ${strategy.name}', () {
+            final ProjectResult result = calculateProject(
+              singleRoomProject([d], room: room, rcdStrategy: strategy),
+            );
+            expect(result.circuits.single.protection.device, ProtectionDevice.rcbo);
+            expect(result.sharedRcds, isEmpty);
+          });
+        }
+      }
     });
 
     test('grouped strategy: shared RCDs respect leakage 1/3 IΔn and rated ≥ Σ IB', () {

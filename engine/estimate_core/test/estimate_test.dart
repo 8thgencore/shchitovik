@@ -20,16 +20,28 @@ void main() {
         final List<ApparatusSlot> slots = slotsFor(apartment, apartmentResult);
         expect(slots.first.id, 'incomer/mcb');
         expect(slots.first.requirement.poles, 2);
-        expect(slots.length, apartmentResult.circuits.length + 1);
+        expect(slots.length, apartmentResult.circuits.length + 2);
+        expect(slotsFor(apartment, apartmentResult, dinSocket: false), hasLength(slots.length - 1));
       },
     );
+
+    test('DIN-rail socket gets its own RCBO 1P+N C16 30 mA', () {
+      final ApparatusRequirement r = slotsFor(
+        apartment,
+        apartmentResult,
+      ).firstWhere((s) => s.id == dinSocketRcboId).requirement;
+      expect(r.label, 'Дифавтомат 1P+N C16 30 мА тип A');
+    });
 
     test('MCB + RCD strategy adds RCD slots rated not below the breaker', () {
       final ProjectInput input = apartment.copyWith(rcdStrategy: RcdStrategy.rcdPerCircuit);
       final ProjectResult result = calculateProject(input);
       final List<ApparatusSlot> slots = slotsFor(input, result);
       final Iterable<ApparatusSlot> rcd = slots.where((s) => s.id.endsWith('/rcd'));
-      expect(rcd.length, result.circuits.where((c) => c.protection.rcd != null).length);
+      expect(
+        rcd.length,
+        result.circuits.where((c) => c.protection.device == ProtectionDevice.mcbAndRcd).length,
+      );
       for (final s in rcd) {
         final CircuitResult circuit = result.circuits.firstWhere((c) => c.id == s.circuitId);
         expect(s.requirement.ratedCurrentA, greaterThanOrEqualTo(circuit.protection.breakerA));
@@ -149,7 +161,7 @@ void main() {
     final ApparatusSlot slot = slotsFor(
       apartment,
       apartmentResult,
-    ).firstWhere((s) => s.id.endsWith('/rcbo'));
+    ).firstWhere((s) => s.circuitId != null && s.id.endsWith('/rcbo'));
     final ApparatusProduct chosen = compatibleProducts(slot.requirement, catalog).last.product;
 
     test('a compatible selection is used with its snapshot price', () {
