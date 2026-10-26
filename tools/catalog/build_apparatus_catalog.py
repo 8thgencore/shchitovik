@@ -76,6 +76,7 @@ RCD_SERIES = [
 ]
 
 # ---- RCBO (дифавтоматы 1P+N) ----  anchor = C16, 30 мА, тип из anchor_type
+# mu – ширина в модулях 17,5 мм (по умолчанию 2); ratings/curves – если серия уже общего ряда.
 RCBO_SERIES = [
     dict(m="iek", s="АВДТ34", ka=4500, types=["AC", "A"], mas=[10, 30], anchor_type="AC", anchor=rng(1500)),
     dict(m="ekf", s="PROxima АВДТ-63", ka=4500, types=["AC", "A"], mas=[30], anchor_type="AC", anchor=rng(1350)),
@@ -87,6 +88,17 @@ RCBO_SERIES = [
     dict(m="schneider", s="Easy9 (дифавтомат)", ka=4500, types=["AC", "A"], mas=[30], anchor_type="AC", anchor=rng(3300)),
     dict(m="schneider", s="Acti9 iDPN N Vigi", ka=6000, types=["AC", "A"], mas=[10, 30], anchor_type="AC", anchor=rng(4800)),
     dict(m="siemens", s="5SU1", ka=6000, types=["AC", "A"], mas=[30], anchor_type="AC", anchor=rng(5500)),
+    # Компактные 1P+N шириной 18 мм (1 модуль). Опорные цены – розничные листинги 2026-10:
+    # ЭТМ, Электродус, LEDPremium, IKrussia (AR-B06S-1N-C16C030); Минимакс, Ледгудс, Профсектор
+    # (2CSR255150R1164).
+    dict(m="iek", s="ARMAT B06S", ka=6000, types=["AC", "A"], mas=[30], anchor_type="AC",
+         anchor=dict(min=4010, typ=5010, max=5830), calibrated=True, mu=1, ratings=[6, 10, 16, 20, 25, 32],
+         article={("AC", "C", 16, 30): "AR-B06S-1N-C16C030", ("A", "C", 16, 30): "AR-B06S-1N-C16A030",
+                  ("A", "B", 16, 30): "AR-B06S-1N-B16A030", ("AC", "C", 25, 30): "AR-B06S-1N-C25C030",
+                  ("A", "C", 32, 30): "AR-B06S-1N-C32A030"}),
+    dict(m="abb", s="DSN201", ka=6000, types=["AC", "A"], mas=[30], anchor_type="A",
+         anchor=dict(min=4590, typ=5840, max=8710), calibrated=True, mu=1, curves="C", ratings=[6, 10, 16, 20, 25, 32],
+         article={("A", "C", 16, 30): "2CSR255150R1164", ("AC", "C", 16, 30): "2CSR255050R1164"}),
 ]
 
 
@@ -155,18 +167,19 @@ def build():
                     spec=dict(poles=4, rated_current_a=i, leakage_ma=300, rcd_type="A", selectivity="S"),
                     module_units=4, price=price(s["anchor"], f, False, s.get("calibrated", False)), status="ACTIVE"))
     for s in RCBO_SERIES:
+        cal = s.get("calibrated", False)
         for t in s["types"]:
-            for curve in "BC":
+            for curve in s.get("curves", "BC"):
                 for ma in s["mas"]:
-                    for i in RCBO_RATINGS:
+                    for i in s.get("ratings", RCBO_RATINGS):
                         f = (CUR_F[i] / CUR_F[16]) * (RCBO_TYPE_F[t] / RCBO_TYPE_F[s["anchor_type"]]) * RCBO_MA_F[ma] * CURVE_F[curve]
-                        is_anchor = False
+                        is_anchor = (t, curve, i, ma) == (s["anchor_type"], "C", 16, 30)
                         products.append(dict(
                             id=slug(s["m"], s["s"], "1pn", f"{curve}{i}", f"{ma}ma", t), manufacturer=s["m"], series=s["s"],
                             function="RCBO", article=(s.get("article") or {}).get((t, curve, i, ma)),
                             spec=dict(poles=2, rated_current_a=i, curve=curve, breaking_capacity_a=s["ka"], leakage_ma=ma,
                                       rcd_type=t, selectivity="NONE"),
-                            module_units=2, price=price(s["anchor"], f, is_anchor, False), status="ACTIVE"))
+                            module_units=s.get("mu", 2), price=price(s["anchor"], f, is_anchor, cal), status="ACTIVE"))
     return products
 
 
@@ -177,8 +190,8 @@ def main():
     manufacturers = json.loads((HERE / "manufacturers.json").read_text(encoding="utf-8"))
     out = dict(
         dataset="apparatus_catalog",
-        dataset_version=f"{AS_OF}-1",
-        catalog_version=f"{AS_OF}-1",
+        dataset_version=f"{AS_OF}-2",
+        catalog_version=f"{AS_OF}-2",
         currency="RUB",
         price_as_of=AS_OF,
         price_disclaimer="Ориентировочные розничные цены, не прайс-лист. basis: retail_listing – откалибровано по розничному "
