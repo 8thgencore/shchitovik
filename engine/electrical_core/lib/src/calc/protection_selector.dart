@@ -21,6 +21,8 @@ const Map<CircuitPurpose, double> minimumBreakerA = {
 /// - Outdoor: СП 256 А.1.6 (outdoor sockets), А.5.4; ПУЭ 7.1.
 /// - Heating cables: ГОСТ Р 50571.7.753.
 /// - EV charging: ГОСТ Р 50571.7.722 (type A with DC 6 mA detection or type B).
+/// - Water appliances ([wetZoneDeviceKinds]): ASSUMPTION, design practice, not a norm clause
+///   (verification/VERIFICATION.md, E11).
 List<String> rcdReasons({required List<DeviceInput> devices, required List<RoomInput> rooms}) {
   final reasons = <String>[];
   if (devices.any((d) => d.connection == DeviceConnection.socket)) {
@@ -40,8 +42,31 @@ List<String> rcdReasons({required List<DeviceInput> devices, required List<RoomI
       'зарядка электромобиля (ГОСТ Р 50571.7.722), нужен тип A с контролем DC 6 мА или тип B',
     );
   }
+  if (devices.any((d) => wetZoneDeviceKinds.contains(d.kind))) {
+    reasons.add('прибор, работающий с водой (практика проектирования)');
+  }
   return reasons;
 }
+
+/// Device kinds that work with water; their circuits are treated as wet zones.
+const wetZoneDeviceKinds = {
+  'washing_machine',
+  'dishwasher',
+  'dryer',
+  'water_heater',
+  'pump',
+  'sauna_heater',
+};
+
+/// Whether a circuit serves a wet zone: a bathroom or a water appliance.
+///
+/// Wet-zone circuits get an RCBO of their own whatever the RCD strategy, so a fault in one
+/// of them never trips other circuits.
+/// ASSUMPTION: design practice; ГОСТ Р 50571.7.701, 701.411.3.3 accepts any 30 mA RCD
+/// (verification/VERIFICATION.md, E11).
+bool isWetZone({required List<DeviceInput> devices, required List<RoomInput> rooms}) =>
+    rooms.any((r) => r.kind == RoomKind.bathroom) ||
+    devices.any((d) => wetZoneDeviceKinds.contains(d.kind));
 
 /// Breaker rating and curve choice for a circuit.
 final class const BreakerChoice({

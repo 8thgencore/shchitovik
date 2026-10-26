@@ -1,11 +1,12 @@
 {
  "dataset": "auxiliary_devices",
- "dataset_version": "2026-10-1",
- "description": "Вспомогательные устройства щита: реле напряжения, реле контроля фаз, УЗИП.",
+ "dataset_version": "2026-10-2",
+ "description": "Вспомогательные устройства щита: реле напряжения, реле контроля фаз, УЗИП, выключатель нагрузки, розетка на DIN-рейку.",
  "price_disclaimer": "Оценка по сегментам (budget/mid/premium); не прайс-лист.",
  "notes": [
   "Реле напряжения — защита приёмников от перенапряжения при обрыве нуля (рекомендация, не требование норм).",
-  "УЗИП — ГОСТ Р 50571.4.44 / ГОСТ Р 50571.5.53 (534); тип 1+2 — при воздушном вводе."
+  "УЗИП — ГОСТ Р 50571.4.44 / ГОСТ Р 50571.5.53 (534); тип 1+2 — при воздушном вводе.",
+  "Выключатель нагрузки отключает все линии, кроме неотключаемых; розетка на DIN-рейку — сервисная, со своим дифавтоматом 16 А 30 мА (практика монтажа, не требование норм)."
  ],
  "items": [
   {
@@ -361,6 +362,363 @@
     "min": 33600,
     "typical": 42000,
     "max": 58800,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-40-budget",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 40,
+   "tier": "budget",
+   "name": "Выключатель нагрузки 2P 40 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 560,
+    "typical": 700,
+    "max": 980,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-40-mid",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 40,
+   "tier": "mid",
+   "name": "Выключатель нагрузки 2P 40 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 896,
+    "typical": 1120,
+    "max": 1568,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-40-premium",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 40,
+   "tier": "premium",
+   "name": "Выключатель нагрузки 2P 40 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1680,
+    "typical": 2100,
+    "max": 2940,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-63-budget",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 63,
+   "tier": "budget",
+   "name": "Выключатель нагрузки 2P 63 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 720,
+    "typical": 900,
+    "max": 1260,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-63-mid",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 63,
+   "tier": "mid",
+   "name": "Выключатель нагрузки 2P 63 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1152,
+    "typical": 1440,
+    "max": 2016,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-63-premium",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 63,
+   "tier": "premium",
+   "name": "Выключатель нагрузки 2P 63 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 2160,
+    "typical": 2700,
+    "max": 3780,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-100-budget",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 100,
+   "tier": "budget",
+   "name": "Выключатель нагрузки 2P 100 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1200,
+    "typical": 1500,
+    "max": 2100,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-100-mid",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 100,
+   "tier": "mid",
+   "name": "Выключатель нагрузки 2P 100 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 1920,
+    "typical": 2400,
+    "max": 3360,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-2p-100-premium",
+   "kind": "load_switch",
+   "poles": 2,
+   "rated_current_a": 100,
+   "tier": "premium",
+   "name": "Выключатель нагрузки 2P 100 А",
+   "module_units": 2,
+   "price": {
+    "currency": "RUB",
+    "min": 3600,
+    "typical": 4500,
+    "max": 6300,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-40-budget",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 40,
+   "tier": "budget",
+   "name": "Выключатель нагрузки 4P 40 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 1120,
+    "typical": 1400,
+    "max": 1960,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-40-mid",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 40,
+   "tier": "mid",
+   "name": "Выключатель нагрузки 4P 40 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 1792,
+    "typical": 2240,
+    "max": 3136,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-40-premium",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 40,
+   "tier": "premium",
+   "name": "Выключатель нагрузки 4P 40 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 3360,
+    "typical": 4200,
+    "max": 5880,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-63-budget",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 63,
+   "tier": "budget",
+   "name": "Выключатель нагрузки 4P 63 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 1440,
+    "typical": 1800,
+    "max": 2520,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-63-mid",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 63,
+   "tier": "mid",
+   "name": "Выключатель нагрузки 4P 63 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 2304,
+    "typical": 2880,
+    "max": 4032,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-63-premium",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 63,
+   "tier": "premium",
+   "name": "Выключатель нагрузки 4P 63 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 4320,
+    "typical": 5400,
+    "max": 7560,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-100-budget",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 100,
+   "tier": "budget",
+   "name": "Выключатель нагрузки 4P 100 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 2400,
+    "typical": 3000,
+    "max": 4200,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-100-mid",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 100,
+   "tier": "mid",
+   "name": "Выключатель нагрузки 4P 100 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 3840,
+    "typical": 4800,
+    "max": 6720,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "load_switch-4p-100-premium",
+   "kind": "load_switch",
+   "poles": 4,
+   "rated_current_a": 100,
+   "tier": "premium",
+   "name": "Выключатель нагрузки 4P 100 А",
+   "module_units": 4,
+   "price": {
+    "currency": "RUB",
+    "min": 7200,
+    "typical": 9000,
+    "max": 12600,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "din_socket-budget",
+   "kind": "din_socket",
+   "poles": 2,
+   "rated_current_a": 16,
+   "tier": "budget",
+   "name": "Розетка на DIN-рейку 16 А",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 480,
+    "typical": 600,
+    "max": 840,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "din_socket-mid",
+   "kind": "din_socket",
+   "poles": 2,
+   "rated_current_a": 16,
+   "tier": "mid",
+   "name": "Розетка на DIN-рейку 16 А",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 768,
+    "typical": 960,
+    "max": 1344,
+    "as_of": "2026-10",
+    "basis": "estimate"
+   }
+  },
+  {
+   "id": "din_socket-premium",
+   "kind": "din_socket",
+   "poles": 2,
+   "rated_current_a": 16,
+   "tier": "premium",
+   "name": "Розетка на DIN-рейку 16 А",
+   "module_units": 3,
+   "price": {
+    "currency": "RUB",
+    "min": 1440,
+    "typical": 1800,
+    "max": 2520,
     "as_of": "2026-10",
     "basis": "estimate"
    }

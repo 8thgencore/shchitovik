@@ -53,6 +53,10 @@ final class const DeviceTemplate({
 
   /// Dedicated circuit policy.
   required final DedicatedLine dedicatedLine,
+
+  /// Whether the receiver stays powered when the load switch is off (refrigerators, leak
+  /// protection).
+  final bool alwaysOn = false,
 }) {
   /// Parses one entry of the `device_catalog` dataset.
   factory fromJson(JsonMap json) => DeviceTemplate(
@@ -66,6 +70,7 @@ final class const DeviceTemplate({
     inrushMultiple: toDouble(json['inrush_multiple']),
     connection: DeviceConnection.values.byName(json['connection']! as String),
     dedicatedLine: DedicatedLine.values.byName(json['dedicated_line']! as String),
+    alwaysOn: json['always_on'] as bool? ?? false,
   );
 }
 

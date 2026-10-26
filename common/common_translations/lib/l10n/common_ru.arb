@@ -155,6 +155,9 @@
   "connectionSocket": "Через розетку",
   "connectionFixed": "Стационарно",
   "deviceDedicated": "Отдельная линия",
+  "deviceAlwaysOn": "Неотключаемая линия",
+  "deviceAlwaysOnHint": "Не отключается выключателем нагрузки: холодильник, защита от протечек",
+  "deviceThreePhaseOnSingle": "Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт",
   "dedicatedRequired": "Обязательно",
   "dedicatedRecommended": "По умолчанию",
   "dedicatedNo": "Общая группа",
@@ -177,6 +180,19 @@
   "circuitSettings": "Параметры линии",
   "circuitExpert": "Ручные изменения",
   "circuitLength": "Длина, м",
+  "circuitAlwaysOn": "Неотключаемая линия: стоит до выключателя нагрузки",
+  "circuitLengthMissing": "длина не задана",
+  "circuitsLengthMissing": "{count, plural, one{{count} линия без длины} few{{count} линии без длины} other{{count} линий без длины}} — падение напряжения и петля «фаза–ноль» не проверены",
+  "@circuitsLengthMissing": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "circuitsSetLength": "Задать длину",
+  "circuitsSetLengthTitle": "Длина линий без длины",
+  "circuitsSetLengthApply": "Применить",
   "circuitSection": "Сечение, мм²",
   "circuitBreaker": "Номинал автомата, А",
   "circuitCurve": "Характеристика",
@@ -215,6 +231,8 @@
   "estimateOptions": "Состав",
   "estimateVoltageRelay": "Реле напряжения",
   "estimateSpd": "УЗИП",
+  "estimateLoadSwitch": "Выключатель нагрузки (кроме неотключаемых линий)",
+  "estimateDinSocket": "Розетка на DIN-рейку с дифавтоматом",
   "estimateOverhead": "Воздушный ввод (УЗИП тип 1+2)",
   "estimateCableMark": "Марка медного кабеля",
   "estimateWarnings": "Предупреждения",

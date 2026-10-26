@@ -40,6 +40,7 @@ class const DeviceEditorSheet({
       return const SizedBox.shrink();
     }
     final bool expert = isExpertMode(context);
+    final singlePhaseSupply = state.document.input.supplyPhases == SupplyPhases.single;
 
     void edit(DeviceInput Function(DeviceInput) change) => ProjectScope.edit(
       context,
@@ -80,13 +81,24 @@ class const DeviceEditorSheet({
         ],
         onChanged: (v) => edit((d) => d.copyWith(connection: v)),
       ),
+      UiSwitchRow(
+        title: t.deviceAlwaysOn,
+        subtitle: t.deviceAlwaysOnHint,
+        value: device.alwaysOn,
+        onChanged: (v) => edit((d) => d.copyWith(alwaysOn: v)),
+      ),
+      if (singlePhaseSupply && device.phases == 3)
+        UiNotice(tone: UiTone.danger, message: t.deviceThreePhaseOnSingle),
       if (expert) ...[
-        UiSelect<int>(
-          label: t.devicePhases,
-          value: device.phases,
-          options: const [(1, '1'), (3, '3')],
-          onChanged: (v) => edit((d) => d.copyWith(phases: v)),
-        ),
+        // A single-phase supply takes single-phase devices only; the choice stays visible
+        // for a three-phase device so it can be switched back.
+        if (!singlePhaseSupply || device.phases == 3)
+          UiSelect<int>(
+            label: t.devicePhases,
+            value: device.phases,
+            options: const [(1, '1'), (3, '3')],
+            onChanged: (v) => edit((d) => d.copyWith(phases: v)),
+          ),
         DecimalField(
           value: device.cosPhi,
           label: t.deviceCosPhi,

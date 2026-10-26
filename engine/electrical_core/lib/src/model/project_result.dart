@@ -328,6 +328,9 @@ final class const CircuitResult({
 
   /// Overall status.
   required final CalculationStatus status,
+
+  /// Whether the circuit is non-switchable (stays on when the load switch is off).
+  final bool alwaysOn = false,
 }) {
   /// All checks of the circuit.
   Iterable<Check> get allChecks => [...checks, ...cable.checks];
@@ -352,6 +355,7 @@ final class const CircuitResult({
     'cable': cable.toJson(),
     'checks': [for (final c in checks) c.toJson()],
     'status': status.name,
+    'always_on': alwaysOn ? true : null,
   });
 }
 

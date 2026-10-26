@@ -124,6 +124,14 @@ def is_lighting_load(d):
     return d["kind"] == "lighting" or (d["kind"] == "ventilation" and d.get("connection") == "fixed" and d["power_w"] <= 100)
 
 
+ALWAYS_ON_KINDS = ("refrigeration", "leak_protection")
+WET_DEVICE_KINDS = ("washing_machine", "dishwasher", "dryer", "water_heater", "pump", "sauna_heater")
+
+
+def always_on(d):
+    return d.get("always_on", d["kind"] in ALWAYS_ON_KINDS)
+
+
 def build_circuits(devices, rooms, u0, ul):
     rooms_by_id = {r["id"]: r for r in rooms}
     order = {r["id"]: i for i, r in enumerate(rooms)}
@@ -131,13 +139,15 @@ def build_circuits(devices, rooms, u0, ul):
     dedicated, shared, meta = [], {}, {}
     for d in devices:
         room = rooms_by_id[d["room_id"]]
-        purpose = "lighting" if is_lighting_load(d) else "power"
+        purpose = "lighting" if is_lighting_load(d) and not always_on(d) else "power"
         limit = 10.0 if purpose == "lighting" else 16.0
         if d.get("dedicated_line", "no") != "no" or d.get("phases", 1) == 3 or current[d["id"]] > limit + EPS:
             dedicated.append(dict(id=f"dev-{d['id']}", purpose="dedicated", devices=[d], rooms=[room],
                                   sort=f"3-{order[room['id']]:04d}-{devices.index(d):04d}"))
             continue
-        if purpose == "lighting":
+        if always_on(d):
+            key, sort = "always-on", "2-z"
+        elif purpose == "lighting":
             zone = {"bathroom": "wet", "outdoor": "outdoor"}.get(room["kind"], "dry")
             key, sort = f"light-{zone}", f"1-{['dry', 'wet', 'outdoor'].index(zone)}"
         else:
@@ -183,7 +193,12 @@ def needs_rcd(c):
     devices, rooms = c["devices"], c["rooms"]
     return (any(d.get("connection", "socket") == "socket" for d in devices)
             or any(r["kind"] in ("bathroom", "outdoor") for r in rooms)
-            or any(d["kind"] in ("floor_heating", "ev_charger") for d in devices))
+            or any(d["kind"] in ("floor_heating", "ev_charger") + WET_DEVICE_KINDS for d in devices))
+
+
+def wet_zone(c):
+    return (any(r["kind"] == "bathroom" for r in c["rooms"])
+            or any(d["kind"] in WET_DEVICE_KINDS for d in c["devices"]))
 
 
 def curve_options(start, rated):
@@ -426,7 +441,7 @@ def calculate(inp):
         socket = any(d.get("connection", "socket") == "socket" for d in c["devices"])
         rcd = needs_rcd(c)
         protection = settings.get("protection") or (
-            "mcb" if not rcd else {"rcboPerCircuit": "rcbo", "rcdPerCircuit": "mcbAndRcd",
+            "mcb" if not rcd else "rcbo" if wet_zone(c) else {"rcboPerCircuit": "rcbo", "rcdPerCircuit": "mcbAndRcd",
                                    "groupedRcd": "mcbUnderGroupRcd"}[inp.get("rcd_strategy", "rcboPerCircuit")])
         material = settings.get("material") or defaults.get("material", "copper")
         spec = dict(

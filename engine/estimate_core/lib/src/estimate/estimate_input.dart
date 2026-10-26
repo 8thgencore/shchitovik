@@ -67,6 +67,13 @@ final class const EstimateInput({
   /// Surge protective device; `null` — included for houses and garages.
   final bool? surgeProtection,
 
+  /// Load switch that turns off every circuit except the non-switchable ones; `null` —
+  /// included.
+  final bool? loadSwitch,
+
+  /// Service socket on the DIN rail with its own RCBO; `null` — included.
+  final bool? dinSocket,
+
   /// Overhead supply line: SPD type 1+2 instead of type 2.
   final bool overheadSupply = false,
 
@@ -86,6 +93,8 @@ final class const EstimateInput({
     cableReserveFactor: (json['cable_reserve_factor'] as num?)?.toDouble() ?? 1.1,
     voltageRelay: json['voltage_relay'] as bool?,
     surgeProtection: json['surge_protection'] as bool?,
+    loadSwitch: json['load_switch'] as bool?,
+    dinSocket: json['din_socket'] as bool?,
     overheadSupply: json['overhead_supply'] as bool? ?? false,
     selections: {
       for (final e in (json['selections'] as Map<String, Object?>? ?? const {}).entries)
@@ -108,6 +117,8 @@ final class const EstimateInput({
     double? cableReserveFactor,
     Object? voltageRelay = unset,
     Object? surgeProtection = unset,
+    Object? loadSwitch = unset,
+    Object? dinSocket = unset,
     bool? overheadSupply,
     Map<String, ApparatusSelection>? selections,
     Map<String, PriceRange>? cableCustomPrices,
@@ -120,6 +131,8 @@ final class const EstimateInput({
     surgeProtection: identical(surgeProtection, unset)
         ? this.surgeProtection
         : surgeProtection as bool?,
+    loadSwitch: identical(loadSwitch, unset) ? this.loadSwitch : loadSwitch as bool?,
+    dinSocket: identical(dinSocket, unset) ? this.dinSocket : dinSocket as bool?,
     overheadSupply: overheadSupply ?? this.overheadSupply,
     selections: selections ?? this.selections,
     cableCustomPrices: cableCustomPrices ?? this.cableCustomPrices,
@@ -133,6 +146,8 @@ final class const EstimateInput({
     'cable_reserve_factor': cableReserveFactor,
     if (voltageRelay != null) 'voltage_relay': voltageRelay,
     if (surgeProtection != null) 'surge_protection': surgeProtection,
+    if (loadSwitch != null) 'load_switch': loadSwitch,
+    if (dinSocket != null) 'din_socket': dinSocket,
     'overhead_supply': overheadSupply,
     'selections': {for (final e in selections.entries) e.key: e.value.toJson()},
     'cable_custom_prices': {for (final e in cableCustomPrices.entries) e.key: e.value.toJson()},

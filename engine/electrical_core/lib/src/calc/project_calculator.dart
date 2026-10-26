@@ -476,6 +476,8 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
     s.rcdReasons = rcdReasons(devices: draft.devices, rooms: draft.rooms);
     final ProtectionDevice automaticDevice = s.rcdReasons.isEmpty
         ? ProtectionDevice.mcb
+        : isWetZone(devices: draft.devices, rooms: draft.rooms)
+        ? ProtectionDevice.rcbo
         : switch (input.rcdStrategy) {
             RcdStrategy.rcboPerCircuit => ProtectionDevice.rcbo,
             RcdStrategy.rcdPerCircuit => ProtectionDevice.mcbAndRcd,
@@ -581,7 +583,10 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
     const maxRatedA = 63.0;
     final buckets = <String, List<_CircuitState>>{};
     for (final s in grouped) {
-      final key = s.draft.phases == 3 ? '3ph-${s.draft.id}' : '1ph-${s.phase!.name}';
+      // A shared RCD never spans both sides of the load switch.
+      final key =
+          '${s.draft.alwaysOn ? 'on-' : ''}'
+          '${s.draft.phases == 3 ? '3ph-${s.draft.id}' : '1ph-${s.phase!.name}'}';
       buckets.putIfAbsent(key, () => []).add(s);
     }
     final result = <SharedRcdResult>[];
@@ -705,6 +710,7 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
       cable: s.cable.result,
       checks: s.checks,
       status: statusOf(all, assumedZext: assumedZext),
+      alwaysOn: draft.alwaysOn,
     );
   }
 
