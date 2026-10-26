@@ -15,7 +15,9 @@ import 'package:shchitovik/src/feature/catalog_sync/injection.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/switchboard_view.dart';
 import 'package:shchitovik/src/feature/projects/injection.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
+import 'package:shchitovik/src/feature/settings/domain/model/general.dart';
 import 'package:shchitovik/src/feature/settings/injection.dart';
+import 'package:shchitovik/src/feature/settings/presentation/settings_scope.dart';
 import 'package:shchitovik/src/logic/composition_root.dart';
 import 'package:shchitovik/src/model/app_config.dart';
 import 'package:shchitovik/src/model/dependencies_container.dart';
@@ -351,6 +353,51 @@ void main() {
     expect(find.textContaining('без длины — падение напряжения'), findsNothing);
     expect(find.textContaining('длина не задана'), findsNothing);
     expect(find.textContaining('12 м'), findsWidgets);
+
+    await closeDatabase(tester);
+  });
+
+  testWidgets('expert mode, single-phase supply: no phase choice unless the device is 3-phase', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.5;
+    addTearDown(tester.view.reset);
+    await newProjectWithKitchen(tester);
+    final BuildContext context = tester.element(find.text('Кухня').first);
+    await tester.runAsync(
+      () => SettingsScope.update(
+        context,
+        (s) => s.copyWith(general: s.general.copyWith(interfaceMode: InterfaceModeVO.expert)),
+      ),
+    );
+    await settle(tester);
+
+    const device = 'Варочная панель индукционная';
+    // Centred: at the bottom edge the row sits under the wizard navigation.
+    Scrollable.ensureVisible(tester.element(find.text(device)), alignment: .5);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(device));
+    await settle(tester);
+    // Expert fields are shown, the phase choice is not.
+    expect(find.text('cos φ'), findsOneWidget);
+    expect(find.text('Фазы'), findsNothing);
+
+    // A three-phase device keeps the choice so it can be switched back to one phase.
+    context.read<ProjectBloc>().add(
+      ProjectEdited(
+        (d) => d.copyWith(
+          input: d.input.copyWith(
+            devices: [
+              for (final x in d.input.devices)
+                if (x.name == device) x.copyWith(phases: 3) else x,
+            ],
+          ),
+        ),
+      ),
+    );
+    await settle(tester);
+    expect(find.text('Фазы'), findsOneWidget);
 
     await closeDatabase(tester);
   });
