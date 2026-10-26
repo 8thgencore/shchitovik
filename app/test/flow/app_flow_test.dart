@@ -401,4 +401,47 @@ void main() {
 
     await closeDatabase(tester);
   });
+
+  testWidgets('estimate: picking a compact RCBO returns to the estimate and narrows the board', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(3200, 2000);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    final DependenciesContainer? deps = await tester.runAsync(dependencies);
+    await tester.pumpWidget(
+      RootContext(compositionResult: CompositionResult(dependencies: deps!, millisecondsSpent: 0)),
+    );
+    await settle(tester);
+    await tester.tap(find.text('1-комнатная квартира'));
+    await settle(tester);
+    int modules() =>
+        tester.widget<SwitchboardView>(find.byType(SwitchboardView)).state.estimate.moduleUnits;
+    final int before = modules();
+
+    await tester.tap(find.text('Смета').first);
+    await settle(tester);
+    await tester.tap(find.text('№3 Розетки: Кухня – 1').first);
+    await settle(tester);
+    final Finder compact = find.text('IEK ARMAT B06S');
+    await tester.scrollUntilVisible(
+      compact,
+      300,
+      scrollable: find
+          .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
+          .first,
+    );
+    await tester.tap(compact);
+    await settle(tester);
+    // Back on the estimate: the slot page was opened with `go`, there is nothing to pop.
+    expect(find.text('Итого'), findsOneWidget);
+    expect(find.textContaining('IEK ARMAT B06S'), findsOneWidget);
+
+    await tester.tap(find.text('Щит').first);
+    await settle(tester);
+    expect(modules(), before - 1);
+
+    await closeDatabase(tester);
+  });
 }
