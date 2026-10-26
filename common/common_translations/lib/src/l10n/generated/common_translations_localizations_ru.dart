@@ -385,6 +385,17 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get deviceDedicated => 'Отдельная линия';
 
   @override
+  String get deviceAlwaysOn => 'Неотключаемая линия';
+
+  @override
+  String get deviceAlwaysOnHint =>
+      'Не отключается выключателем нагрузки: холодильник, защита от протечек';
+
+  @override
+  String get deviceThreePhaseOnSingle =>
+      'Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт';
+
+  @override
   String get dedicatedRequired => 'Обязательно';
 
   @override
@@ -449,6 +460,33 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String get circuitLength => 'Длина, м';
+
+  @override
+  String get circuitAlwaysOn => 'Неотключаемая линия: стоит до выключателя нагрузки';
+
+  @override
+  String get circuitLengthMissing => 'длина не задана';
+
+  @override
+  String circuitsLengthMissing(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count линий без длины',
+      few: '$count линии без длины',
+      one: '$count линия без длины',
+    );
+    return '$_temp0 — падение напряжения и петля «фаза–ноль» не проверены';
+  }
+
+  @override
+  String get circuitsSetLength => 'Задать длину';
+
+  @override
+  String get circuitsSetLengthTitle => 'Длина линий без длины';
+
+  @override
+  String get circuitsSetLengthApply => 'Применить';
 
   @override
   String get circuitSection => 'Сечение, мм²';
@@ -525,6 +563,12 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String get estimateSpd => 'УЗИП';
+
+  @override
+  String get estimateLoadSwitch => 'Выключатель нагрузки (кроме неотключаемых линий)';
+
+  @override
+  String get estimateDinSocket => 'Розетка на DIN-рейку с дифавтоматом';
 
   @override
   String get estimateOverhead => 'Воздушный ввод (УЗИП тип 1+2)';

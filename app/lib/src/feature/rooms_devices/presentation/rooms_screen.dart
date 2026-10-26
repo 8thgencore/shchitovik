@@ -24,6 +24,7 @@ class const RoomsScreen({super.key}) extends StatelessWidget {
     final String roomId = _uuid.v4();
     ProjectScope.edit(context, (d) {
       final ProjectInput input = d.input;
+      final singlePhase = input.supplyPhases == SupplyPhases.single;
       final int sameName = input.rooms.where((r) => r.name.startsWith(template.name)).length;
       final room = RoomInput(
         id: roomId,
@@ -32,12 +33,9 @@ class const RoomsScreen({super.key}) extends StatelessWidget {
       );
       final List<DeviceInput> devices = [
         for (final entry in template.devices)
-          DeviceInput.fromTemplate(
-            NormsData.embedded.device(entry.deviceId),
-            id: _uuid.v4(),
-            roomId: roomId,
-            quantity: entry.count,
-          ),
+          if (NormsData.embedded.device(entry.deviceId) case final t
+              when !singlePhase || t.phases == 1)
+            DeviceInput.fromTemplate(t, id: _uuid.v4(), roomId: roomId, quantity: entry.count),
       ];
       return d.copyWith(
         input: input.copyWith(
@@ -108,7 +106,10 @@ class const RoomsScreen({super.key}) extends StatelessWidget {
 class const _RoomCard({required final RoomInput room, required final ProjectInput input})
     extends StatelessWidget {
   Future<void> _addDevice(BuildContext context) async {
-    final Object? template = await DeviceTemplatePicker.show(context);
+    final Object? template = await DeviceTemplatePicker.show(
+      context,
+      singlePhase: input.supplyPhases == SupplyPhases.single,
+    );
     if (!context.mounted || template == null) {
       return;
     }
@@ -179,6 +180,7 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
   Widget build(BuildContext context) {
     final CommonTranslationsLocalizations t = context.translations;
     final List<DeviceInput> devices = input.devices.where((d) => d.roomId == room.id).toList();
+    final singlePhase = input.supplyPhases == SupplyPhases.single;
     final int total = devices.fold<int>(0, (s, d) => s + d.totalPowerW);
     return UiCard(
       banded: true,
@@ -215,7 +217,8 @@ class const _RoomCard({required final RoomInput room, required final ProjectInpu
             UiListRow(
               dense: true,
               title: d.name,
-              subtitle: d.phases == 3 ? '3ф' : null,
+              subtitle: d.phases == 3 ? (singlePhase ? t.deviceThreePhaseOnSingle : '3ф') : null,
+              stripe: singlePhase && d.phases == 3 ? UiTone.danger : null,
               trailing: UiQuantity(
                 formatNumber(d.powerW / 1000, 2),
                 unit: 'кВт',

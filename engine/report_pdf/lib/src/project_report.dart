@@ -279,7 +279,11 @@ List<pw.Widget> _circuits(ProjectReportData data) {
     for (final c in data.result.circuits)
       [
         c.number.toString(),
-        c.name,
+        // The shared non-switchable line says so in its name; a dedicated one is marked.
+        if (c.alwaysOn && c.purpose == CircuitPurpose.dedicated)
+          '${c.name}, неотключаемая'
+        else
+          c.name,
         c.phase?.label ?? '3ф',
         _num(c.installedPowerW / 1000, 2),
         _num(c.designCurrentA),

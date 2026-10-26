@@ -202,6 +202,16 @@ class const _OptionsCard({required final ProjectReady state}) extends StatelessW
                 onChanged: (v) => _edit(context, (e) => e.copyWith(surgeProtection: v)),
               ),
               UiSwitchRow(
+                title: t.estimateDinSocket,
+                value: choices.dinSocket ?? true,
+                onChanged: (v) => _edit(context, (e) => e.copyWith(dinSocket: v)),
+              ),
+              UiSwitchRow(
+                title: t.estimateLoadSwitch,
+                value: choices.loadSwitch ?? true,
+                onChanged: (v) => _edit(context, (e) => e.copyWith(loadSwitch: v)),
+              ),
+              UiSwitchRow(
                 title: t.estimateOverhead,
                 value: choices.overheadSupply,
                 onChanged: (v) => _edit(context, (e) => e.copyWith(overheadSupply: v)),

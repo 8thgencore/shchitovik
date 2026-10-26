@@ -277,6 +277,7 @@ class const CircuitScreen({
         children: [
           header,
           if (loopAssumed) LoopReviewNotice(state: state, circuit: circuit),
+          if (circuit.alwaysOn) UiNotice(boxed: true, message: t.circuitAlwaysOn),
           devicesCard,
           valuesCard,
           checks,
@@ -290,6 +291,7 @@ class const CircuitScreen({
       children: [
         header,
         if (loopAssumed) LoopReviewNotice(state: state, circuit: circuit),
+        if (circuit.alwaysOn) UiNotice(boxed: true, message: t.circuitAlwaysOn),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

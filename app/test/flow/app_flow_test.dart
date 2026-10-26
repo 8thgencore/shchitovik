@@ -99,7 +99,7 @@ void main() {
     expect(find.byType(UiListRow), findsWidgets);
 
     // The review notice of the assumed loop impedance sits above the list.
-    expect(find.text('15 линий требуют проверки'), findsOneWidget);
+    expect(find.text('16 линий требуют проверки'), findsOneWidget);
     await tester.ensureVisible(find.textContaining('Освещение').first);
     await settle(tester);
     await tester.tap(find.textContaining('Освещение').first);

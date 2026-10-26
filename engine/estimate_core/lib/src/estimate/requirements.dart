@@ -79,7 +79,8 @@ final class const ApparatusRequirement({
 /// Place for one device in the panel.
 @immutable
 final class const ApparatusSlot({
-  /// Stable id: `<circuit id>/mcb|rcd|rcbo`, `incomer/mcb`, `incomer/rcd`, `rcd-<n>`.
+  /// Stable id: `<circuit id>/mcb|rcd|rcbo`, `incomer/mcb`, `incomer/rcd`, `rcd-<n>`,
+  /// `din_socket/rcbo`.
   required final String id,
 
   /// Title for the estimate.
@@ -92,8 +93,21 @@ final class const ApparatusSlot({
   final String? circuitId,
 });
 
+/// Rated current of the DIN-rail service socket and its RCBO, A.
+const double dinSocketRatedA = 16;
+
+/// Residual current of the DIN-rail socket RCBO, mA (ГОСТ Р 50571.4.41, 411.3.3).
+const double dinSocketResidualMa = 30;
+
+/// Slot id of the DIN-rail socket RCBO.
+const dinSocketRcboId = 'din_socket/rcbo';
+
 /// Builds the list of slots from a calculation result. The incomer comes first.
-List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result) {
+///
+/// With [dinSocket], the service socket on the DIN rail gets its own 30 mA RCBO: a socket
+/// needs additional protection (ГОСТ Р 50571.4.41, 411.3.3), and the socket sits ahead of the
+/// fire RCD.
+List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result, {bool dinSocket = true}) {
   final three = input.supplyPhases == SupplyPhases.three;
   final slots = <ApparatusSlot>[];
 
@@ -125,6 +139,22 @@ List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result) {
           leakageMa: fire.residualMa,
           rcdType: RcdType.fromKey(fire.type),
           selective: fire.selective,
+        ),
+      ),
+    );
+  }
+  if (dinSocket) {
+    slots.add(
+      const ApparatusSlot(
+        id: dinSocketRcboId,
+        title: 'Розетка на DIN-рейку — дифавтомат',
+        requirement: ApparatusRequirement(
+          function: ApparatusFunction.rcbo,
+          poles: 2,
+          ratedCurrentA: dinSocketRatedA,
+          curve: BreakerCurve.c,
+          leakageMa: dinSocketResidualMa,
+          rcdType: RcdType.a,
         ),
       ),
     );

@@ -4,6 +4,7 @@ import 'package:electrical_core/electrical_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/length_notice.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/review_notice.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/switchboard_view.dart';
@@ -47,6 +48,7 @@ class const _ExpandedCircuits({required final ProjectReady state}) extends State
           child: SwitchboardView(state: state),
         ),
         ...side,
+        if (LengthNotice.shows(state)) LengthNotice(state: state),
         circuits,
       ],
     );
@@ -111,6 +113,7 @@ class const _CompactCircuits({required final ProjectReady state}) extends Statel
                 : [
                     if (LoopReviewNotice.shows(state)) LoopReviewNotice(state: state),
                     ...details,
+                    if (LengthNotice.shows(state)) LengthNotice(state: state),
                     if (result.circuits.isEmpty)
                       _NoCircuits(projectId: state.document.id)
                     else
@@ -260,9 +263,9 @@ class const _IssuesCard({required final ProjectResult result}) extends Stateless
   }
 }
 
-String _circuitMeta(CircuitResult c) =>
+String _circuitMeta(CommonTranslationsLocalizations t, CircuitResult c) =>
     '${c.protection.label} · ${c.cable.label} мм²'
-    '${c.cable.lengthM == null ? '' : ' · ${formatNumber(c.cable.lengthM)} м'}'
+    ' · ${c.cable.lengthM == null ? t.circuitLengthMissing : '${formatNumber(c.cable.lengthM)} м'}'
     ' · ${c.phase?.label ?? '3ф'}';
 
 class const _CircuitRow({required final String projectId, required final CircuitResult circuit})
@@ -273,7 +276,7 @@ class const _CircuitRow({required final String projectId, required final Circuit
     return UiListRow(
       number: '${c.number}',
       title: c.name,
-      subtitle: _circuitMeta(c),
+      subtitle: _circuitMeta(context.translations, c),
       trailing: UiQuantity(formatNumber(c.designCurrentA), unit: 'А'),
       stripe: statusStripe(c.status),
       // «Requires review» is explained once above the list; the stripe marks the rows.
@@ -331,7 +334,9 @@ class const _CircuitsTable({required final ProjectReady state}) extends Stateles
                 child: Text(c.protection.label, style: UiTextStyles.valueStrong),
               ),
               UiTableDetail(
-                detail: c.cable.lengthM == null ? null : '${formatNumber(c.cable.lengthM)} м',
+                detail: c.cable.lengthM == null
+                    ? t.circuitLengthMissing
+                    : '${formatNumber(c.cable.lengthM)} м',
                 child: Text(c.cable.label, style: UiTextStyles.value),
               ),
               Text(c.phase?.label ?? '3ф', style: UiTextStyles.value),

@@ -26,6 +26,9 @@ final class CircuitDraft({
 }) {
   /// 3 if the circuit feeds a three-phase device, otherwise 1.
   int get phases => devices.any((d) => d.phases == 3) ? 3 : 1;
+
+  /// Whether the circuit is non-switchable: it feeds an always-on device.
+  bool get alwaysOn => devices.any((d) => d.alwaysOn);
 }
 
 /// Limits of shared circuits by design current, A.
@@ -46,6 +49,9 @@ const Map<CircuitPurpose, double> sharedLimitA = {
 ///    ГОСТ Р 50571.7.701 requires RCD for all circuits of the location) and outdoor.
 /// 3. Socket-outlets and small fixed appliances form power circuits per room
 ///    (СП 256 п. 10.2 recommends separate lines for room sockets, kitchen and lighting).
+///    Always-on devices (refrigerators, leak protection) are pooled across rooms into the
+///    non-switchable line that bypasses the load switch.
+///    ASSUMPTION: design practice, not a norm clause (verification/VERIFICATION.md, E10).
 /// 4. Shared circuits are packed first-fit-decreasing by design current (Kс = 1) within
 ///    [sharedLimitA]; ties are broken by device id for determinism.
 List<CircuitDraft> buildCircuits({
@@ -65,7 +71,7 @@ List<CircuitDraft> buildCircuits({
 
   for (final device in devices) {
     final RoomInput room = roomById[device.roomId]!;
-    final CircuitPurpose purpose = _isLightingCircuitLoad(device)
+    final CircuitPurpose purpose = _isLightingCircuitLoad(device) && !device.alwaysOn
         ? CircuitPurpose.lighting
         : CircuitPurpose.power;
     final bool dedicated =
@@ -89,7 +95,11 @@ List<CircuitDraft> buildCircuits({
     final String key;
     final String title;
     final String sortKey;
-    if (purpose == CircuitPurpose.lighting) {
+    if (device.alwaysOn) {
+      key = 'always-on';
+      title = 'Неотключаемая линия';
+      sortKey = '2-z';
+    } else if (purpose == CircuitPurpose.lighting) {
       final (String, String) zone = switch (room.kind) {
         RoomKind.bathroom => ('wet', 'Освещение влажных помещений'),
         RoomKind.outdoor => ('outdoor', 'Наружное освещение'),

@@ -78,14 +78,14 @@ void main() {
         ],
         (1, 12),
       ),
-      'unknown ids are skipped, new items fill the first rail with room': (
+      'unknown ids are skipped, new items follow the item before them in mounting order': (
         const BoardArrangement(
           rails: [
             ['x', 'c', 'a'],
           ],
         ),
         [
-          ['c', 'a', 'b', 'd'],
+          ['c', 'd', 'a', 'b'],
         ],
         (1, 12),
       ),

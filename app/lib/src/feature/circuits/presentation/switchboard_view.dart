@@ -399,9 +399,13 @@ class const _BoardItemModule({
         );
       case BoardItemKind.auxiliary:
         final EstimateLine line = state.estimate.lines.firstWhere((l) => l.id == item.id);
+        final ApparatusRequirement? requirement = line.requirement;
         return (
           top: t.boardAuxiliary,
-          title: line.title,
+          // The DIN-rail socket RCBO shows its rating like circuit breakers do.
+          title: requirement?.curve == null
+              ? line.title
+              : '${requirement!.curve!.name.toUpperCase()}${formatNumber(requirement.ratedCurrentA, 0)}',
           bottom: line.description,
           strip: c.textMuted,
           frame: null,
@@ -426,7 +430,9 @@ class const _BoardItemModule({
           bottom: circuit.name,
           strip: phase == null ? c.primary : _phaseColor(phase),
           frame: statusStripe(circuit.status)?.color(c),
-          label: '${circuit.number}. ${circuit.name}, ${circuit.status.label}',
+          label:
+              '${circuit.number}. ${circuit.name}, '
+              '${circuit.alwaysOn ? '${t.deviceAlwaysOn}, ' : ''}${circuit.status.label}',
         );
     }
   }
@@ -477,7 +483,9 @@ class const _BoardItemModule({
     if (circuit != null && !editing) {
       pressable = Tooltip(
         message:
-            '${circuit.number}. ${circuit.name}\n${circuit.protection.description}\n'
+            '${circuit.number}. ${circuit.name}\n'
+            '${circuit.alwaysOn ? '${t.circuitAlwaysOn}\n' : ''}'
+            '${circuit.protection.description}\n'
             '${circuit.cable.label} мм² · ${circuit.phase?.label ?? '3ф'} · '
             '${circuit.status.label}',
         child: pressable,
