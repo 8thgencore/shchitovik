@@ -103,7 +103,7 @@ void main() {
         expect(items.first.kind, BoardItemKind.incomer);
       });
 
-      test('$name: mounting order — protection devices, non-switchable lines, load switch', () {
+      test('$name: mounting order – protection devices, non-switchable lines, load switch', () {
         final ProjectResult result = calculateProject(input);
         final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
         final List<String> ids = [

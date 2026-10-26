@@ -52,7 +52,7 @@ List<({ApparatusProduct product, Compatibility compatibility})> compatibleProduc
 /// Builds the estimate for a calculated project.
 ///
 /// For every slot: a user selection that is still compatible is used with its snapshot price
-/// (or the user's price); otherwise a model is chosen automatically — from the scenario
+/// (or the user's price); otherwise a model is chosen automatically – from the scenario
 /// segment's series that covers most slots of this function, then the cheapest compatible
 /// model of the segment, then the cheapest compatible model of any segment; if the catalog
 /// has none, the average price of the rating range is used. Cables are priced per metre with
@@ -134,7 +134,7 @@ final class _Estimate(
     warnings.add(
       EstimateWarning(
         code: 'prices_are_estimates',
-        message: 'Цены — ориентировочные розничные (на ${catalog.priceAsOf}), не прайс-лист',
+        message: 'Цены – ориентировочные розничные (на ${catalog.priceAsOf}), не прайс-лист',
       ),
     );
 
@@ -157,7 +157,7 @@ final class _Estimate(
     );
   }
 
-  /// Series of the scenario segment covering most slots per function; ties — lower total
+  /// Series of the scenario segment covering most slots per function; ties – lower total
   /// typical price, then series name.
   Map<ApparatusFunction, String> _preferredSeries(List<ApparatusSlot> slots) {
     final result = <ApparatusFunction, String>{};

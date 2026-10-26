@@ -35,10 +35,10 @@ final class const ProjectReportData({
   /// Calculation result.
   required final ProjectResult result,
 
-  /// Estimate; `null` — the estimate sections are omitted.
+  /// Estimate; `null` – the estimate sections are omitted.
   final EstimateResult? estimate,
 
-  /// Switchboard; `null` — the switchboard section is omitted.
+  /// Switchboard; `null` – the switchboard section is omitted.
   final SwitchboardLayout? board,
 });
 
@@ -46,7 +46,7 @@ final class const ProjectReportData({
 const reportDisclaimer =
     'Ориентировочный расчёт. Не является проектной документацией и не заменяет проект, '
     'выполненный квалифицированным специалистом. Перед монтажом параметры сети (сопротивление '
-    'петли «фаза — нуль», ток КЗ) должны быть измерены, а решения — проверены.';
+    'петли «фаза – нуль», ток КЗ) должны быть измерены, а решения – проверены.';
 
 /// Builds the A4 PDF report.
 ///
@@ -92,7 +92,7 @@ const _headerFill = PdfColor.fromInt(0xFFE8EEF5);
 
 String _num(double? v, [int digits = 1]) {
   if (v == null) {
-    return '—';
+    return '–';
   }
   String s = v.toStringAsFixed(digits);
   if (s.contains('.')) {
@@ -465,8 +465,8 @@ List<pw.Widget> _switchboard(ProjectReportData data, SwitchboardLayout board) {
     _paragraph(
       'Корпус ${board.enclosureRails}×${board.modulesPerRail} = '
       '${board.enclosureRails * board.modulesPerRail} мод., занято ${board.occupiedModules}. '
-      'Ширина аппаратов — по моделям сметы; резерв не менее '
-      '${_num(enclosureReserveShare * 100, 0)} % — допущение. Полоса — фаза (L1 коричневая, '
+      'Ширина аппаратов – по моделям сметы; резерв не менее '
+      '${_num(enclosureReserveShare * 100, 0)} % – допущение. Полоса – фаза (L1 коричневая, '
       'L2 чёрная, L3 серая).',
     ),
     for (var r = 0; r < board.rails.length; r++)
@@ -588,7 +588,7 @@ String _boardWarning(ProjectReportData data, BoardWarning warning) => switch (wa
   BoardRailOverfull(:final rail) => 'Рейка ${rail + 1} переполнена: аппараты шире рейки.',
   BoardEnclosureTooSmall() => 'Аппараты не помещаются в выбранный корпус.',
   BoardReserveLow() =>
-    'Резерв меньше ${_num(enclosureReserveShare * 100, 0)} % — нет места для новых линий.',
+    'Резерв меньше ${_num(enclosureReserveShare * 100, 0)} % – нет места для новых линий.',
   BoardGroupSplit(:final rcdId) => () {
     final List<String> numbers = [
       for (final c in data.result.circuits)
@@ -596,7 +596,7 @@ String _boardWarning(ProjectReportData data, BoardWarning warning) => switch (wa
           '№${c.number}',
     ];
     return 'Группа УЗО (линии ${numbers.join(', ')}) разнесена: аппараты не стоят подряд '
-        'на одной рейке, гребёнкой их не соединить — нужны перемычки.';
+        'на одной рейке, гребёнкой их не соединить – нужны перемычки.';
   }(),
 };
 

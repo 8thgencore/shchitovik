@@ -317,7 +317,7 @@ void main() {
           ),
         );
     await settle(tester);
-    const warning = 'Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт';
+    const warning = 'Трёхфазный прибор не подключить к однофазному вводу – он не входит в расчёт';
     expect(find.text(warning), findsOneWidget);
 
     await tester.ensureVisible(find.text('Водонагреватель проточный (однофазный)'));
@@ -339,7 +339,7 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('Список'));
     await settle(tester);
-    expect(find.textContaining('без длины — падение напряжения'), findsOneWidget);
+    expect(find.textContaining('без длины – падение напряжения'), findsOneWidget);
     expect(find.textContaining('длина не задана'), findsWidgets);
 
     await tester.tap(find.text('Задать длину'));
@@ -350,7 +350,7 @@ void main() {
     await tester.tap(find.text('Применить'));
     await settle(tester);
 
-    expect(find.textContaining('без длины — падение напряжения'), findsNothing);
+    expect(find.textContaining('без длины – падение напряжения'), findsNothing);
     expect(find.textContaining('длина не задана'), findsNothing);
     expect(find.textContaining('12 м'), findsWidgets);
 

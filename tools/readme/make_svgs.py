@@ -99,7 +99,7 @@ def hero(c: dict) -> str:
         fx += unit + gap
     dim_y = rail_y + 132 + 34
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
-  <title id="title">Щитовик — расчёт электрощита</title>
+  <title id="title">Щитовик – расчёт электрощита</title>
   <desc id="desc">Название проекта и описание слева; справа чертёж DIN-рейки с вводным автоматом и автоматами линий, размерная линия и штамп с итогами демо-проекта.</desc>
 
   <rect width="1200" height="420" rx="12" fill="{c['canvas']}"/>

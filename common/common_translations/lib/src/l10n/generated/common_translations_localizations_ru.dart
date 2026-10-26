@@ -220,11 +220,11 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get setupIncomerBreaker => 'Существующий вводной автомат, А';
 
   @override
-  String get setupExternalLoop => 'Сопротивление петли «фаза — нуль» до щита, Ом';
+  String get setupExternalLoop => 'Сопротивление петли «фаза – нуль» до щита, Ом';
 
   @override
   String get setupExternalLoopHint =>
-      'По замеру или от сетевой организации; без него проверка КЗ — с допущением';
+      'По замеру или от сетевой организации; без него проверка КЗ – с допущением';
 
   @override
   String get setupCookingFuel => 'Плита';
@@ -302,7 +302,7 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get setupDefaultLength => 'Длина линии по умолчанию, м';
 
   @override
-  String get roomsEmpty => 'Добавьте помещения — приборы подставятся из типового набора';
+  String get roomsEmpty => 'Добавьте помещения – приборы подставятся из типового набора';
 
   @override
   String get roomsAdd => 'Добавить помещение';
@@ -393,7 +393,7 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String get deviceThreePhaseOnSingle =>
-      'Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт';
+      'Трёхфазный прибор не подключить к однофазному вводу – он не входит в расчёт';
 
   @override
   String get dedicatedRequired => 'Обязательно';
@@ -476,7 +476,7 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
       few: '$count линии без длины',
       one: '$count линия без длины',
     );
-    return '$_temp0 — падение напряжения и петля «фаза–ноль» не проверены';
+    return '$_temp0 – падение напряжения и петля «фаза–ноль» не проверены';
   }
 
   @override
@@ -647,7 +647,7 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String boardReserveNote(int percent) {
-    return 'Резерв не менее $percent % — допущение, требует проверки. Цвет полосы — фаза, рамка — статус линии.';
+    return 'Резерв не менее $percent % – допущение, требует проверки. Цвет полосы – фаза, рамка – статус линии.';
   }
 
   @override
@@ -710,21 +710,21 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
 
   @override
   String get boardWarningTooSmall =>
-      'Аппараты не помещаются в выбранный корпус — лишние рейки показаны ниже.';
+      'Аппараты не помещаются в выбранный корпус – лишние рейки показаны ниже.';
 
   @override
   String boardWarningReserve(int percent) {
-    return 'Резерв меньше $percent % — для новых линий места нет.';
+    return 'Резерв меньше $percent % – для новых линий места нет.';
   }
 
   @override
   String boardWarningGroupSplit(String circuits) {
-    return 'Группа УЗО (линии $circuits) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить — нужны перемычки.';
+    return 'Группа УЗО (линии $circuits) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить – нужны перемычки.';
   }
 
   @override
   String get projectsEmptyHint =>
-      'Создайте проект — линии, щит и смета посчитаются по нормам автоматически.';
+      'Создайте проект – линии, щит и смета посчитаются по нормам автоматически.';
 
   @override
   String get projectsImportPickAnother => 'Выбрать другой файл';

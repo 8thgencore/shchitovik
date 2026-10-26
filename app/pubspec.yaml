@@ -1,5 +1,5 @@
 name: shchitovik
-description: "Щитовик — расчёт электрощита и смета."
+description: "Щитовик – расчёт электрощита и смета."
 publish_to: "none"
 version: 0.1.1+1
 resolution: workspace

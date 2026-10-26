@@ -180,7 +180,7 @@ class const _IncomerCard({required final ProjectResult result}) extends Stateles
               ),
               UiMetric(
                 label: t.circuitsIncomer,
-                value: incomer.breakerA == null ? '—' : formatNumber(incomer.breakerA, 0),
+                value: incomer.breakerA == null ? '–' : formatNumber(incomer.breakerA, 0),
                 unit: incomer.breakerA == null ? null : 'А',
               ),
               UiMetric(

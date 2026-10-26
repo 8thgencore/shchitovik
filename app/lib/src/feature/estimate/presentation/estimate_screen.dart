@@ -163,11 +163,11 @@ class const _LineRow({required final String projectId, required final EstimateLi
       dense: true,
       title: line.title,
       subtitle: missing
-          ? '${line.description} — нет: ${line.missing.join(', ')}'
+          ? '${line.description} – нет: ${line.missing.join(', ')}'
           : line.description,
       stripe: missing ? UiTone.warning : null,
       trailing: missing
-          ? const Text('—')
+          ? const Text('–')
           : Text(
               '${line.unit == 'м' ? '${formatNumber(line.quantity)} м\n' : ''}'
               '${formatRubles(line.total.typicalKopecks)}',
@@ -268,7 +268,7 @@ class const _WarningsCard({required final EstimateResult estimate}) extends Stat
                 Padding(
                   padding: const EdgeInsets.only(top: UiSpace.xs),
                   child: Text(
-                    '— $item',
+                    '– $item',
                     style: UiTextStyles.bodySmall.copyWith(color: c.text),
                   ),
                 ),

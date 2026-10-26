@@ -9,7 +9,7 @@ part 'database.g.dart';
 /// The drift-managed database of the app.
 ///
 /// Projects are stored as documents (input and estimate choices as JSON); calculation
-/// results are never stored — they are recomputed from the input.
+/// results are never stored – they are recomputed from the input.
 /// {@endtemplate}
 @DriftDatabase(tables: [Projects, CatalogCache])
 class AppDatabase extends _$AppDatabase {

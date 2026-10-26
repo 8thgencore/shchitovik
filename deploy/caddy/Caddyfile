@@ -2,8 +2,8 @@
 # Alternative to deploy/nginx/shchitovik.conf with the same layout and headers.
 # Domain shchitovik.ru; Caddy obtains and renews TLS certificates itself.
 # Layout on the server (deployed by CI, see deploy/README.md):
-#   /var/www/shchitovik/web/      — Flutter Web build (app/build/web)
-#   /var/www/shchitovik/catalog/  — catalog files (tools/catalog/publish_catalog.py)
+#   /var/www/shchitovik/web/      – Flutter Web build (app/build/web)
+#   /var/www/shchitovik/catalog/  – catalog files (tools/catalog/publish_catalog.py)
 
 shchitovik.ru {
 	encode zstd gzip

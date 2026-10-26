@@ -61,7 +61,7 @@ tests.json
 .dev.gitignore
 
 
-# Local working materials (norm texts and sources) — never committed
+# Local working materials (norm texts and sources) – never committed
 /reference/
 
 # Python

@@ -21,7 +21,7 @@ void main() {
     test('between steps the hotter step is used', () {
       expect(t.factor(air, Insulation.pvc, 31), 0.94);
     });
-    test('below the table the first step is used, above — no data', () {
+    test('below the table the first step is used, above – no data', () {
       expect(t.factor(air, Insulation.pvc, -20), 1.22);
       expect(t.factor(air, Insulation.pvc, 65), isNull);
       expect(t.factor(air, Insulation.xlpe, 80), 0.41);

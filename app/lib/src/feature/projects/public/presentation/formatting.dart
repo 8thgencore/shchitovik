@@ -1,9 +1,9 @@
 import 'package:estimate_core/estimate_core.dart';
 
-/// Number with a comma and at most [digits] decimals; `—` for null.
+/// Number with a comma and at most [digits] decimals; `–` for null.
 String formatNumber(double? value, [int digits = 1]) {
   if (value == null) {
-    return '—';
+    return '–';
   }
   String s = value.toStringAsFixed(digits);
   if (s.contains('.')) {
