@@ -7,6 +7,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
+import 'package:shchitovik/src/logic/app_router.dart';
 import 'package:shchitovik/src/widget/form_fields.dart';
 
 /// Choice of a model for one estimate slot, or a custom price.
@@ -27,6 +28,9 @@ class const SlotScreen({
     final ApparatusSelection? selection = state.document.estimate.selections[slotId];
     final List<({Compatibility compatibility, ApparatusProduct product})> candidates =
         compatibleProducts(requirement, state.catalog);
+
+    // Opened with `go` from the estimate, so there is nothing to pop.
+    void back() => context.go(AppRoutes.projectEstimate(state.document.id));
 
     void select(ApparatusSelection? value) {
       ProjectScope.edit(context, (d) {
@@ -54,7 +58,7 @@ class const SlotScreen({
                 selected: selection == null,
                 onTap: () {
                   select(null);
-                  context.pop();
+                  back();
                 },
               ),
               if (selection != null)
@@ -104,7 +108,7 @@ class const SlotScreen({
                               catalogVersion: state.catalog.catalogVersion,
                             ),
                           );
-                          context.pop();
+                          back();
                         },
                       ),
                   ],

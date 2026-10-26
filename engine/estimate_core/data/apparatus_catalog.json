@@ -1,7 +1,7 @@
 {
  "dataset": "apparatus_catalog",
- "dataset_version": "2026-10-1",
- "catalog_version": "2026-10-1",
+ "dataset_version": "2026-10-2",
+ "catalog_version": "2026-10-2",
  "currency": "RUB",
  "price_as_of": "2026-10",
  "price_disclaimer": "Ориентировочные розничные цены, не прайс-лист. basis: retail_listing – откалибровано по розничному листингу; derived_from_listing – масштабирование от такой модели; estimate – экспертная оценка.",
@@ -49215,6 +49215,942 @@
     "max": 14510,
     "as_of": "2026-10",
     "basis": "estimate"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b6-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 6,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3810,
+    "typical": 4760,
+    "max": 5540,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b10-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 10,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3890,
+    "typical": 4860,
+    "max": 5660,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b16-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 16,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4010,
+    "typical": 5010,
+    "max": 5830,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b20-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 20,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4130,
+    "typical": 5160,
+    "max": 6000,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b25-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 25,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4330,
+    "typical": 5410,
+    "max": 6300,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b32-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 32,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4610,
+    "typical": 5760,
+    "max": 6700,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c6-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 6,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3810,
+    "typical": 4760,
+    "max": 5540,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c10-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 10,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3890,
+    "typical": 4860,
+    "max": 5660,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c16-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": "AR-B06S-1N-C16C030",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 16,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4010,
+    "typical": 5010,
+    "max": 5830,
+    "as_of": "2026-10",
+    "basis": "retail_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c20-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 20,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4130,
+    "typical": 5160,
+    "max": 6000,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c25-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": "AR-B06S-1N-C25C030",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 25,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4330,
+    "typical": 5410,
+    "max": 6300,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c32-30ma-ac",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 32,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4610,
+    "typical": 5760,
+    "max": 6700,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b6-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 6,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4950,
+    "typical": 6190,
+    "max": 7200,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b10-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 10,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5060,
+    "typical": 6320,
+    "max": 7350,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b16-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": "AR-B06S-1N-B16A030",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 16,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5210,
+    "typical": 6510,
+    "max": 7580,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b20-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 20,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5370,
+    "typical": 6710,
+    "max": 7810,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b25-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 25,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5630,
+    "typical": 7030,
+    "max": 8190,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-b32-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 32,
+    "curve": "B",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5990,
+    "typical": 7490,
+    "max": 8720,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c6-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 6,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4950,
+    "typical": 6190,
+    "max": 7200,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c10-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 10,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5060,
+    "typical": 6320,
+    "max": 7350,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c16-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": "AR-B06S-1N-C16A030",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 16,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5210,
+    "typical": 6510,
+    "max": 7580,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c20-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 20,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5370,
+    "typical": 6710,
+    "max": 7810,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c25-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 25,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5630,
+    "typical": 7030,
+    "max": 8190,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "iek-armat-b06s-1pn-c32-30ma-a",
+   "manufacturer": "iek",
+   "series": "ARMAT B06S",
+   "function": "RCBO",
+   "article": "AR-B06S-1N-C32A030",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 32,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5990,
+    "typical": 7490,
+    "max": 8720,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c6-30ma-ac",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 6,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3350,
+    "typical": 4270,
+    "max": 6360,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c10-30ma-ac",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 10,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3420,
+    "typical": 4360,
+    "max": 6500,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c16-30ma-ac",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": "2CSR255050R1164",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 16,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3530,
+    "typical": 4490,
+    "max": 6700,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c20-30ma-ac",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 20,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3640,
+    "typical": 4630,
+    "max": 6900,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c25-30ma-ac",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 25,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 3810,
+    "typical": 4850,
+    "max": 7240,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c32-30ma-ac",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 32,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "AC",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4060,
+    "typical": 5170,
+    "max": 7700,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c6-30ma-a",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 6,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4360,
+    "typical": 5550,
+    "max": 8270,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c10-30ma-a",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 10,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4450,
+    "typical": 5660,
+    "max": 8450,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c16-30ma-a",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": "2CSR255150R1164",
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 16,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4590,
+    "typical": 5840,
+    "max": 8710,
+    "as_of": "2026-10",
+    "basis": "retail_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c20-30ma-a",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 20,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4730,
+    "typical": 6020,
+    "max": 8970,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c25-30ma-a",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 25,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 4960,
+    "typical": 6310,
+    "max": 9410,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
+   },
+   "status": "ACTIVE"
+  },
+  {
+   "id": "abb-dsn201-1pn-c32-30ma-a",
+   "manufacturer": "abb",
+   "series": "DSN201",
+   "function": "RCBO",
+   "article": null,
+   "spec": {
+    "poles": 2,
+    "rated_current_a": 32,
+    "curve": "C",
+    "breaking_capacity_a": 6000,
+    "leakage_ma": 30,
+    "rcd_type": "A",
+    "selectivity": "NONE"
+   },
+   "module_units": 1,
+   "price": {
+    "currency": "RUB",
+    "min": 5280,
+    "typical": 6720,
+    "max": 10020,
+    "as_of": "2026-10",
+    "basis": "derived_from_listing"
    },
    "status": "ACTIVE"
   }
