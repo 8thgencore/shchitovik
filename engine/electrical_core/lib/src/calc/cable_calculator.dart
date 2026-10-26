@@ -58,7 +58,7 @@ final class const CableLineSpec({
   /// Voltage drop upstream of the line (incomer cable), %.
   required final double upstreamVoltageDropPercent,
 
-  /// Length, m; `null` — voltage drop and fault loop are not evaluated.
+  /// Length, m; `null` – voltage drop and fault loop are not evaluated.
   final double? lengthM,
 
   /// Group network of a building (aluminium restrictions of СП 256 табл. 15.3 apply).
@@ -245,7 +245,7 @@ final class CableCalculator(
       );
     }
 
-    // Short-circuit thermal withstand: ГОСТ Р 50571.4.43, 435.1 — a breaker protecting the
+    // Short-circuit thermal withstand: ГОСТ Р 50571.4.43, 435.1 – a breaker protecting the
     // cable against overload (433.1) with breaking capacity not below the prospective fault
     // current (4,5 кА, VERIFICATION E5) also protects it against short circuit, so the
     // I²t check of 434.5.2 is not needed.

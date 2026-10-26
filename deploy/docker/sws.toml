@@ -1,7 +1,7 @@
 # static-web-server config of the web image; same headers as deploy/caddy/Caddyfile.
 # Layout in the image:
-#   /public/          — Flutter Web build (app/build/web)
-#   /public/catalog/  — price catalog (tools/catalog/publish_catalog.py)
+#   /public/          – Flutter Web build (app/build/web)
+#   /public/catalog/  – price catalog (tools/catalog/publish_catalog.py)
 
 [general]
 host = "0.0.0.0"

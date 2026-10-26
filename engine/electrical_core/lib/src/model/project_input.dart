@@ -22,13 +22,13 @@ final class const ProjectInput({
   /// Nominal voltage option id (`u220_380` or `u230_400`).
   final String nominalVoltageId = defaultNominalVoltageId,
 
-  /// Fuel of the kitchen stove; `null` — derived from the devices (electric if any stove/cooktop).
+  /// Fuel of the kitchen stove; `null` – derived from the devices (electric if any stove/cooktop).
   final CookingFuel? cookingFuel,
 
   /// How RCDs are arranged.
   final RcdStrategy rcdStrategy = RcdStrategy.rcboPerCircuit,
 
-  /// Fire-protection RCD at the input; `null` — automatic (houses and garages).
+  /// Fire-protection RCD at the input; `null` – automatic (houses and garages).
   final bool? fireRcdAtInput,
 
   /// Profile of a commercial object; selects СП 256 demand factors.
@@ -156,14 +156,14 @@ final class const SupplyInput({
   /// Allowed (contracted) power from the technical conditions, кВт.
   final double? allowedPowerKw,
 
-  /// Rated current of an existing incomer breaker, A; `null` — selected by the calculation.
+  /// Rated current of an existing incomer breaker, A; `null` – selected by the calculation.
   final double? incomerBreakerA,
 
   /// Phase–protective conductor loop impedance upstream of the panel (Zвнеш), Ом;
-  /// `null` — a conservative default is assumed and the result requires review.
+  /// `null` – a conservative default is assumed and the result requires review.
   final double? externalLoopImpedanceOhm,
 
-  /// Incomer cable from the metering point to the panel; `null` — not calculated.
+  /// Incomer cable from the metering point to the panel; `null` – not calculated.
   final CircuitSettings? incomerCable,
 }) {
   /// Parses JSON produced by [toJson].
@@ -228,7 +228,7 @@ final class const CableDefaults({
   /// Soil thermal resistivity, К·м/Вт (cables in the ground).
   final double soilResistivityKMPerW = 2.5,
 
-  /// Default circuit length, m; `null` — circuits without a length are preliminary.
+  /// Default circuit length, m; `null` – circuits without a length are preliminary.
   final double? lengthM,
 }) {
   /// Parses JSON produced by [toJson].

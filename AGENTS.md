@@ -1,14 +1,14 @@
-Flutter workspace of «Щитовик» — switchboard calculator (Android, iOS, Web). Structure follows
+Flutter workspace of «Щитовик» – switchboard calculator (Android, iOS, Web). Structure follows
 [sizzle_starter](https://github.com/hawkkiller/sizzle_starter).
 
-- [app](app) — entry point; features and wiring.
-- [common](common) — reusable, app-independent Flutter packages; use `common_` prefix.
-- [engine](engine) — pure Dart calculation core, **standalone packages outside the pub workspace**
+- [app](app) – entry point; features and wiring.
+- [common](common) – reusable, app-independent Flutter packages; use `common_` prefix.
+- [engine](engine) – pure Dart calculation core, **standalone packages outside the pub workspace**
   (own `pubspec.lock`; `package:test` can't share a solve with `flutter_test`). No Flutter imports.
-  - `electrical_core` — currents, circuits, protection, phases, cables, fault loop, demand.
-  - `estimate_core` — apparatus selection, compatibility, estimate.
-  - `norms_data` — normative tables and catalogs (JSON with `source` for every table).
-  - `report_pdf` — PDF report of a project.
+  - `electrical_core` – currents, circuits, protection, phases, cables, fault loop, demand.
+  - `estimate_core` – apparatus selection, compatibility, estimate.
+  - `norms_data` – normative tables and catalogs (JSON with `source` for every table).
+  - `report_pdf` – PDF report of a project.
 
 Plan, decisions and what is left: [docs/PLAN.md](docs/PLAN.md). Publishing waits for the manual part of
 [verification/VERIFICATION.md](verification/VERIFICATION.md).
@@ -21,10 +21,10 @@ Flutter 3.47.8 pinned via FVM (`.fvmrc`). `make bootstrap` → `make format` →
 
 Pragmatic layered architecture:
 
-- *Presentation* — Widgets, Scopes (InheritedWidget), Cubits/Blocs.
-- *Application* (optional) — Services, Use Cases.
-- *Domain* — Entities, Value Objects, Repository interfaces.
-- *Data* — Repository implementations (DB, files, network).
+- *Presentation* – Widgets, Scopes (InheritedWidget), Cubits/Blocs.
+- *Application* (optional) – Services, Use Cases.
+- *Domain* – Entities, Value Objects, Repository interfaces.
+- *Data* – Repository implementations (DB, files, network).
 
 Dependency rule: *Presentation → Application → Domain ← Data*. Domain never imports other layers.
 

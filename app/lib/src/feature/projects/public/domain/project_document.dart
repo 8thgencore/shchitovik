@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 
 /// Everything persisted about a project: metadata, calculation input and estimate choices.
 ///
-/// Calculation results are not part of it — they are recomputed by `calculateProject`.
+/// Calculation results are not part of it – they are recomputed by `calculateProject`.
 @immutable
 final class const ProjectDocument({
   /// UUID.

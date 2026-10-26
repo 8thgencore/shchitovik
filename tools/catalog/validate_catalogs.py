@@ -104,7 +104,7 @@ for tier in app["tiers"]:
     missing = [f"{f} {poles}P {kw.get('curve', '')}{rated} {kw.get('leakage', '')}{'S' if kw.get('selective') else ''}".strip()
                for f, poles, rated, kw in TYPICAL if not any(covers(p, f, poles, rated, **kw) for p in products)]
     coverage.append(f"{tier}: не покрыто {len(missing)} из {len(TYPICAL)} типовых требований"
-                    + (f" — {', '.join(missing)}" if missing else ""))
+                    + (f" – {', '.join(missing)}" if missing else ""))
 
 print(f"моделей: {len(app['products'])}, кабелей: {len(cables['items'])}, ошибок: {len(errors)}")
 for line in coverage:

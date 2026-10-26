@@ -98,7 +98,7 @@ class _UiGalleryState() extends State<UiGallery> {
             UiNotice(
               boxed: true,
               tone: UiTone.danger,
-              message: 'Линия №8 не проходит проверку петли «фаза — нуль».',
+              message: 'Линия №8 не проходит проверку петли «фаза – нуль».',
             ),
             SizedBox(height: UiSpace.s),
             UiNotice(boxed: true, tone: UiTone.warning, message: 'ΔU 4,6 % больше 4 %.'),

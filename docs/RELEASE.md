@@ -2,13 +2,13 @@
 
 Что сделать владельцу перед первой публикацией. В репозитории уже готово: id `ru.shchitovik.app`,
 release-подпись Android, workflow `.github/workflows/release.yml` (подписанные AAB и APK, черновик
-GitHub Release, выкладка Web, IPA на своём Mac), политика `app/web/privacy.html`, тексты и анкеты —
+GitHub Release, выкладка Web, IPA на своём Mac), политика `app/web/privacy.html`, тексты и анкеты –
 [store/listing.md](store/listing.md).
 
 ## 1. До выпуска
 
-- [ ] Закрыть ручную верификацию — [VERIFICATION.md](../verification/VERIFICATION.md).
-- [ ] Зарегистрировать `shchitovik.ru`, настроить сервер — [deploy/README.md](../deploy/README.md).
+- [ ] Закрыть ручную верификацию – [VERIFICATION.md](../verification/VERIFICATION.md).
+- [ ] Зарегистрировать `shchitovik.ru`, настроить сервер – [deploy/README.md](../deploy/README.md).
 - [ ] Заполнить `⟨…⟩` в `app/web/privacy.html` (разработчик, e-mail, срок хранения журналов),
       выложить веб-версию, проверить `https://shchitovik.ru/privacy.html`.
 - [x] Иконка и сплэш.
@@ -31,17 +31,17 @@ keytool -genkey -v -keystore ~/shchitovik-upload.jks -keyalg RSA -keysize 2048 -
 | Secret | `ANDROID_KEY_ALIAS` | `upload` |
 | Variable | `APP_BASE_URL` | `https://shchitovik.ru` |
 
-Для локальной сборки — `app/android/key.properties` с теми же полями (`storeFile`,
+Для локальной сборки – `app/android/key.properties` с теми же полями (`storeFile`,
 `storePassword`, `keyAlias`, `keyPassword`); файл в `.gitignore`.
 
 Защитить теги релиза: Settings → Rules → Rulesets → New tag ruleset, шаблон `v*`, создание и
-удаление — только владельцу. В PR из форков секреты не передаются; запуск workflow из форков —
+удаление – только владельцу. В PR из форков секреты не передаются; запуск workflow из форков –
 только с одобрения (Settings → Actions → General → «Require approval for all outside
 collaborators»).
 
 ## 3. Выпуск версии
 
-1. Поднять `version` в `app/pubspec.yaml` (например, `1.0.0+1`; номер сборки CI ставит сам —
+1. Поднять `version` в `app/pubspec.yaml` (например, `1.0.0+1`; номер сборки CI ставит сам –
    `github.run_number`), закоммитить в `main`.
 2. Поставить тег и отправить его:
 
@@ -53,7 +53,7 @@ collaborators»).
    `shchitovik-1.0.0.apk` и создаст **черновик** GitHub Release с ними и списком изменений.
    Проверить текст и опубликовать (Releases → Edit → Publish).
 4. Веб-версия: Actions → Release → Run workflow → `deploy-web` (Docker) или `deploy-files`
-   (nginx/Caddy без Docker) — [deploy/README.md](../deploy/README.md).
+   (nginx/Caddy без Docker) – [deploy/README.md](../deploy/README.md).
 
 Без тега AAB и APK собирает Actions → Release → `store-android` (артефакт на 30 дней).
 
@@ -66,7 +66,7 @@ APK в GitHub Release подписан ключом загрузки, а Google 
 - [ ] Взять AAB/APK из GitHub Release (или из артефакта `store-android`).
 - [ ] Google Play: создать приложение, включить Play App Signing, заполнить Data safety, рейтинг,
       аудиторию и политику по `listing.md`. Новым личным аккаунтам нужно закрытое тестирование
-      (сейчас 12 тестировщиков, 14 дней) — сверить правила в консоли.
+      (сейчас 12 тестировщиков, 14 дней) – сверить правила в консоли.
 - [ ] RuStore: создать приложение, загрузить APK или AAB, заполнить карточку по `listing.md`.
 
 ## 5. App Store (на Mac)
@@ -82,7 +82,7 @@ cd app && flutter build ipa --release --dart-define=ENVIRONMENT=prod --dart-defi
 Или через Actions: подключить Mac как self-hosted runner (Settings → Actions → Runners → New
 self-hosted runner → macOS, при `./config.sh` добавить `--labels macos`, затем
 `./svc.sh install && ./svc.sh start`). Нужны Xcode, CocoaPods, `jq` и вход в аккаунт Apple в Xcode.
-Actions → Release → `ios` собирает IPA в артефакт; загрузка — через Transporter. Этот runner
+Actions → Release → `ios` собирает IPA в артефакт; загрузка – через Transporter. Этот runner
 используется только ручной задачей `ios`: CI с PR из форков на нём не запускается.
 
 - [ ] App Store Connect: App Privacy («Data Not Collected»), карточка по `listing.md`, TestFlight, ревью.

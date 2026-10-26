@@ -8,7 +8,7 @@ plugins {
 }
 
 // Upload key for the stores: android/key.properties (not in git, see docs/RELEASE.md).
-// Without it release builds are signed with the debug key — fine for CI checks, not for stores.
+// Without it release builds are signed with the debug key – fine for CI checks, not for stores.
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {

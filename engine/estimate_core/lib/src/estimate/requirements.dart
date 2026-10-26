@@ -147,7 +147,7 @@ List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result, {bool din
     slots.add(
       const ApparatusSlot(
         id: dinSocketRcboId,
-        title: 'Розетка на DIN-рейку — дифавтомат',
+        title: 'Розетка на DIN-рейку – дифавтомат',
         requirement: ApparatusRequirement(
           function: ApparatusFunction.rcbo,
           poles: 2,
@@ -217,7 +217,7 @@ List<ApparatusSlot> slotsFor(ProjectInput input, ProjectResult result, {bool din
           slots.add(
             ApparatusSlot(
               id: '${c.id}/rcd',
-              title: '$title — УЗО',
+              title: '$title – УЗО',
               circuitId: c.id,
               requirement: ApparatusRequirement(
                 function: ApparatusFunction.rcd,

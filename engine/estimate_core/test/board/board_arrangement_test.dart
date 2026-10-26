@@ -200,7 +200,7 @@ void main() {
       ),
     );
 
-    // (id, move, expected rails; null — unchanged).
+    // (id, move, expected rails; null – unchanged).
     final cases = <(String, BoardMove, List<List<String>>?)>[
       (
         'b',

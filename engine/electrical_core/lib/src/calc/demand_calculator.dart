@@ -34,7 +34,7 @@ const electricCookingKinds = {'electric_stove', 'cooktop'};
 
 /// Calculates the normative design load of the input.
 ///
-/// Apartments and houses (СП 256, 7.1): the load of an apartment of increased comfort —
+/// Apartments and houses (СП 256, 7.1): the load of an apartment of increased comfort –
 /// declared power × Kс by табл. 7.2 (примечание 4 к табл. 7.1), but not less than the
 /// specific load of табл. 7.1 for one apartment with the given stove type (примечание 11
 /// for single-family houses). The declared power is the allowed power of the technical

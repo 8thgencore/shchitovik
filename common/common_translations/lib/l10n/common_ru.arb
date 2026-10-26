@@ -94,8 +94,8 @@
   "setupAllowedPower": "Разрешённая мощность, кВт",
   "setupAllowedPowerHint": "Из технических условий на присоединение",
   "setupIncomerBreaker": "Существующий вводной автомат, А",
-  "setupExternalLoop": "Сопротивление петли «фаза — нуль» до щита, Ом",
-  "setupExternalLoopHint": "По замеру или от сетевой организации; без него проверка КЗ — с допущением",
+  "setupExternalLoop": "Сопротивление петли «фаза – нуль» до щита, Ом",
+  "setupExternalLoopHint": "По замеру или от сетевой организации; без него проверка КЗ – с допущением",
   "setupCookingFuel": "Плита",
   "cookingFuelNaturalGas": "Газовая",
   "cookingFuelLiquefied": "Сжиженный газ / твёрдое топливо",
@@ -121,7 +121,7 @@
   "setupAmbient": "Температура среды, °C",
   "setupGrouped": "Цепей, проложенных вместе",
   "setupDefaultLength": "Длина линии по умолчанию, м",
-  "roomsEmpty": "Добавьте помещения — приборы подставятся из типового набора",
+  "roomsEmpty": "Добавьте помещения – приборы подставятся из типового набора",
   "roomsAdd": "Добавить помещение",
   "roomsAddTitle": "Добавить помещение",
   "roomsEmptyRoom": "Пустое помещение",
@@ -157,7 +157,7 @@
   "deviceDedicated": "Отдельная линия",
   "deviceAlwaysOn": "Неотключаемая линия",
   "deviceAlwaysOnHint": "Не отключается выключателем нагрузки: холодильник, защита от протечек",
-  "deviceThreePhaseOnSingle": "Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт",
+  "deviceThreePhaseOnSingle": "Трёхфазный прибор не подключить к однофазному вводу – он не входит в расчёт",
   "dedicatedRequired": "Обязательно",
   "dedicatedRecommended": "По умолчанию",
   "dedicatedNo": "Общая группа",
@@ -182,7 +182,7 @@
   "circuitLength": "Длина, м",
   "circuitAlwaysOn": "Неотключаемая линия: стоит до выключателя нагрузки",
   "circuitLengthMissing": "длина не задана",
-  "circuitsLengthMissing": "{count, plural, one{{count} линия без длины} few{{count} линии без длины} other{{count} линий без длины}} — падение напряжения и петля «фаза–ноль» не проверены",
+  "circuitsLengthMissing": "{count, plural, one{{count} линия без длины} few{{count} линии без длины} other{{count} линий без длины}} – падение напряжения и петля «фаза–ноль» не проверены",
   "@circuitsLengthMissing": {
     "placeholders": {
       "count": {
@@ -320,7 +320,7 @@
       }
     }
   },
-  "boardReserveNote": "Резерв не менее {percent} % — допущение, требует проверки. Цвет полосы — фаза, рамка — статус линии.",
+  "boardReserveNote": "Резерв не менее {percent} % – допущение, требует проверки. Цвет полосы – фаза, рамка – статус линии.",
   "@boardReserveNote": {
     "placeholders": {
       "percent": {
@@ -372,8 +372,8 @@
       }
     }
   },
-  "boardWarningTooSmall": "Аппараты не помещаются в выбранный корпус — лишние рейки показаны ниже.",
-  "boardWarningReserve": "Резерв меньше {percent} % — для новых линий места нет.",
+  "boardWarningTooSmall": "Аппараты не помещаются в выбранный корпус – лишние рейки показаны ниже.",
+  "boardWarningReserve": "Резерв меньше {percent} % – для новых линий места нет.",
   "@boardWarningReserve": {
     "placeholders": {
       "percent": {
@@ -381,7 +381,7 @@
       }
     }
   },
-  "boardWarningGroupSplit": "Группа УЗО (линии {circuits}) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить — нужны перемычки.",
+  "boardWarningGroupSplit": "Группа УЗО (линии {circuits}) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить – нужны перемычки.",
   "@boardWarningGroupSplit": {
     "placeholders": {
       "circuits": {
@@ -389,7 +389,7 @@
       }
     }
   },
-  "projectsEmptyHint": "Создайте проект — линии, щит и смета посчитаются по нормам автоматически.",
+  "projectsEmptyHint": "Создайте проект – линии, щит и смета посчитаются по нормам автоматически.",
   "projectsImportPickAnother": "Выбрать другой файл",
   "copyErrorDetails": "Скопировать подробности",
   "projectDeleteConfirm": "Удалить проект",

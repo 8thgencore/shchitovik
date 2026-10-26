@@ -159,7 +159,7 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
         reject(
           d,
           'invalid_parameters',
-          'cos φ должен быть в пределах 0,1…1, ku — 0…1, кратность пуска — не менее 1',
+          'cos φ должен быть в пределах 0,1…1, ku – 0…1, кратность пуска – не менее 1',
         );
       } else if (d.phases == 3 && input.supplyPhases == SupplyPhases.single) {
         reject(
@@ -373,7 +373,7 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
         Assumption(
           code: 'assumed_external_loop_impedance',
           message:
-              'Сопротивление петли «фаза — PE» до щита не задано, принято ${fmt(zExt, 2)} Ом. '
+              'Сопротивление петли «фаза – PE» до щита не задано, принято ${fmt(zExt, 2)} Ом. '
               'Проверка отключения при КЗ требует подтверждения замером или данными сетевой организации.',
         ),
       );
@@ -489,7 +489,7 @@ final class _ProjectCalculation(final ProjectInput input, final NormsData norms)
         Issue(
           severity: IssueSeverity.warning,
           code: 'rcd_removed_manually',
-          message: '${draft.name}: требуется УЗО 30 мА — ${s.rcdReasons.join('; ')}',
+          message: '${draft.name}: требуется УЗО 30 мА – ${s.rcdReasons.join('; ')}',
           circuitId: draft.id,
         ),
       );

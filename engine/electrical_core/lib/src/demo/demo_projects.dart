@@ -4,7 +4,7 @@ import 'package:norms_data/norms_data.dart';
 
 /// Builds a project from room templates of the reference catalog.
 ///
-/// Room ids are `r1`, `r2`, …; device ids are `r1-d1`, … — stable for tests and demos.
+/// Room ids are `r1`, `r2`, …; device ids are `r1-d1`, … – stable for tests and demos.
 ProjectInput projectFromTemplates({
   required ObjectType objectType,
   required SupplyPhases supplyPhases,

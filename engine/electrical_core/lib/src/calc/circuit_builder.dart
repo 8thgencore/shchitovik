@@ -159,7 +159,7 @@ List<CircuitDraft> buildCircuits({
         CircuitDraft(
           id: '${entry.key}-${n + 1}',
           purpose: meta.purpose,
-          name: bins.length > 1 ? '${meta.title} — ${n + 1}' : meta.title,
+          name: bins.length > 1 ? '${meta.title} – ${n + 1}' : meta.title,
           devices: binDevices,
           rooms: binRooms,
           sortKey: '${meta.sortKey}-${(n + 1).toString().padLeft(3, '0')}',

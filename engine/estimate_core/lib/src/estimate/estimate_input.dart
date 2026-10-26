@@ -55,23 +55,23 @@ final class const EstimateInput({
   /// Price scenario.
   final EstimateScenario scenario = EstimateScenario.standard,
 
-  /// Copper cable mark; `null` — ВВГнг(А)-LS. Aluminium lines always use АВВГнг(А)-LS.
+  /// Copper cable mark; `null` – ВВГнг(А)-LS. Aluminium lines always use АВВГнг(А)-LS.
   final String? cableMarkId,
 
   /// Cable length reserve for routing and terminations (1,1 = +10 %).
   final double cableReserveFactor = 1.1,
 
-  /// Voltage relay; `null` — recommended (included).
+  /// Voltage relay; `null` – recommended (included).
   final bool? voltageRelay,
 
-  /// Surge protective device; `null` — included for houses and garages.
+  /// Surge protective device; `null` – included for houses and garages.
   final bool? surgeProtection,
 
-  /// Load switch that turns off every circuit except the non-switchable ones; `null` —
+  /// Load switch that turns off every circuit except the non-switchable ones; `null` –
   /// included.
   final bool? loadSwitch,
 
-  /// Service socket on the DIN rail with its own RCBO; `null` — included.
+  /// Service socket on the DIN rail with its own RCBO; `null` – included.
   final bool? dinSocket,
 
   /// Overhead supply line: SPD type 1+2 instead of type 2.

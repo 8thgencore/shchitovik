@@ -496,13 +496,13 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @setupExternalLoop.
   ///
   /// In ru, this message translates to:
-  /// **'Сопротивление петли «фаза — нуль» до щита, Ом'**
+  /// **'Сопротивление петли «фаза – нуль» до щита, Ом'**
   String get setupExternalLoop;
 
   /// No description provided for @setupExternalLoopHint.
   ///
   /// In ru, this message translates to:
-  /// **'По замеру или от сетевой организации; без него проверка КЗ — с допущением'**
+  /// **'По замеру или от сетевой организации; без него проверка КЗ – с допущением'**
   String get setupExternalLoopHint;
 
   /// No description provided for @setupCookingFuel.
@@ -658,7 +658,7 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @roomsEmpty.
   ///
   /// In ru, this message translates to:
-  /// **'Добавьте помещения — приборы подставятся из типового набора'**
+  /// **'Добавьте помещения – приборы подставятся из типового набора'**
   String get roomsEmpty;
 
   /// No description provided for @roomsAdd.
@@ -832,7 +832,7 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @deviceThreePhaseOnSingle.
   ///
   /// In ru, this message translates to:
-  /// **'Трёхфазный прибор не подключить к однофазному вводу — он не входит в расчёт'**
+  /// **'Трёхфазный прибор не подключить к однофазному вводу – он не входит в расчёт'**
   String get deviceThreePhaseOnSingle;
 
   /// No description provided for @dedicatedRequired.
@@ -982,7 +982,7 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @circuitsLengthMissing.
   ///
   /// In ru, this message translates to:
-  /// **'{count, plural, one{{count} линия без длины} few{{count} линии без длины} other{{count} линий без длины}} — падение напряжения и петля «фаза–ноль» не проверены'**
+  /// **'{count, plural, one{{count} линия без длины} few{{count} линии без длины} other{{count} линий без длины}} – падение напряжения и петля «фаза–ноль» не проверены'**
   String circuitsLengthMissing(int count);
 
   /// No description provided for @circuitsSetLength.
@@ -1288,7 +1288,7 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @boardReserveNote.
   ///
   /// In ru, this message translates to:
-  /// **'Резерв не менее {percent} % — допущение, требует проверки. Цвет полосы — фаза, рамка — статус линии.'**
+  /// **'Резерв не менее {percent} % – допущение, требует проверки. Цвет полосы – фаза, рамка – статус линии.'**
   String boardReserveNote(int percent);
 
   /// No description provided for @boardIncomer.
@@ -1396,25 +1396,25 @@ abstract class CommonTranslationsLocalizations {
   /// No description provided for @boardWarningTooSmall.
   ///
   /// In ru, this message translates to:
-  /// **'Аппараты не помещаются в выбранный корпус — лишние рейки показаны ниже.'**
+  /// **'Аппараты не помещаются в выбранный корпус – лишние рейки показаны ниже.'**
   String get boardWarningTooSmall;
 
   /// No description provided for @boardWarningReserve.
   ///
   /// In ru, this message translates to:
-  /// **'Резерв меньше {percent} % — для новых линий места нет.'**
+  /// **'Резерв меньше {percent} % – для новых линий места нет.'**
   String boardWarningReserve(int percent);
 
   /// No description provided for @boardWarningGroupSplit.
   ///
   /// In ru, this message translates to:
-  /// **'Группа УЗО (линии {circuits}) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить — нужны перемычки.'**
+  /// **'Группа УЗО (линии {circuits}) разнесена: аппараты не стоят подряд на одной рейке, гребёнкой их не соединить – нужны перемычки.'**
   String boardWarningGroupSplit(String circuits);
 
   /// No description provided for @projectsEmptyHint.
   ///
   /// In ru, this message translates to:
-  /// **'Создайте проект — линии, щит и смета посчитаются по нормам автоматически.'**
+  /// **'Создайте проект – линии, щит и смета посчитаются по нормам автоматически.'**
   String get projectsEmptyHint;
 
   /// No description provided for @projectsImportPickAnother.

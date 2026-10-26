@@ -1,15 +1,15 @@
 # Деплой на VPS
 
-Web-версия и каталог цен — один Docker-образ (`deploy/docker/Dockerfile`), который compose
-запускает на VPS за общим Caddy хоста. Выкладка — Actions → Release → `deploy-web`. Вариант без
-Docker (файлы в `/var/www`, nginx или Caddy) — в конце.
+Web-версия и каталог цен – один Docker-образ (`deploy/docker/Dockerfile`), который compose
+запускает на VPS за общим Caddy хоста. Выкладка – Actions → Release → `deploy-web`. Вариант без
+Docker (файлы в `/var/www`, nginx или Caddy) – в конце.
 
 ## Образ
 
 Стадии: Flutter Web (SDK ставится по версии из `.fvmrc`, публичные образы Flutter отстают),
-каталог цен (`tools/catalog`), итог на `scratch` — static-web-server, busybox для healthcheck и
+каталог цен (`tools/catalog`), итог на `scratch` – static-web-server, busybox для healthcheck и
 файлы сайта, ~35 МБ. Сервер отдаёт заголовки COOP/COEP, CORS каталога и `no-cache`; работает от
-`nobody` на порту 8080. Каталог входит в образ: новые цены — новый деплой.
+`nobody` на порту 8080. Каталог входит в образ: новые цены – новый деплой.
 
 CanvasKit release-сборка грузит с CDN `gstatic.com`, поэтому локальная копия из образа удалена.
 
@@ -22,7 +22,7 @@ sudo usermod -aG docker deploy           # группа docker равносил�
 # A-запись shchitovik.ru → VPS
 ```
 
-Открытый SSH-ключ для CI — в `~deploy/.ssh/authorized_keys`.
+Открытый SSH-ключ для CI – в `~deploy/.ssh/authorized_keys`.
 
 В общий `/etc/caddy/Caddyfile` хоста добавьте блок из `deploy/caddy/Caddyfile.compose`:
 
@@ -72,7 +72,7 @@ curl https://shchitovik.ru/catalog/manifest.json      # актуальная cat
 nginx (`deploy/nginx/shchitovik.conf`, сертификат через certbot) или Caddy
 (`deploy/caddy/Caddyfile`) раздаёт `/var/www/shchitovik/{web,catalog}`; заголовки те же. Файлы
 выкладывает Actions → Release → `deploy-files` (rsync от пользователя `deploy`, владельца
-`/var/www/shchitovik`; секреты и переменные — те же, что для `deploy-web`).
+`/var/www/shchitovik`; секреты и переменные – те же, что для `deploy-web`).
 
 ```bash
 sudo cp deploy/nginx/shchitovik.conf /etc/nginx/sites-available/

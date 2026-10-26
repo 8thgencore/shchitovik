@@ -227,7 +227,7 @@ class const _Toolbar({
 }
 
 class const _MoveButtons({
-  /// `null` — nothing is selected.
+  /// `null` – nothing is selected.
   required final ValueChanged<BoardMove>? onMove,
 }) extends StatelessWidget {
   @override

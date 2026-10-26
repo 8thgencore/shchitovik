@@ -126,7 +126,7 @@ final class GroupingFactors._(
   }
 
   /// Factor for [circuits] grouped circuits in air; `null` if the table gives none
-  /// (rows 2–5 end at 9 circuits — the caller should fall back to [AirGroupingArrangement.bunched]).
+  /// (rows 2–5 end at 9 circuits – the caller should fall back to [AirGroupingArrangement.bunched]).
   ///
   /// Between columns the next larger number of circuits is used (conservative).
   double? air(AirGroupingArrangement arrangement, int circuits) {

@@ -21,7 +21,7 @@ void main() {
 
 String _encode(Object json) => '${const JsonEncoder.withIndent(' ').convert(json)}\n';
 
-/// Deterministic pseudo-random choice (LCG, fixed seed) — the grid must not change between runs.
+/// Deterministic pseudo-random choice (LCG, fixed seed) – the grid must not change between runs.
 final class _Choice() {
   int _state = 20261008;
 

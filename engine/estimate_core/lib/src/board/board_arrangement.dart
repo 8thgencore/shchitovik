@@ -7,10 +7,10 @@ import 'package:meta/meta.dart';
 /// Each field left `null` is chosen automatically by `layoutSwitchboard`.
 @immutable
 final class const BoardArrangement({
-  /// Enclosure as (rails, modules per rail); `null` — the smallest typical one with reserve.
+  /// Enclosure as (rails, modules per rail); `null` – the smallest typical one with reserve.
   final (int, int)? enclosure,
 
-  /// Item ids ([BoardItem.id]) by rail, top to bottom, left to right; `null` — mounting order.
+  /// Item ids ([BoardItem.id]) by rail, top to bottom, left to right; `null` – mounting order.
   final List<List<String>>? rails,
 }) {
   /// Captures the placement of [layout] as a manual arrangement keeping [enclosure].
@@ -53,10 +53,10 @@ final class const BoardArrangement({
 
 /// Direction of a manual move on the switchboard.
 enum BoardMove() {
-  /// One place to the left; from the rail start — to the end of the rail above.
+  /// One place to the left; from the rail start – to the end of the rail above.
   left,
 
-  /// One place to the right; from the rail end — to the start of the rail below.
+  /// One place to the right; from the rail end – to the start of the rail below.
   right,
 
   /// To the rail above, at the same distance from the rail start.
