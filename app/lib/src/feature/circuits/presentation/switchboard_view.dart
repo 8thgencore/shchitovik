@@ -6,6 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:shchitovik/src/feature/circuits/presentation/status_badge.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/switchboard_prototype_a.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/switchboard_prototype_b.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/switchboard_prototype_c.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/switchboard_prototype_shared.dart';
+import 'package:shchitovik/src/feature/circuits/presentation/switchboard_prototype_switcher.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/formatting.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc.dart';
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
@@ -100,6 +105,25 @@ class _SwitchboardViewState() extends State<SwitchboardView> {
         ),
       ),
     );
+    // PROTOTYPE: board variants, see switchboard_prototype_switcher.dart.
+    final String variant = protoVariantOf(context);
+    final ProtoBoard proto = (
+      state: _state,
+      editing: _editing,
+      draggable: draggable,
+      selected: selected,
+      onSelect: (id) => setState(() => _selected = _selected == id ? null : id),
+      onDrop: (id, rail, index) {
+        setState(() => _selected = id);
+        _edit((b) => placeBoardItem(b, layout, id, rail, index));
+      },
+    );
+    rails = switch (variant) {
+      'A' => ProtoBoardA(layout: layout, board: proto),
+      'B' => ProtoBoardB(layout: layout, board: proto),
+      'C' => ProtoBoardC(layout: layout, board: proto),
+      _ => rails,
+    };
     if (_editing) {
       rails = CallbackShortcuts(
         bindings: {
@@ -114,48 +138,52 @@ class _SwitchboardViewState() extends State<SwitchboardView> {
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          t.boardEnclosure(
-            layout.enclosureRails,
-            layout.modulesPerRail,
-            enclosureModules,
-            layout.occupiedModules,
-            enclosureModules - layout.occupiedModules,
+    return ProtoSwitcher(
+      current: variant,
+      keys: !_editing,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            t.boardEnclosure(
+              layout.enclosureRails,
+              layout.modulesPerRail,
+              enclosureModules,
+              layout.occupiedModules,
+              enclosureModules - layout.occupiedModules,
+            ),
+            style: UiTextStyles.heading.copyWith(color: c.text),
           ),
-          style: UiTextStyles.heading.copyWith(color: c.text),
-        ),
-        if (!board.isAuto)
-          Text(t.boardManual, style: UiTextStyles.caption.copyWith(color: c.textMuted)),
-        const SizedBox(height: UiSpace.m),
-        _Toolbar(
-          board: board,
-          layout: layout,
-          editing: _editing,
-          onToggleEditing: _toggleEditing,
-          onEnclosure: (enclosure) => _edit((b) => b.copyWith(enclosure: enclosure)),
-          onReset: () => _edit((_) => const BoardArrangement()),
-        ),
-        if (_editing) ...[
+          if (!board.isAuto)
+            Text(t.boardManual, style: UiTextStyles.caption.copyWith(color: c.textMuted)),
+          const SizedBox(height: UiSpace.m),
+          _Toolbar(
+            board: board,
+            layout: layout,
+            editing: _editing,
+            onToggleEditing: _toggleEditing,
+            onEnclosure: (enclosure) => _edit((b) => b.copyWith(enclosure: enclosure)),
+            onReset: () => _edit((_) => const BoardArrangement()),
+          ),
+          if (_editing) ...[
+            const SizedBox(height: UiSpace.s),
+            Text(t.boardRearrangeHint, style: UiTextStyles.caption.copyWith(color: c.textMuted)),
+            const SizedBox(height: UiSpace.xs),
+            _MoveButtons(onMove: selected == null ? null : (move) => _move(layout, move)),
+          ],
+          const SizedBox(height: UiSpace.m),
+          rails,
+          for (final warning in layout.warnings) ...[
+            const SizedBox(height: UiSpace.s),
+            UiNotice(tone: UiTone.warning, message: _warningText(warning)),
+          ],
           const SizedBox(height: UiSpace.s),
-          Text(t.boardRearrangeHint, style: UiTextStyles.caption.copyWith(color: c.textMuted)),
-          const SizedBox(height: UiSpace.xs),
-          _MoveButtons(onMove: selected == null ? null : (move) => _move(layout, move)),
+          Text(
+            t.boardReserveNote((enclosureReserveShare * 100).round()),
+            style: UiTextStyles.caption.copyWith(color: c.textMuted),
+          ),
         ],
-        const SizedBox(height: UiSpace.m),
-        rails,
-        for (final warning in layout.warnings) ...[
-          const SizedBox(height: UiSpace.s),
-          UiNotice(tone: UiTone.warning, message: _warningText(warning)),
-        ],
-        const SizedBox(height: UiSpace.s),
-        Text(
-          t.boardReserveNote((enclosureReserveShare * 100).round()),
-          style: UiTextStyles.caption.copyWith(color: c.textMuted),
-        ),
-      ],
+      ),
     );
   }
 

@@ -1,4 +1,4 @@
-.PHONY: help get bootstrap gen gen-watch format analyze test
+.PHONY: help get bootstrap gen gen-watch format analyze test prototype-board prototype-board-shots
 
 help:
 	@echo "Available commands:"
@@ -29,3 +29,11 @@ analyze:
 
 test:
 	bash scripts/test.bash
+
+# PROTOTYPE (branch prototype/board-design): board variants, switch with ←/→ or the bottom pill.
+prototype-board:
+	cd app && fvm flutter run -d chrome
+
+# PROTOTYPE: re-render the variants to app/test/prototype_shots/*.png.
+prototype-board-shots:
+	cd app && fvm flutter test --update-goldens test/prototype_board_shots_test.dart
