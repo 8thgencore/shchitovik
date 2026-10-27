@@ -11,12 +11,17 @@ import 'package:shchitovik/src/feature/projects/public/presentation/project_bloc
 import 'package:shchitovik/src/feature/projects/public/presentation/project_scope.dart';
 import 'package:shchitovik/src/logic/app_router.dart';
 
-/// Width of one DIN module on screen.
-const _moduleWidth = 36.0;
+/// Narrowest width of one DIN module on screen; below it the board scrolls horizontally.
+const _minModule = 30.0;
+
+/// Widest width of one DIN module on screen.
+const _maxModule = 52.0;
 
 /// Switchboard drawn as DIN rails; tapping a circuit opens it.
 ///
-/// The board keeps real proportions and scrolls horizontally as a whole on narrow screens.
+/// Every device of a line has its own body as wide as its model in the estimate; a label under
+/// the line carries its number and name. The module width follows the available width, and the
+/// board scrolls horizontally as a whole when even the narrowest module does not fit.
 /// In the rearrange mode a tap selects a device, which then moves with the arrow buttons or
 /// keys; on expanded windows devices can also be dragged. The arrangement and the enclosure
 /// are saved with the estimate choices.
@@ -67,38 +72,51 @@ class _SwitchboardViewState() extends State<SwitchboardView> {
         : null;
     final int enclosureModules = layout.enclosureRails * layout.modulesPerRail;
 
-    Widget rails = SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: c.sunken,
-          borderRadius: UiRadius.cardAll,
-          border: Border.all(color: _editing ? c.primary : c.borderStrong),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(UiSpace.m, UiSpace.m, UiSpace.m, UiSpace.xs),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (var i = 0; i < layout.rails.length; i++)
-                _Rail(
-                  number: i + 1,
-                  rail: layout.rails[i],
-                  outside: i >= layout.enclosureRails,
-                  state: _state,
-                  editing: _editing,
-                  draggable: draggable,
-                  selected: selected,
-                  onSelect: (id) => setState(() => _selected = _selected == id ? null : id),
-                  onDrop: (id, index) {
-                    setState(() => _selected = id);
-                    _edit((b) => placeBoardItem(b, layout, id, i, index));
-                  },
-                ),
-            ],
+    final int perRail = layout.rails.fold(
+      layout.modulesPerRail,
+      (m, r) => r.used > m ? r.used : m,
+    );
+    Widget rails = LayoutBuilder(
+      builder: (context, constraints) {
+        final double module = ((constraints.maxWidth - 2 * UiSpace.m) / perRail).clamp(
+          _minModule,
+          _maxModule,
+        );
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: c.sunken,
+              borderRadius: UiRadius.cardAll,
+              border: Border.all(color: _editing ? c.primary : c.borderStrong),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(UiSpace.m, UiSpace.m, UiSpace.m, UiSpace.xs),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var i = 0; i < layout.rails.length; i++)
+                    _Rail(
+                      number: i + 1,
+                      rail: layout.rails[i],
+                      outside: i >= layout.enclosureRails,
+                      module: module,
+                      state: _state,
+                      editing: _editing,
+                      draggable: draggable,
+                      selected: selected,
+                      onSelect: (id) => setState(() => _selected = _selected == id ? null : id),
+                      onDrop: (id, index) {
+                        setState(() => _selected = id);
+                        _edit((b) => placeBoardItem(b, layout, id, i, index));
+                      },
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
     if (_editing) {
       rails = CallbackShortcuts(
@@ -263,6 +281,7 @@ class const _Rail({
   required final int number,
   required final BoardRail rail,
   required final bool outside,
+  required final double module,
   required final ProjectReady state,
   required final bool editing,
   required final bool draggable,
@@ -275,7 +294,7 @@ class const _Rail({
     var start = 0;
     for (var i = 0; i < rail.items.length; i++) {
       final int units = rail.items[i].units;
-      if (x < (start + units / 2) * _moduleWidth) {
+      if (x < (start + units / 2) * module) {
         return i;
       }
       start += units;
@@ -289,8 +308,9 @@ class const _Rail({
     final UiColors c = context.uiColors;
     final int modules = rail.used > rail.capacity ? rail.used : rail.capacity;
     final String label = t.boardRail(number, rail.used, rail.capacity);
+    final double body = _bodyHeight(module);
     return Padding(
-      padding: const EdgeInsets.only(bottom: UiSpace.s),
+      padding: const EdgeInsets.only(bottom: UiSpace.m),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -300,20 +320,19 @@ class const _Rail({
             onWillAcceptWithDetails: (_) => draggable,
             onAcceptWithDetails: (details) {
               final box = context.findRenderObject()! as RenderBox;
-              final double x = box.globalToLocal(details.offset).dx + _moduleWidth / 2;
+              final double x = box.globalToLocal(details.offset).dx + module / 2;
               onDrop(details.data, _dropIndex(x));
             },
             builder: (context, candidates, _) => SizedBox(
-              width: modules * _moduleWidth,
-              height: 108,
+              width: modules * module,
               child: Stack(
                 children: [
-                  // The DIN rail itself, behind the modules.
+                  // The DIN rail itself, seen through the free places.
                   Positioned(
                     left: 0,
                     right: 0,
-                    top: 38,
-                    height: 26,
+                    top: body * .36,
+                    height: body * .28,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: candidates.isEmpty ? c.border : c.primary.withValues(alpha: .35),
@@ -325,15 +344,16 @@ class const _Rail({
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       for (final item in rail.items)
-                        _BoardItemModule(
+                        _BoardItemLine(
                           item: item,
+                          module: module,
                           state: state,
                           editing: editing,
                           draggable: draggable,
                           selected: item.id == selected,
                           onSelect: () => onSelect(item.id),
                         ),
-                      for (var i = rail.used; i < rail.capacity; i++) const _BlankModule(),
+                      for (var i = rail.used; i < rail.capacity; i++) _BlankModule(module: module),
                     ],
                   ),
                 ],
@@ -346,6 +366,9 @@ class const _Rail({
   }
 }
 
+/// Height of a device body for a module [width], close to the real 1 : 2.6 face.
+double _bodyHeight(double width) => (width * 2.6).clamp(100, 136);
+
 /// Conductor colours of the phases by ГОСТ 33542-2015 (IEC 60445): L1 brown, L2 black, L3 grey.
 ///
 /// These are physical marking colours, not theme roles.
@@ -355,84 +378,154 @@ Color _phaseColor(Phase phase) => switch (phase) {
   Phase.l3 => const Color(0xFF9E9E9E),
 };
 
+/// Black or white, whichever reads on [background].
+Color _onColor(Color background) =>
+    ThemeData.estimateBrightnessForColor(background) == Brightness.dark
+    ? const Color(0xFFFFFFFF)
+    : const Color(0xFF000000);
+
+/// Face of one device body: kind, rating and a second value (poles or residual current).
+typedef _DeviceFace = ({int units, String kind, String rating, String? extra});
+
 /// Texts and look of one board item.
-typedef _ModuleFace = ({
-  String top,
+typedef _LineFace = ({
+  String number,
   String title,
-  String bottom,
-  Color strip,
+  Color accent,
   Color? frame,
   String label,
+  List<_DeviceFace> devices,
 });
 
-class const _BoardItemModule({
+class const _BoardItemLine({
   required final BoardItem item,
+  required final double module,
   required final ProjectReady state,
   required final bool editing,
   required final bool draggable,
   required final bool selected,
   required final VoidCallback onSelect,
 }) extends StatelessWidget {
-  _ModuleFace _face(BuildContext context) {
+  _DeviceFace _device(
+    BuildContext context,
+    BoardDevice device, {
+    required String kind,
+    required String rating,
+    String? extra,
+  }) {
+    final CommonTranslationsLocalizations t = context.translations;
+    final ApparatusRequirement? r = device.requirement;
+    if (r == null) {
+      return (units: device.units, kind: kind, rating: rating, extra: extra);
+    }
+    final String curve = r.curve?.name.toUpperCase() ?? '';
+    final String rated = formatNumber(r.ratedCurrentA, 0);
+    final String? leakage = r.leakageMa == null ? null : '${formatNumber(r.leakageMa, 0)} мА';
+    return switch (r.function) {
+      ApparatusFunction.mcb => (
+        units: device.units,
+        kind: t.boardMcb,
+        rating: '$curve$rated',
+        extra: '${r.poles}P',
+      ),
+      ApparatusFunction.rcd => (
+        units: device.units,
+        kind: t.boardRcd,
+        rating: '$rated А',
+        extra: leakage,
+      ),
+      ApparatusFunction.rcbo => (
+        units: device.units,
+        kind: t.boardRcbo,
+        rating: '$curve$rated',
+        extra: leakage,
+      ),
+    };
+  }
+
+  _LineFace _face(BuildContext context) {
     final CommonTranslationsLocalizations t = context.translations;
     final UiColors c = context.uiColors;
     final ProjectResult result = state.result;
+    final List<BoardDevice> devices = boardItemDevices(item, state.estimate);
+    List<_DeviceFace> faces({required String kind, required String rating, String? extra}) => [
+      for (final d in devices) _device(context, d, kind: kind, rating: rating, extra: extra),
+    ];
     switch (item.kind) {
       case BoardItemKind.incomer:
         return (
-          top: t.boardIncomer,
-          title: 'C${formatNumber(result.incomer.breakerA, 0)}',
-          bottom: '${formatNumber(result.incomer.designCurrentA)} А',
-          strip: c.primary,
+          number: t.boardIncomer,
+          title: t.boardDesignCurrent(formatNumber(result.incomer.designCurrentA)),
+          accent: c.primary,
           frame: null,
           label: t.boardIncomer,
+          devices: faces(kind: t.boardMcb, rating: 'C${formatNumber(result.incomer.breakerA, 0)}'),
         );
       case BoardItemKind.fireRcd:
         final SharedRcdResult rcd = result.fireRcd!;
         return (
-          top: t.boardRcd,
-          title: '${formatNumber(rcd.residualMa, 0)} мА',
-          bottom: '${formatNumber(rcd.ratedA, 0)} А',
-          strip: c.danger,
+          number: t.boardRcd,
+          title: t.boardFireRcd,
+          accent: c.danger,
           frame: null,
-          label: t.boardRcd,
+          label: '${t.boardRcd}, ${t.boardFireRcd}',
+          devices: faces(
+            kind: t.boardRcd,
+            rating: '${formatNumber(rcd.ratedA, 0)} А',
+            extra: '${formatNumber(rcd.residualMa, 0)} мА',
+          ),
         );
       case BoardItemKind.auxiliary:
         final EstimateLine line = state.estimate.lines.firstWhere((l) => l.id == item.id);
-        final ApparatusRequirement? requirement = line.requirement;
+        final String short = switch (item.id) {
+          'aux/spd' => t.boardSpd,
+          'aux/voltage_relay' => t.boardVoltageRelay,
+          'aux/din_socket' => t.boardDinSocket,
+          'aux/load_switch' => t.boardLoadSwitch,
+          dinSocketRcboId => t.boardRcbo,
+          _ => t.boardAuxiliary,
+        };
         return (
-          top: t.boardAuxiliary,
-          // The DIN-rail socket RCBO shows its rating like circuit breakers do.
-          title: requirement?.curve == null
-              ? line.title
-              : '${requirement!.curve!.name.toUpperCase()}${formatNumber(requirement.ratedCurrentA, 0)}',
-          bottom: line.description,
-          strip: c.textMuted,
+          number: short,
+          title: line.title,
+          accent: c.textMuted,
           frame: null,
           label: line.title,
+          devices: faces(kind: short, rating: ''),
         );
       case BoardItemKind.groupRcd:
         final SharedRcdResult rcd = result.sharedRcds.firstWhere((r) => r.id == item.id);
+        final String numbers = [
+          for (final x in result.circuits)
+            if (rcd.circuitIds.contains(x.id)) x.number,
+        ].join(', ');
         return (
-          top: t.boardRcd,
-          title: '${formatNumber(rcd.residualMa, 0)} мА',
-          bottom: '${formatNumber(rcd.ratedA, 0)} А',
-          strip: c.primary,
+          number: t.boardRcd,
+          title: t.boardRcdGroup(numbers),
+          accent: c.primary,
           frame: null,
-          label: t.boardRcd,
+          label: '${t.boardRcd}, ${t.boardRcdGroup(numbers)}',
+          devices: faces(
+            kind: t.boardRcd,
+            rating: '${formatNumber(rcd.ratedA, 0)} А',
+            extra: '${formatNumber(rcd.residualMa, 0)} мА',
+          ),
         );
       case BoardItemKind.circuit:
         final CircuitResult circuit = result.circuits.firstWhere((x) => x.id == item.id);
         final Phase? phase = circuit.phase;
         return (
-          top: '${circuit.number} · ${phase?.label ?? '3ф'}',
-          title: circuit.protection.label,
-          bottom: circuit.name,
-          strip: phase == null ? c.primary : _phaseColor(phase),
+          number: '${circuit.number}',
+          title: circuit.name,
+          accent: phase == null ? c.primary : _phaseColor(phase),
           frame: statusStripe(circuit.status)?.color(c),
           label:
               '${circuit.number}. ${circuit.name}, '
               '${circuit.alwaysOn ? '${t.deviceAlwaysOn}, ' : ''}${circuit.status.label}',
+          devices: faces(
+            kind: circuit.protection.device == ProtectionDevice.rcbo ? t.boardRcbo : t.boardMcb,
+            rating: circuit.protection.label,
+          ),
         );
     }
   }
@@ -440,8 +533,7 @@ class const _BoardItemModule({
   @override
   Widget build(BuildContext context) {
     final CommonTranslationsLocalizations t = context.translations;
-    final UiColors c = context.uiColors;
-    final _ModuleFace face = _face(context);
+    final _LineFace face = _face(context);
     final CircuitResult? circuit = item.kind == BoardItemKind.circuit
         ? state.result.circuits.firstWhere((x) => x.id == item.id)
         : null;
@@ -450,17 +542,14 @@ class const _BoardItemModule({
         : circuit == null
         ? null
         : () => context.go(AppRoutes.circuit(state.document.id, circuit.id));
-    final module = _Module(
-      units: item.units,
-      top: face.top,
-      title: face.title,
-      bottom: face.bottom,
-      strip: face.strip,
-      frame: selected ? c.primary : face.frame,
-      underline: item.groupId == null ? null : c.primary,
+    final line = _Line(
+      face: face,
+      module: module,
+      grouped: item.groupId != null,
+      selected: selected,
     );
     if (onPressed == null) {
-      return module;
+      return line;
     }
     Widget pressable = UiPressable(
       onPressed: onPressed,
@@ -468,15 +557,12 @@ class const _BoardItemModule({
       semanticLabel: selected ? t.boardSelected(face.label) : face.label,
       builder: (context, s) => UiFocusRing(
         visible: s.focused,
-        child: _Module(
-          units: item.units,
-          top: face.top,
-          title: face.title,
-          bottom: face.bottom,
-          strip: face.strip,
-          frame: selected ? c.primary : face.frame,
+        child: _Line(
+          face: face,
+          module: module,
+          grouped: item.groupId != null,
+          selected: selected,
           hovered: s.hovered || selected,
-          underline: item.groupId == null ? null : c.primary,
         ),
       ),
     );
@@ -496,108 +582,56 @@ class const _BoardItemModule({
     }
     return Draggable<String>(
       data: item.id,
-      feedback: Opacity(opacity: .85, child: module),
-      childWhenDragging: Opacity(opacity: .3, child: module),
+      feedback: Opacity(opacity: .85, child: line),
+      childWhenDragging: Opacity(opacity: .3, child: line),
       child: pressable,
     );
   }
 }
 
-class const _Module({
-  required final int units,
-  required final String top,
-  required final String title,
-  required final String bottom,
-  required final Color strip,
-  final Color? frame,
-  final Color? underline,
+/// Devices of one line, the busbar of its RCD group and the marking label under them.
+class const _Line({
+  required final _LineFace face,
+  required final double module,
+  required final bool grouped,
+  required final bool selected,
   final bool hovered = false,
 }) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UiColors c = context.uiColors;
-    final double width = units * _moduleWidth - 2;
-    final onStrip = ThemeData.estimateBrightnessForColor(strip) == Brightness.dark
-        ? const Color(0xFFFFFFFF)
-        : const Color(0xFF000000);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 1),
+    final double width = face.devices.fold(0, (s, d) => s + d.units) * module;
+    return SizedBox(
+      width: width,
       child: Column(
         children: [
-          SizedBox(
-            width: width,
-            height: 100,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: hovered ? c.sunken : c.surface,
-                borderRadius: const BorderRadius.all(Radius.circular(2)),
-                border: Border.all(color: frame ?? c.borderStrong, width: frame == null ? 1 : 2),
-              ),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 16,
-                    child: ColoredBox(
-                      color: strip,
-                      child: Center(
-                        child: Text(
-                          top,
-                          maxLines: 1,
-                          overflow: TextOverflow.clip,
-                          style: UiTextStyles.label.copyWith(
-                            color: onStrip,
-                            fontSize: 11,
-                            letterSpacing: 0,
-                            height: 1.2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.clip,
-                    style: UiTextStyles.valueStrong.copyWith(color: c.text, fontSize: 12),
-                  ),
-                  const SizedBox(height: 5),
-                  // Toggle lever of the device.
-                  SizedBox(
-                    width: 10,
-                    height: 20,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: c.text.withValues(alpha: .75),
-                        borderRadius: const BorderRadius.all(Radius.circular(1.5)),
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(2, 0, 2, 4),
-                    child: Text(
-                      bottom,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: UiTextStyles.caption.copyWith(
-                        color: c.textMuted,
-                        fontSize: 12,
-                        height: 1.15,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          Row(
+            children: [
+              for (final d in face.devices)
+                _DeviceBody(
+                  device: d,
+                  module: module,
+                  accent: face.accent,
+                  hovered: hovered,
+                ),
+            ],
+          ),
+          // Busbar of a shared RCD group.
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
+            child: SizedBox(
+              width: double.infinity,
+              height: 3,
+              child: ColoredBox(color: grouped ? c.primary : const Color(0x00000000)),
             ),
           ),
-          const SizedBox(height: 2),
-          SizedBox(
-            width: width,
-            height: 3,
-            child: ColoredBox(color: underline ?? const Color(0x00000000)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: _Marking(
+              face: face,
+              width: width - 2,
+              frame: selected ? c.primary : face.frame,
+            ),
           ),
         ],
       ),
@@ -605,19 +639,205 @@ class const _Module({
   }
 }
 
-class const _BlankModule() extends StatelessWidget {
+/// Marking label under a line, like the stickers on a real panel: the number on the phase
+/// colour and up to two lines of the name. Cable and status are in the tooltip.
+class const _Marking({
+  required final _LineFace face,
+  required final double width,
+  required final Color? frame,
+}) extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(1, 18, 1, 0),
-    child: SizedBox(
-      width: _moduleWidth - 2,
-      height: 66,
+  Widget build(BuildContext context) {
+    final UiColors c = context.uiColors;
+    return SizedBox(
+      width: width,
+      height: 38,
       child: DecoratedBox(
         decoration: BoxDecoration(
+          color: c.surface,
           borderRadius: const BorderRadius.all(Radius.circular(2)),
-          border: Border.all(color: context.uiColors.borderStrong.withValues(alpha: .6)),
+          border: Border.all(color: frame ?? c.borderStrong, width: frame == null ? 1 : 2),
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 12,
+              width: double.infinity,
+              child: ColoredBox(
+                color: face.accent,
+                child: Center(
+                  child: _FitText(
+                    face.number,
+                    style: UiTextStyles.valueStrong.copyWith(
+                      color: _onColor(face.accent),
+                      fontSize: 10,
+                      height: 1.1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    face.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: UiTextStyles.caption.copyWith(
+                      color: c.text,
+                      fontSize: width < 50 ? 9 : 10,
+                      height: 1.05,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-    ),
+    );
+  }
+}
+
+/// Body of one device: terminal covers, kind, rating window, lever and the test button of RCDs.
+class const _DeviceBody({
+  required final _DeviceFace device,
+  required final double module,
+  required final Color accent,
+  required final bool hovered,
+}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final CommonTranslationsLocalizations t = context.translations;
+    final UiColors c = context.uiColors;
+    final double body = _bodyHeight(module);
+    final double lever = (module * .34).clamp(8, 16);
+    final bool rcd = device.kind == t.boardRcd || device.kind == t.boardRcbo;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: .5),
+      child: SizedBox(
+        width: device.units * module - 1,
+        height: body,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: hovered ? c.sunken : c.surface,
+            borderRadius: const BorderRadius.all(Radius.circular(3)),
+            border: Border.all(color: c.borderStrong),
+          ),
+          child: Column(
+            children: [
+              // Upper terminal cover with the phase tick.
+              SizedBox(
+                height: body * .14,
+                width: double.infinity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: c.border,
+                    border: Border(top: BorderSide(color: accent, width: 3)),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _FitText(
+                        device.kind,
+                        style: UiTextStyles.label.copyWith(
+                          color: c.textMuted,
+                          fontSize: 9,
+                          letterSpacing: 0,
+                        ),
+                      ),
+                      if (device.rating.isNotEmpty)
+                        _FitText(
+                          device.rating,
+                          style: UiTextStyles.valueStrong.copyWith(color: c.text, fontSize: 14),
+                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: lever,
+                            height: body * .2,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: c.text.withValues(alpha: .8),
+                                borderRadius: const BorderRadius.all(Radius.circular(2)),
+                              ),
+                            ),
+                          ),
+                          if (rcd && device.units > 1) ...[
+                            SizedBox(width: module * .2),
+                            // Test button «Т».
+                            SizedBox.square(
+                              dimension: lever * .8,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: c.warning,
+                                  borderRadius: const BorderRadius.all(Radius.circular(2)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      if (device.extra case final String extra)
+                        _FitText(
+                          extra,
+                          style: UiTextStyles.caption.copyWith(color: c.textMuted, fontSize: 10),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: body * .1,
+                width: double.infinity,
+                child: ColoredBox(color: c.border),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// One line of text shrunk to fit its width.
+class const _FitText(final String text, {required final TextStyle style}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, maxLines: 1, style: style),
   );
+}
+
+/// Blank cover of a free place.
+class const _BlankModule({required final double module}) extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final UiColors c = context.uiColors;
+    final double body = _bodyHeight(module);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(.5, body * .25, .5, 0),
+      child: SizedBox(
+        width: module - 1,
+        height: body * .5,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: c.surface.withValues(alpha: .5),
+            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            border: Border.all(color: c.borderStrong.withValues(alpha: .6)),
+          ),
+        ),
+      ),
+    );
+  }
 }
