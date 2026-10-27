@@ -331,6 +331,29 @@
   "boardIncomer": "Ввод",
   "boardRcd": "УЗО",
   "boardAuxiliary": "Доп.",
+  "boardMcb": "АВ",
+  "boardRcbo": "АВДТ",
+  "boardSpd": "УЗИП",
+  "boardVoltageRelay": "РН",
+  "boardDinSocket": "Розетка",
+  "boardLoadSwitch": "ВН",
+  "boardFireRcd": "Противопожарное",
+  "boardRcdGroup": "Линии {circuits}",
+  "@boardRcdGroup": {
+    "placeholders": {
+      "circuits": {
+        "type": "String"
+      }
+    }
+  },
+  "boardDesignCurrent": "Iр {current} А",
+  "@boardDesignCurrent": {
+    "placeholders": {
+      "current": {
+        "type": "String"
+      }
+    }
+  },
   "boardRearrange": "Переставить",
   "boardRearrangeDone": "Готово",
   "boardRearrangeHint": "Нажмите на аппарат и двигайте его кнопками или стрелками клавиатуры. На широком экране аппарат можно перетащить.",

@@ -172,4 +172,63 @@ void main() {
       expect(item.units, 2);
     });
   });
+
+  group('boardItemDevices', () {
+    test('devices of every demo item add up to its width', () {
+      for (final ProjectInput input in [
+        DemoProjects.oneRoomApartment(),
+        DemoProjects.threeRoomApartment(),
+        DemoProjects.house(),
+      ]) {
+        final ProjectResult result = calculateProject(input);
+        final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
+        for (final BoardItem item in switchboardItems(input, result, estimate)) {
+          final List<BoardDevice> devices = boardItemDevices(item, estimate);
+          expect(devices.fold(0, (s, d) => s + d.units), item.units, reason: item.id);
+        }
+      }
+    });
+
+    test('separate MCB and RCD of a socket circuit are two devices in estimate order', () {
+      final ProjectInput input = DemoProjects.oneRoomApartment().copyWith(
+        rcdStrategy: RcdStrategy.rcdPerCircuit,
+      );
+      final ProjectResult result = calculateProject(input);
+      final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
+      final CircuitResult sockets = result.circuits.firstWhere(
+        (c) => c.protection.device == ProtectionDevice.mcbAndRcd,
+      );
+      final BoardItem item = switchboardItems(
+        input,
+        result,
+        estimate,
+      ).firstWhere((i) => i.id == sockets.id);
+      final List<BoardDevice> devices = boardItemDevices(item, estimate);
+      final List<ApparatusFunction?> functions = [
+        for (final d in devices) d.requirement?.function,
+      ];
+      final List<ApparatusFunction?> lines = [
+        for (final l in estimate.lines)
+          if (l.circuitId == sockets.id && l.category == EstimateCategory.apparatus)
+            l.requirement?.function,
+      ];
+      expect(functions, lines);
+      expect(functions.toSet(), {ApparatusFunction.mcb, ApparatusFunction.rcd});
+      expect(devices.map((d) => d.units).toList(), [
+        for (final l in estimate.lines)
+          if (l.circuitId == sockets.id && l.category == EstimateCategory.apparatus) l.moduleUnits,
+      ]);
+    });
+
+    test('an item without estimate lines is one device of its width', () {
+      const item = BoardItem(kind: BoardItemKind.circuit, id: 'missing', units: 3);
+      final ProjectInput input = DemoProjects.oneRoomApartment();
+      final ProjectResult result = calculateProject(input);
+      final EstimateResult estimate = calculateEstimate(input, result, const EstimateInput());
+      final List<BoardDevice> devices = boardItemDevices(item, estimate);
+      expect(devices.length, 1);
+      expect(devices.single.units, 3);
+      expect(devices.single.requirement, isNull);
+    });
+  });
 }

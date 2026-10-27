@@ -1309,6 +1309,60 @@ abstract class CommonTranslationsLocalizations {
   /// **'Доп.'**
   String get boardAuxiliary;
 
+  /// No description provided for @boardMcb.
+  ///
+  /// In ru, this message translates to:
+  /// **'АВ'**
+  String get boardMcb;
+
+  /// No description provided for @boardRcbo.
+  ///
+  /// In ru, this message translates to:
+  /// **'АВДТ'**
+  String get boardRcbo;
+
+  /// No description provided for @boardSpd.
+  ///
+  /// In ru, this message translates to:
+  /// **'УЗИП'**
+  String get boardSpd;
+
+  /// No description provided for @boardVoltageRelay.
+  ///
+  /// In ru, this message translates to:
+  /// **'РН'**
+  String get boardVoltageRelay;
+
+  /// No description provided for @boardDinSocket.
+  ///
+  /// In ru, this message translates to:
+  /// **'Розетка'**
+  String get boardDinSocket;
+
+  /// No description provided for @boardLoadSwitch.
+  ///
+  /// In ru, this message translates to:
+  /// **'ВН'**
+  String get boardLoadSwitch;
+
+  /// No description provided for @boardFireRcd.
+  ///
+  /// In ru, this message translates to:
+  /// **'Противопожарное'**
+  String get boardFireRcd;
+
+  /// No description provided for @boardRcdGroup.
+  ///
+  /// In ru, this message translates to:
+  /// **'Линии {circuits}'**
+  String boardRcdGroup(String circuits);
+
+  /// No description provided for @boardDesignCurrent.
+  ///
+  /// In ru, this message translates to:
+  /// **'Iр {current} А'**
+  String boardDesignCurrent(String current);
+
   /// No description provided for @boardRearrange.
   ///
   /// In ru, this message translates to:

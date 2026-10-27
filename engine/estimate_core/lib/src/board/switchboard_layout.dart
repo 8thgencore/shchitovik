@@ -130,6 +130,41 @@ final class const SwitchboardLayout({
   }
 }
 
+/// One physical device of a board item.
+@immutable
+final class const BoardDevice({
+  /// Width in DIN modules.
+  required final int units,
+
+  /// What the device is; `null` for auxiliary devices and when the estimate has no line.
+  final ApparatusRequirement? requirement,
+});
+
+/// Devices of [item] left to right, in the order of their estimate lines.
+///
+/// A circuit with a separate MCB and RCD is two devices, so each is drawn with its own width.
+/// When the estimate lines do not add up to the item width (no lines, typical width), the item
+/// is one device.
+List<BoardDevice> boardItemDevices(BoardItem item, EstimateResult estimate) {
+  final List<EstimateLine> lines = [
+    for (final l in estimate.lines)
+      if (l.moduleUnits > 0 &&
+          (item.kind == BoardItemKind.circuit
+              ? l.circuitId == item.id && l.category == EstimateCategory.apparatus
+              : l.id == item.id))
+        l,
+  ];
+  if (lines.isEmpty || lines.fold(0, (s, l) => s + l.moduleUnits) != item.units) {
+    return [
+      BoardDevice(
+        units: item.units,
+        requirement: lines.length == 1 ? lines.first.requirement : null,
+      ),
+    ];
+  }
+  return [for (final l in lines) BoardDevice(units: l.moduleUnits, requirement: l.requirement)];
+}
+
 /// Typical modular enclosures, smallest first, as (rails, modules per rail).
 const typicalEnclosures = [(1, 12), (1, 18), (2, 12), (2, 18), (3, 18), (4, 18), (4, 24), (5, 24)];
 

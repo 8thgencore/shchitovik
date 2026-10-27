@@ -660,6 +660,37 @@ class CommonTranslationsLocalizationsRu extends CommonTranslationsLocalizations 
   String get boardAuxiliary => 'Доп.';
 
   @override
+  String get boardMcb => 'АВ';
+
+  @override
+  String get boardRcbo => 'АВДТ';
+
+  @override
+  String get boardSpd => 'УЗИП';
+
+  @override
+  String get boardVoltageRelay => 'РН';
+
+  @override
+  String get boardDinSocket => 'Розетка';
+
+  @override
+  String get boardLoadSwitch => 'ВН';
+
+  @override
+  String get boardFireRcd => 'Противопожарное';
+
+  @override
+  String boardRcdGroup(String circuits) {
+    return 'Линии $circuits';
+  }
+
+  @override
+  String boardDesignCurrent(String current) {
+    return 'Iр $current А';
+  }
+
+  @override
   String get boardRearrange => 'Переставить';
 
   @override
